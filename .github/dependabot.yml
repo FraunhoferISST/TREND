@@ -1,0 +1,53 @@
+#
+# Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+#
+# This work is licensed under the Fraunhofer License (on the basis of the MIT license)
+# that can be found in the LICENSE file.
+#
+
+version: 2
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/cli"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+      - "component: cli"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+
+  - package-ecosystem: "gradle"
+    directory: "/webinterface"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+      - "component: webinterface"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+
+  - package-ecosystem: "gradle"
+    directory: "/watermarker"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+      - "component: watermarker"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "pipeline"
+    commit-message:
+      prefix: "build"
+      include: "scope"

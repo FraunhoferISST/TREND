@@ -1,0 +1,5 @@
+# Exclude docs from the language statistics
+docs/** linguist-documentation
+
+# Set file specific line endings
+*.bat text eol=crlf

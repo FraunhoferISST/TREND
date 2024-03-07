@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/node_modules" />
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/packages/webinterface-test/node_modules" />
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/packages/webinterface/node_modules" />
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/packages_imported/kvision-kvision-modules-kvision-bootstrap-upload/7.0.0/node_modules" />
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/packages_imported/kvision-kvision-modules-kvision-bootstrap/7.0.0/node_modules" />
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/packages_imported/kvision-kvision-modules-kvision-fontawesome/7.0.0/node_modules" />
+    <excludedPredefinedLibrary name="TREND/webinterface/build/js/packages_imported/kvision/7.0.0/node_modules" />
+  </component>
+</project>

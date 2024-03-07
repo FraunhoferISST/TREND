@@ -1,0 +1,15 @@
+FRAUNHOFER LICENSE (on the basis of the MIT license)
+
+Copyright (c) Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e. V.
+
+NO PATENT LICENSE
+
+Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e. V., Hansastrasse 27 c, 80686 Munich, Germany (Fraunhofer) is the owner of the rights of use and exploitation of the software „TREND“ (Software) and the owner of a pending German patent application with the application number 10 2023 125 012.4. In order to use the Software in the form published here, a patent license is required in addition to the license for the Software. It is hereby clarified that the MIT license below only grants a right of use in relation to the Software, not to the above-mentioned patent application or to any patent that may subsequently be granted. Fraunhofer grants rights of use to the patent application or to any patent that may subsequently be granted only on the basis of an express patent license. A patent license can be requested from Fraunhofer by sending an e-mail to trend@isst.fraunhofer.de. On the basis of the MIT license, users are free to modify the Software and use it in a form that does not infringe the above-mentioned patent application and any patent that may subsequently be granted. It is the sole responsibility of the user to check whether the use of the Software infringes this or any other patent.
+
+MIT LICENSE
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
