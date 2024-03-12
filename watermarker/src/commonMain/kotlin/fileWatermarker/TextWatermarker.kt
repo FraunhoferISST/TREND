@@ -366,7 +366,7 @@ class TextWatermarker(
             val content =
                 file.content.asSequence()
                     .drop(start)
-                    .take(end - start)
+                    .take(end - start + 1)
                     .filter { char -> char in transcoding.alphabet }
 
             if (content.count() > 0) {
