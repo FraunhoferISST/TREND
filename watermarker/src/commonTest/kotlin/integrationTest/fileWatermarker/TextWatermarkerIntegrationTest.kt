@@ -1,6 +1,11 @@
+/*
+ * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ *
+ * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
+ * that can be found in the LICENSE file.
+ */
 package integrationTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.SupportedFileType
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
