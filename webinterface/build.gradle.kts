@@ -13,7 +13,7 @@ val kvisionVersion = "7.3.1"
 val webDir = file("src/jsMain/web")
 
 plugins {
-    val kotlinVersion = "1.9.22"
+    val kotlinVersion = "1.9.23"
     val kvisionVersion = "7.3.1"
 
     kotlin("plugin.serialization") version kotlinVersion
