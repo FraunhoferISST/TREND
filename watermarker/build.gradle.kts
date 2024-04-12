@@ -35,7 +35,11 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation("org.kotlincrypto.hash:sha3:0.5.1")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))

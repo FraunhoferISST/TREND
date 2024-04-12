@@ -10,15 +10,15 @@ import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import kotlin.js.JsExport
 
 @JsExport
-open class Watermark(val content: List<Byte>) {
+open class Watermark(val rawContent: List<Byte>) {
     /** Represents the bytes of the watermark in hex */
-    override fun toString(): String = content.toHexString()
+    override fun toString(): String = rawContent.toHexString()
 
     /** Returns true if other is a watermark and contains the same bytes */
     override fun equals(other: Any?): Boolean {
         return when (other) {
             is Watermark -> {
-                this.content == other.content
+                this.rawContent == other.rawContent
             }
 
             else -> false
@@ -26,5 +26,5 @@ open class Watermark(val content: List<Byte>) {
     }
 
     /** Exposes content.hashCode() */
-    override fun hashCode(): Int = content.hashCode()
+    override fun hashCode(): Int = rawContent.hashCode()
 }
