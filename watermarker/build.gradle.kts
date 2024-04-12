@@ -46,7 +46,11 @@ kotlin {
             }
         }
         val jvmMain by getting
-        val jvmTest by getting
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("reflect"))
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation(npm("pako", "2.1.0"))
