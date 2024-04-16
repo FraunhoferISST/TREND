@@ -24,7 +24,7 @@ class TrendmarkTest {
     fun plainWatermark_creation_success() {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
-        val expected = listOf(PlainWatermark.TAG.toByte()) + content
+        val expected = listOf(PlainWatermark.TYPE_TAG.toByte()) + content
 
         // Act
         val watermark = PlainWatermark.new(content)
@@ -64,7 +64,7 @@ class TrendmarkTest {
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val expectedSize = Trendmark.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size
         val expected =
-            listOf(SizedWatermark.TAG.toByte()) +
+            listOf(SizedWatermark.TYPE_TAG.toByte()) +
                 expectedSize.toUInt().toBytesLittleEndian() +
                 content
 
@@ -112,7 +112,7 @@ class TrendmarkTest {
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val invalidSize = Trendmark.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size + 1
         val watermarkContent =
-            listOf(SizedWatermark.TAG.toByte()) +
+            listOf(SizedWatermark.TYPE_TAG.toByte()) +
                 invalidSize.toUInt().toBytesLittleEndian() +
                 content
         val expectedStatus =
@@ -140,7 +140,7 @@ class TrendmarkTest {
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val expectedCrc32 = 0x358AD45Du
         val expected =
-            listOf(CRC32Watermark.TAG.toByte()) + expectedCrc32.toBytesLittleEndian() + content
+            listOf(CRC32Watermark.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() + content
 
         // Act
         val watermark = CRC32Watermark.new(content)
@@ -185,7 +185,7 @@ class TrendmarkTest {
         val expectedCrc32 = 0x358AD45Du
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CRC32Watermark.TAG.toByte()) +
+            listOf(CRC32Watermark.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus =
@@ -218,7 +218,7 @@ class TrendmarkTest {
                 content.size
         val expectedCrc32 = 0x358AD45Du
         val expected =
-            listOf(SizedCRC32Watermark.TAG.toByte()) +
+            listOf(SizedCRC32Watermark.TYPE_TAG.toByte()) +
                 expectedSize.toUInt().toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 content
@@ -281,7 +281,7 @@ class TrendmarkTest {
                 content.size +
                 1
         val watermarkContent =
-            listOf(SizedCRC32Watermark.TAG.toByte()) +
+            listOf(SizedCRC32Watermark.TYPE_TAG.toByte()) +
                 invalidSize.toUInt().toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 content
@@ -323,7 +323,7 @@ class TrendmarkTest {
                 62, 89, 112, -111, -83, -16, 75, 74, 70, 84, 22, -99, 101, 39,
             )
         val expectedContent =
-            listOf(SHA3256Watermark.TAG.toByte()) + expectedHash + content
+            listOf(SHA3256Watermark.TYPE_TAG.toByte()) + expectedHash + content
 
         // Act
         val watermark = SHA3256Watermark.new(content)
@@ -382,7 +382,7 @@ class TrendmarkTest {
                 invalidHash,
                 expectedHash,
             ).into()
-        val watermarkContent = listOf(SHA3256Watermark.TAG.toByte()) + invalidHash + content
+        val watermarkContent = listOf(SHA3256Watermark.TYPE_TAG.toByte()) + invalidHash + content
 
         // Act
         val watermark = SHA3256Watermark(watermarkContent)
@@ -411,7 +411,7 @@ class TrendmarkTest {
                 -41, 6, -3, -118, 33, 105, -76, -46, 122, 12, 21, -97, -39, 18, 3,
             )
         val expectedContent =
-            listOf(SizedSHA3256Watermark.TAG.toByte()) +
+            listOf(SizedSHA3256Watermark.TYPE_TAG.toByte()) +
                 expectedSize.toUInt().toBytesLittleEndian() +
                 expectedHash +
                 content
@@ -500,7 +500,7 @@ class TrendmarkTest {
         )
 
         val watermarkContent =
-            listOf(SizedSHA3256Watermark.TAG.toByte()) +
+            listOf(SizedSHA3256Watermark.TYPE_TAG.toByte()) +
                 invalidSize.toUInt().toBytesLittleEndian() +
                 invalidHash +
                 content
@@ -580,40 +580,5 @@ class TrendmarkTest {
         assertEquals(sizedSHA3256Watermark.extractHash(), parsedWatermark.extractHash())
         assertEquals(content, parsedWatermark.getContent())
         assertEquals(sizedSHA3256Watermark.rawContent, parsedWatermark.rawContent)
-    }
-
-    @Test
-    fun tagConsistency_success() {
-        // TODO: Find better solution to enforce consistent (only used once) tags
-        val anyTrendmark: Trendmark = PlainWatermark.new(listOf(0))
-        /*
-         * Hacky solution to enforce consistent tags
-         * When you create a new tag you need to add it to the *when* statement AND to the tag-list
-         */
-        when (anyTrendmark) {
-            is PlainWatermark,
-            is SizedWatermark,
-            is CRC32Watermark,
-            is SizedCRC32Watermark,
-            is SHA3256Watermark,
-            is SizedSHA3256Watermark,
-            -> {
-                val tags =
-                    listOf(
-                        PlainWatermark.TAG,
-                        SizedWatermark.TAG,
-                        CRC32Watermark.TAG,
-                        SizedCRC32Watermark.TAG,
-                        SHA3256Watermark.TAG,
-                        SizedSHA3256Watermark.TAG,
-                    )
-                assertTrue(tags.size < 256)
-
-                val expectedTags = (0u) until tags.size.toUInt()
-                for ((expectedTag, actualTag) in expectedTags.zip(tags)) {
-                    assertEquals(expectedTag.toUByte(), actualTag)
-                }
-            }
-        }
     }
 }

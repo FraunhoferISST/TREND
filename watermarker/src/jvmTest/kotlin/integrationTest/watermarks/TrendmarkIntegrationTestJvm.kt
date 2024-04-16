@@ -31,7 +31,7 @@ class TrendmarkIntegrationTestJvm {
             )
 
             val tagProperty =
-                companionObjectInstance::class.memberProperties.filter { it.name == "TAG" }
+                companionObjectInstance::class.memberProperties.filter { it.name == "TYPE_TAG" }
             assertTrue(
                 tagProperty.size == 1,
                 "The companion object of the Trendmark class \"${c.simpleName}\" must contain a " +
