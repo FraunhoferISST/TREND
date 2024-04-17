@@ -15,13 +15,13 @@ import kotlin.js.JsExport
 open class DeflateWatermark(content: List<Byte>) : Watermark(content) {
     /** Returns the inflated bytes from the Watermark */
     fun getBytes(): Result<List<Byte>> {
-        return Compression.inflate(rawContent)
+        return Compression.inflate(watermarkContent)
     }
 
     companion object {
         /** Converts a watermark to a DeflateWatermark */
         fun fromWatermark(watermark: Watermark): DeflateWatermark =
-            DeflateWatermark(watermark.rawContent)
+            DeflateWatermark(watermark.watermarkContent)
 
         /** Creates a DeflateWatermark from a [text] using deflate compression */
         fun fromText(text: String): DeflateWatermark {

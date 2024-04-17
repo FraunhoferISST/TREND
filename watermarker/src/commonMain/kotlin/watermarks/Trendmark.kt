@@ -14,8 +14,71 @@ import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.EmptyError
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.InvalidTagError
+import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface.Companion.TAG_SIZE
 import org.kotlincrypto.hash.sha3.SHA3_256
 import kotlin.collections.ArrayList
+
+sealed interface TrendmarkInterface {
+    companion object {
+        /** Number of bytes used as tag representing the type of the watermark */
+        const val TAG_SIZE: Int = 1
+    }
+
+    /** Constant function that returns the tag used to encode this Trendmark class */
+    fun getTag(): UByte
+
+    /** Constant function that returns the name of the specific Trendmark */
+    fun getSource(): String
+
+    /** Extracts the encoded tag from the bytes of the Trendmark */
+    fun extractTag(): UByte {
+        check(TAG_SIZE == 1)
+        val content = getRawContent()
+        require(content.size >= TAG_SIZE)
+        return content.first().toUByte()
+    }
+
+    /** Returns the decoded information stored in the Trendmark */
+    fun getContent(): Result<List<Byte>>
+
+    /** Returns the raw bytes of the watermark */
+    fun getRawContent(): List<Byte>
+
+    /** Updates the raw bytes of the watermark */
+    fun setRawContent(content: List<Byte>)
+
+    /** Checks if the bytes represent a valid Trendmark of the given class */
+    fun validate(): Status {
+        val content = getRawContent()
+        if (content.size < TAG_SIZE) {
+            return EmptyError.into()
+        }
+        val status = Status.success()
+        val extractedTag = extractTag()
+        val expectedTag = getTag()
+
+        if (extractedTag != expectedTag) {
+            status.addEvent(InvalidTagError(getSource(), expectedTag, extractedTag))
+        }
+
+        if (this is Trendmark.Sized) {
+            status.appendStatus(validateSize())
+        }
+        if (this is Trendmark.Checksum) {
+            status.appendStatus(validateChecksum())
+        }
+        if (this is Trendmark.Hash) {
+            status.appendStatus(validateHash())
+        }
+        if (this is Trendmark.Compressed) {
+            status.appendStatus(validateCompression())
+        }
+
+        return status
+    }
+}
 
 /**
  * Trendmark defines a list of Watermarks with specific format
@@ -25,31 +88,26 @@ import kotlin.collections.ArrayList
  * be used.
  *
  */
-sealed class Trendmark(val typeTag: UByte, content: List<Byte>) : Watermark(content) {
-    abstract fun getTag(): UByte
-
-    abstract fun getContent(): List<Byte>
-
-    abstract fun validate(): Status
-
+sealed class Trendmark(
+    val typeTag: UByte,
+    content: List<Byte>,
+) : Watermark(content), TrendmarkInterface {
     companion object {
-        /** Number of bytes used as tag representing the type of the watermark */
-        const val TAG_SIZE: Int = 1
         const val SOURCE = "Trendmark"
 
-        fun parse(bytes: List<Byte>): Result<Trendmark> {
-            if (bytes.size < TAG_SIZE) {
-                return NotEnoughDataError.into<_>()
+        fun parse(input: List<Byte>): Result<Trendmark> {
+            if (input.size < TAG_SIZE) {
+                return NotEnoughDataError(SOURCE, TAG_SIZE).into<_>()
             }
 
             val watermark =
-                when (val tag = extractTag(bytes)) {
-                    PlainWatermark.TYPE_TAG -> PlainWatermark(bytes)
-                    SizedWatermark.TYPE_TAG -> SizedWatermark(bytes)
-                    CRC32Watermark.TYPE_TAG -> CRC32Watermark(bytes)
-                    SizedCRC32Watermark.TYPE_TAG -> SizedCRC32Watermark(bytes)
-                    SHA3256Watermark.TYPE_TAG -> SHA3256Watermark(bytes)
-                    SizedSHA3256Watermark.TYPE_TAG -> SizedSHA3256Watermark(bytes)
+                when (val tag = extractTag(input)) {
+                    RawWatermark.TYPE_TAG -> RawWatermark(input)
+                    SizedWatermark.TYPE_TAG -> SizedWatermark(input)
+                    CRC32Watermark.TYPE_TAG -> CRC32Watermark(input)
+                    SizedCRC32Watermark.TYPE_TAG -> SizedCRC32Watermark(input)
+                    SHA3256Watermark.TYPE_TAG -> SHA3256Watermark(input)
+                    SizedSHA3256Watermark.TYPE_TAG -> SizedSHA3256Watermark(input)
                     else -> return UnknownTagError(tag).into<_>()
                 }
             val status = watermark.validate()
@@ -71,14 +129,225 @@ sealed class Trendmark(val typeTag: UByte, content: List<Byte>) : Watermark(cont
             }
     }
 
-    fun extractTag(): UByte = Companion.extractTag(rawContent)
+    override fun extractTag(): UByte = Companion.extractTag(watermarkContent)
 
-    object NotEnoughDataError : Event.Error(SOURCE) {
-        override fun getMessage(): String = "More bytes are required for a valid Trendmark."
+    override fun getRawContent(): List<Byte> = watermarkContent
+
+    override fun setRawContent(content: List<Byte>) {
+        watermarkContent = content
+    }
+
+    sealed interface Sized : TrendmarkInterface {
+        fun getSizeRange(): IntRange
+
+        fun extractSize(): Result<UInt> {
+            val content = getRawContent()
+            val sizeRange = getSizeRange()
+            if (content.size <= sizeRange.last) {
+                return NotEnoughDataError(getSource(), sizeRange.last).into<_>()
+            }
+
+            return Result.success(
+                UInt.fromBytesLittleEndian(content.subList(sizeRange.first, sizeRange.last)),
+            )
+        }
+
+        fun validateSize(): Status {
+            val extractedSize =
+                with(extractSize()) {
+                    if (!isSuccess) return status
+                    value!!
+                }.toInt()
+            val actualSize = getRawContent().size
+
+            return if (extractedSize != actualSize) {
+                MismatchedSizeWarning(getSource(), extractedSize, actualSize).into()
+            } else {
+                Status.success()
+            }
+        }
+    }
+
+    sealed interface Checksum : TrendmarkInterface {
+        companion object {
+            const val CHECKSUM_PLACEHOLDER: Byte = 0
+        }
+
+        fun getChecksumRange(): IntRange
+
+        fun extractChecksum(): Result<UInt> {
+            val checksumRange = getChecksumRange()
+            val checksumSize = checksumRange.last - checksumRange.first
+            // Ensure checksum fits into an Int, otherwise impl must be changed
+            check(checksumSize <= 4)
+
+            val content = getRawContent()
+            if (content.size <= checksumRange.last) {
+                return NotEnoughDataError(getSource(), checksumRange.last).into<_>()
+            }
+
+            val checksumBytes = content.subList(checksumRange.first, checksumRange.last)
+            val checksum = UInt.fromBytesLittleEndian(checksumBytes)
+
+            return Result.success(checksum)
+        }
+
+        fun getChecksumPlaceholder(): List<Byte> {
+            val checksumRange = getChecksumRange()
+            val size = checksumRange.last - checksumRange.first
+            return List(size) { CHECKSUM_PLACEHOLDER }
+        }
+
+        /**
+         * Extracts the bytes that are used as input to calculate the checksum.
+         * This function must be overridden if more than the checksum itself is excluded from the
+         * checksum input. E.g., when a placeholder for a hash is required.
+         */
+        fun getChecksumContent(): Result<List<Byte>> {
+            val rawContent = getRawContent()
+            val checksumRange = getChecksumRange()
+            if (rawContent.size <= checksumRange.last) {
+                return NotEnoughDataError(getSource(), checksumRange.last).into<_>()
+            }
+
+            val checksumInput = ArrayList<Byte>(rawContent.size)
+            checksumInput.addAll(rawContent.subList(0, checksumRange.first))
+            checksumInput.addAll(getChecksumPlaceholder())
+            checksumInput.addAll(rawContent.subList(checksumRange.last, rawContent.size))
+
+            return Result.success(checksumInput)
+        }
+
+        fun calculateChecksum(): Result<UInt>
+
+        fun updateChecksum(): Status {
+            val checksum =
+                with(calculateChecksum()) {
+                    if (!isSuccess) return status
+                    value!!
+                }.toBytesLittleEndian().iterator()
+            val content = getRawContent().toMutableList()
+            for (i in getChecksumRange()) {
+                content[i] = checksum.next()
+            }
+            check(!checksum.hasNext())
+            setRawContent(content)
+
+            return Status.success()
+        }
+
+        fun validateChecksum(): Status {
+            val extractedChecksum =
+                with(extractChecksum()) {
+                    if (!isSuccess) return status
+                    value!!
+                }
+            val calculatedChecksum =
+                with(calculateChecksum()) {
+                    if (!isSuccess) return status
+                    value!!
+                }
+
+            return if (extractedChecksum != calculatedChecksum) {
+                InvalidChecksumWarning(getSource(), extractedChecksum, calculatedChecksum).into()
+            } else {
+                Status.success()
+            }
+        }
+    }
+
+    sealed interface Hash : TrendmarkInterface {
+        companion object {
+            const val HASH_PLACEHOLDER: Byte = 0
+        }
+
+        fun getHashRange(): IntRange
+
+        fun extractHash(): Result<List<Byte>> {
+            val content = getRawContent()
+            val hashRange = getHashRange()
+
+            if (content.size <= hashRange.last) {
+                return NotEnoughDataError(getSource(), hashRange.last).into<_>()
+            }
+
+            return Result.success(content.subList(hashRange.first, hashRange.last))
+        }
+
+        fun getHashPlaceholder(): List<Byte> {
+            val hashRange = getHashRange()
+            val size = hashRange.last - hashRange.first
+            return List(size) { HASH_PLACEHOLDER }
+        }
+
+        /**
+         * Extracts the bytes that are used as input to calculate the hash.
+         * This function must be overridden if more than the hash itself is excluded from the
+         * hash input. E.g., when a placeholder for a checksum is required.
+         */
+        fun getHashInput(): Result<List<Byte>> {
+            val rawContent = getRawContent()
+            val hashRange = getHashRange()
+            if (rawContent.size <= hashRange.last) {
+                return NotEnoughDataError(getSource(), hashRange.last).into<_>()
+            }
+
+            val hashInput = ArrayList<Byte>(rawContent.size)
+            hashInput.addAll(rawContent.subList(0, hashRange.first))
+            hashInput.addAll(getHashPlaceholder())
+            hashInput.addAll(rawContent.subList(hashRange.last, rawContent.size))
+
+            return Result.success(hashInput)
+        }
+
+        fun calculateHash(): Result<List<Byte>>
+
+        fun updateHash(): Status {
+            val hash =
+                with(calculateHash()) {
+                    if (!isSuccess) return status
+                    value!!
+                }.iterator()
+            val content = getRawContent().toMutableList()
+            for (i in getHashRange()) {
+                content[i] = hash.next()
+            }
+            check(!hash.hasNext())
+            setRawContent(content)
+
+            return Status.success()
+        }
+
+        fun validateHash(): Status {
+            val extractedHash =
+                with(extractHash()) {
+                    if (!isSuccess) return status
+                    value!!
+                }
+            val calculatedHash =
+                with(calculateHash()) {
+                    if (!isSuccess) return status
+                    value!!
+                }
+
+            return if (extractedHash != calculatedHash) {
+                InvalidHashWarning(getSource(), extractedHash, calculatedHash).into()
+            } else {
+                Status.success()
+            }
+        }
+    }
+
+    sealed interface Compressed : TrendmarkInterface {
+        fun validateCompression(): Status = getContent().status
     }
 
     object EmptyError : Event.Error(SOURCE) {
         override fun getMessage(): String = "Cannot validate an empty watermark."
+    }
+
+    class NotEnoughDataError(source: String, val minimumBytesRequired: Int) : Event.Error(source) {
+        override fun getMessage(): String = "At least $minimumBytesRequired bytes are required."
     }
 
     class UnknownTagError(val tag: UByte) : Event.Error(SOURCE) {
@@ -124,12 +393,12 @@ sealed class Trendmark(val typeTag: UByte, content: List<Byte>) : Watermark(cont
     class DecompressionException(source: String) : Exception("$source: decompression failed.")
 }
 
-open class PlainWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class RawWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
     companion object {
-        const val SOURCE = "Trendmark.PlainWatermark"
+        const val SOURCE = "Trendmark.RawWatermark"
         const val TYPE_TAG: UByte = 0u
 
-        fun new(content: List<Byte>): PlainWatermark = PlainWatermark(createRaw(TYPE_TAG, content))
+        fun new(content: List<Byte>): RawWatermark = RawWatermark(createRaw(TYPE_TAG, content))
 
         internal fun createRaw(
             tag: UByte,
@@ -137,22 +406,14 @@ open class PlainWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
         ): List<Byte> = listOf(tag.toByte()) + content
     }
 
+    override fun getSource(): String = SOURCE
+
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> = rawContent.drop(TAG_SIZE)
-
-    override fun validate(): Status {
-        return if (rawContent.isEmpty()) {
-            EmptyError.into()
-        } else if (extractTag() != getTag()) {
-            InvalidTagError(SOURCE, getTag(), extractTag()).into()
-        } else {
-            Status.success()
-        }
-    }
+    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE))
 }
 
-open class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendmark.Sized {
     companion object {
         const val SOURCE = "Trendmark.SizedWatermark"
         const val TYPE_TAG: UByte = 1u
@@ -182,33 +443,16 @@ open class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
         }
     }
 
+    override fun getSource(): String = SOURCE
+
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> = rawContent.drop(TAG_SIZE + SIZE_SIZE)
+    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE))
 
-    override fun validate(): Status {
-        return if (rawContent.isEmpty()) {
-            EmptyError.into()
-        } else if (extractTag() != getTag()) {
-            InvalidTagError(SOURCE, getTag(), extractTag()).into()
-        } else {
-            val parsedSize = extractSize()
-
-            if (parsedSize != rawContent.size) {
-                MismatchedSizeWarning(SOURCE, parsedSize, rawContent.size).into()
-            } else {
-                Status.success()
-            }
-        }
-    }
-
-    fun extractSize(): Int {
-        return UInt.fromBytesLittleEndian(rawContent.subList(SIZE_START_INDEX, SIZE_END_INDEX))
-            .toInt()
-    }
+    override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 }
 
-open class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CRC32Watermark"
         const val TYPE_TAG: UByte = 2u
@@ -217,54 +461,50 @@ open class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE
 
         fun new(content: List<Byte>): CRC32Watermark {
-            return CRC32Watermark(createRaw(TYPE_TAG, content))
+            val watermark = CRC32Watermark(createRaw(TYPE_TAG, content))
+            watermark.updateChecksum()
+            return watermark
         }
 
         internal fun createRaw(
             tag: UByte,
             content: List<Byte>,
         ): List<Byte> {
-            val checksum = calculateChecksum(content).toBytesLittleEndian()
             val watermark = ArrayList<Byte>(TAG_SIZE + CHECKSUM_SIZE + content.size)
 
             watermark.add(tag.toByte())
-            watermark.addAll(checksum)
+            repeat(CHECKSUM_SIZE) {
+                watermark.add(Checksum.CHECKSUM_PLACEHOLDER)
+            }
             watermark.addAll(content)
 
             return watermark
         }
 
-        fun calculateChecksum(bytes: List<Byte>): UInt = CRC32.checksum(bytes)
+        fun calculateChecksum(input: List<Byte>): UInt = CRC32.checksum(input)
     }
+
+    override fun getSource(): String = SOURCE
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> = rawContent.drop(TAG_SIZE + CHECKSUM_SIZE)
+    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + CHECKSUM_SIZE))
 
-    override fun validate(): Status {
-        if (rawContent.isEmpty()) {
-            return EmptyError.into()
-        } else if (extractTag() != getTag()) {
-            return InvalidTagError(SOURCE, getTag(), extractTag()).into()
-        }
+    override fun getChecksumRange(): IntRange = CHECKSUM_START_INDEX..CHECKSUM_END_INDEX
 
-        val parsedChecksum = extractChecksum()
-        val calculatedChecksum = calculateChecksum(getContent())
+    override fun calculateChecksum(): Result<UInt> {
+        val checksumContent =
+            with(getChecksumContent()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
 
-        return if (parsedChecksum != calculatedChecksum) {
-            InvalidChecksumWarning(SOURCE, parsedChecksum, calculatedChecksum).into()
-        } else {
-            Status.success()
-        }
-    }
-
-    fun extractChecksum(): UInt {
-        val checksumBytes = rawContent.subList(CHECKSUM_START_INDEX, CHECKSUM_END_INDEX)
-        return UInt.fromBytesLittleEndian(checksumBytes)
+        return Result.success(Companion.calculateChecksum(checksumContent))
     }
 }
 
-open class SizedCRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class SizedCRC32Watermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.SizedCRC32Watermark"
         const val TYPE_TAG: UByte = 3u
@@ -276,7 +516,9 @@ open class SizedCRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, conten
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE
 
         fun new(content: List<Byte>): SizedCRC32Watermark {
-            return SizedCRC32Watermark(createRaw(TYPE_TAG, content))
+            val watermark = SizedCRC32Watermark(createRaw(TYPE_TAG, content))
+            watermark.updateChecksum()
+            return watermark
         }
 
         internal fun createRaw(
@@ -285,58 +527,42 @@ open class SizedCRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, conten
         ): List<Byte> {
             val size = TAG_SIZE + SIZE_SIZE + CHECKSUM_SIZE + content.size
             val encodedSize = size.toUInt().toBytesLittleEndian()
-            val checksum = calculateChecksum(content).toBytesLittleEndian()
             val watermark = ArrayList<Byte>(size)
 
             watermark.add(tag.toByte())
             watermark.addAll(encodedSize)
-            watermark.addAll(checksum)
+            repeat(CHECKSUM_SIZE) {
+                Checksum.CHECKSUM_PLACEHOLDER
+            }
             watermark.addAll(content)
 
             return watermark
         }
-
-        fun calculateChecksum(bytes: List<Byte>): UInt = CRC32.checksum(bytes)
     }
+
+    override fun getSource(): String = SOURCE
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> = rawContent.drop(TAG_SIZE + SIZE_SIZE + CHECKSUM_SIZE)
+    override fun getContent() =
+        Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE + CHECKSUM_SIZE))
 
-    override fun validate(): Status {
-        if (rawContent.isEmpty()) {
-            return EmptyError.into()
-        } else if (extractTag() != getTag()) {
-            return InvalidTagError(SOURCE, getTag(), extractTag()).into()
-        }
+    override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 
-        val parsedSize = extractSize()
-        val parsedChecksum = extractChecksum()
-        val calculatedChecksum = calculateChecksum(getContent())
+    override fun getChecksumRange(): IntRange = CHECKSUM_START_INDEX..CHECKSUM_END_INDEX
 
-        val status = Status.success()
-        if (parsedSize != rawContent.size) {
-            status.addEvent(MismatchedSizeWarning(SOURCE, parsedSize, rawContent.size))
-        }
-        if (parsedChecksum != calculatedChecksum) {
-            status.addEvent(InvalidChecksumWarning(SOURCE, parsedChecksum, calculatedChecksum))
-        }
+    override fun calculateChecksum(): Result<UInt> {
+        val checksumContent =
+            with(getChecksumContent()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
 
-        return status
-    }
-
-    fun extractSize(): Int {
-        return UInt.fromBytesLittleEndian(rawContent.subList(SIZE_START_INDEX, SIZE_END_INDEX))
-            .toInt()
-    }
-
-    fun extractChecksum(): UInt {
-        val checksumBytes = rawContent.subList(CHECKSUM_START_INDEX, CHECKSUM_END_INDEX)
-        return UInt.fromBytesLittleEndian(checksumBytes)
+        return Result.success(CRC32Watermark.calculateChecksum(checksumContent))
     }
 }
 
-open class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.SHA3256Watermark"
         const val TYPE_TAG: UByte = 4u
@@ -345,7 +571,9 @@ open class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) 
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE
 
         fun new(content: List<Byte>): SHA3256Watermark {
-            return SHA3256Watermark(createRaw(TYPE_TAG, content))
+            val watermark = SHA3256Watermark(createRaw(TYPE_TAG, content))
+            watermark.updateHash()
+            return watermark
         }
 
         internal fun createRaw(
@@ -353,51 +581,44 @@ open class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) 
             content: List<Byte>,
         ): List<Byte> {
             val size = TAG_SIZE + HASH_SIZE + content.size
-            val hash = calculateHash(content)
 
             val watermark = ArrayList<Byte>(size)
             watermark.add(tag.toByte())
-            watermark.addAll(hash)
+            repeat(HASH_SIZE) {
+                watermark.add(Hash.HASH_PLACEHOLDER)
+            }
             watermark.addAll(content)
 
             return watermark
         }
 
-        fun calculateHash(bytes: List<Byte>): List<Byte> {
+        fun calculateHash(input: List<Byte>): List<Byte> {
             val hashAlgorithm = SHA3_256()
-            hashAlgorithm.update(TYPE_TAG.toByte())
-            hashAlgorithm.update(bytes.toByteArray())
+            hashAlgorithm.update(input.toByteArray())
             return hashAlgorithm.digest().asList()
         }
     }
 
-    fun extractHash(): List<Byte> {
-        return rawContent.subList(HASH_START_INDEX, HASH_END_INDEX)
-    }
+    override fun getSource(): String = SOURCE
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> = rawContent.drop(TAG_SIZE + HASH_SIZE)
+    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + HASH_SIZE))
 
-    override fun validate(): Status {
-        if (rawContent.isEmpty()) {
-            return EmptyError.into()
-        } else if (extractTag() != getTag()) {
-            return InvalidTagError(SOURCE, getTag(), extractTag()).into()
-        }
+    override fun getHashRange(): IntRange = HASH_START_INDEX..HASH_END_INDEX
 
-        val extractedHash = extractHash()
-        val calculatedHash = calculateHash(getContent())
-
-        return if (extractedHash != calculatedHash) {
-            InvalidHashWarning(SOURCE, extractedHash, calculatedHash).into()
-        } else {
-            Status.success()
-        }
+    override fun calculateHash(): Result<List<Byte>> {
+        val hashInput =
+            with(getHashInput()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
+        return Result.success(Companion.calculateHash(hashInput))
     }
 }
 
-open class SizedSHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class SizedSHA3256Watermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.SizedSHA3256Watermark"
         const val TYPE_TAG: UByte = 5u
@@ -409,7 +630,9 @@ open class SizedSHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, cont
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE
 
         fun new(content: List<Byte>): SizedSHA3256Watermark {
-            return SizedSHA3256Watermark(createRaw(TYPE_TAG, content))
+            val watermark = SizedSHA3256Watermark(createRaw(TYPE_TAG, content))
+            watermark.updateHash()
+            return watermark
         }
 
         internal fun createRaw(
@@ -418,277 +641,250 @@ open class SizedSHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, cont
         ): List<Byte> {
             val size = TAG_SIZE + SIZE_SIZE + HASH_SIZE + content.size
             val encodedSize = size.toUInt().toBytesLittleEndian()
-            val hash = calculateHash(content)
 
             val watermark = ArrayList<Byte>(size)
             watermark.add(tag.toByte())
             watermark.addAll(encodedSize)
-            watermark.addAll(hash)
+            repeat(HASH_SIZE) {
+                watermark.add(Hash.HASH_PLACEHOLDER)
+            }
             watermark.addAll(content)
 
             return watermark
         }
-
-        fun calculateHash(bytes: List<Byte>): List<Byte> {
-            val hashAlgorithm = SHA3_256()
-            hashAlgorithm.update(TYPE_TAG.toByte())
-            hashAlgorithm.update(bytes.toByteArray())
-            return hashAlgorithm.digest().asList()
-        }
     }
+
+    override fun getSource(): String = SOURCE
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> = rawContent.drop(TAG_SIZE + SIZE_SIZE + HASH_SIZE)
+    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE + HASH_SIZE))
 
-    override fun validate(): Status {
-        if (rawContent.isEmpty()) {
-            return EmptyError.into()
-        } else if (extractTag() != getTag()) {
-            return InvalidTagError(SOURCE, getTag(), extractTag()).into()
-        }
+    override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 
-        val parsedSize = extractSize()
-        val extractedHash = extractHash()
-        val calculatedHash = calculateHash(getContent())
+    override fun getHashRange(): IntRange = HASH_START_INDEX..HASH_END_INDEX
 
-        val status = Status.success()
-        if (parsedSize != rawContent.size) {
-            status.addEvent(MismatchedSizeWarning(SOURCE, parsedSize, rawContent.size))
-        }
-        if (extractedHash != calculatedHash) {
-            status.addEvent(InvalidHashWarning(SOURCE, extractedHash, calculatedHash))
-        }
+    override fun calculateHash(): Result<List<Byte>> {
+        val hashInput =
+            with(getHashInput()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
 
-        return status
-    }
-
-    fun extractSize(): Int {
-        return UInt.fromBytesLittleEndian(rawContent.subList(SIZE_START_INDEX, SIZE_END_INDEX))
-            .toInt()
-    }
-
-    fun extractHash(): List<Byte> {
-        return rawContent.subList(HASH_START_INDEX, HASH_END_INDEX)
+        return Result.success(SHA3256Watermark.calculateHash(hashInput))
     }
 }
 
-class CompressedWatermark(content: List<Byte>) : PlainWatermark(content) {
+class CompressedRawWatermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Compressed {
     companion object {
-        const val SOURCE = "Trendmark.CompressedWatermark"
+        const val SOURCE = "Trendmark.CompressedRawWatermark"
         const val TYPE_TAG: UByte = 100u
 
-        fun new(content: List<Byte>): CompressedWatermark {
+        fun new(content: List<Byte>): CompressedRawWatermark {
             val compressedContent = Compression.deflate(content)
-            return CompressedWatermark(createRaw(TYPE_TAG, compressedContent))
+            return CompressedRawWatermark(RawWatermark.createRaw(TYPE_TAG, compressedContent))
         }
     }
+
+    override fun getSource(): String = SOURCE
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> {
-        val uncompressedContent = getContentSafe()
-
-        if (!uncompressedContent.isSuccess) {
-            throw DecompressionException(SOURCE)
-        }
-
-        return uncompressedContent.value!!
-    }
-
-    fun getContentSafe(): Result<List<Byte>> {
-        val compressedContent = super.getContent()
+    override fun getContent(): Result<List<Byte>> {
+        val compressedContent = watermarkContent.drop(TAG_SIZE)
         return Compression.inflate(compressedContent)
-    }
-
-    override fun validate(): Status {
-        val status = super.validate()
-
-        val uncompressedContent = getContentSafe()
-        status.appendStatus(uncompressedContent.status)
-
-        return status
     }
 }
 
-class CompressedSizedWatermark(content: List<Byte>) : SizedWatermark(content) {
+class CompressedSizedWatermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedWatermark"
         const val TYPE_TAG: UByte = 101u
 
         fun new(content: List<Byte>): CompressedSizedWatermark {
             val compressedContent = Compression.deflate(content)
-            return CompressedSizedWatermark(createRaw(TYPE_TAG, compressedContent))
+            return CompressedSizedWatermark(SizedWatermark.createRaw(TYPE_TAG, compressedContent))
         }
     }
+
+    override fun getSource(): String = SOURCE
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent(): List<Byte> {
-        val uncompressedContent = getContentSafe()
-
-        if (!uncompressedContent.isSuccess) {
-            throw DecompressionException("$SOURCE: ${uncompressedContent.getMessage()}")
-        }
-
-        return uncompressedContent.value!!
-    }
-
-    fun getContentSafe(): Result<List<Byte>> {
-        val compressedContent = super.getContent()
+    override fun getContent(): Result<List<Byte>> {
+        val compressedContent = watermarkContent.drop(TAG_SIZE + SizedWatermark.SIZE_SIZE)
         return Compression.inflate(compressedContent)
     }
 
-    override fun validate(): Status {
-        val status = super.validate()
-
-        val uncompressedContent = getContentSafe()
-        status.appendStatus(uncompressedContent.status)
-
-        return status
-    }
+    override fun getSizeRange(): IntRange =
+        SizedWatermark.SIZE_START_INDEX..SizedWatermark.SIZE_END_INDEX
 }
 
-class CompressedCRC32Watermark(content: List<Byte>) : CRC32Watermark(content) {
+class CompressedCRC32Watermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CompressedCRC32Watermark"
         const val TYPE_TAG: UByte = 102u
 
         fun new(content: List<Byte>): CompressedCRC32Watermark {
             val compressedContent = Compression.deflate(content)
-            return CompressedCRC32Watermark(createRaw(TYPE_TAG, compressedContent))
+            val watermark =
+                CompressedCRC32Watermark(CRC32Watermark.createRaw(TYPE_TAG, compressedContent))
+            watermark.updateChecksum()
+            return watermark
         }
     }
 
-    override fun getContent(): List<Byte> {
-        val uncompressedContent = getContentSafe()
+    override fun getSource(): String = SOURCE
 
-        if (!uncompressedContent.isSuccess) {
-            throw DecompressionException("$SOURCE: ${uncompressedContent.getMessage()}")
-        }
+    override fun getTag(): UByte = TYPE_TAG
 
-        return uncompressedContent.value!!
-    }
+    override fun getChecksumRange(): IntRange =
+        CRC32Watermark.CHECKSUM_START_INDEX..CRC32Watermark.CHECKSUM_END_INDEX
 
-    fun getContentSafe(): Result<List<Byte>> {
-        val compressedContent = super.getContent()
+    override fun getContent(): Result<List<Byte>> {
+        val compressedContent = watermarkContent.drop(TAG_SIZE + CRC32Watermark.CHECKSUM_SIZE)
         return Compression.inflate(compressedContent)
     }
 
-    override fun validate(): Status {
-        val status = super.validate()
+    override fun calculateChecksum(): Result<UInt> {
+        val checksumContent =
+            with(getChecksumContent()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
 
-        val uncompressedContent = getContentSafe()
-        status.appendStatus(uncompressedContent.status)
-
-        return status
+        return Result.success(CRC32Watermark.calculateChecksum(checksumContent))
     }
 }
 
-class CompressedSizedCRC32Watermark(content: List<Byte>) : SizedCRC32Watermark(content) {
+class CompressedSizedCRC32Watermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
-        val SOURCE = "Trendmark.CompressedSizedCRC32Watermark"
-        val TAG: UByte = 103u
+        const val SOURCE = "Trendmark.CompressedSizedCRC32Watermark"
+        const val TYPE_TAG: UByte = 103u
 
         fun new(content: List<Byte>): CompressedSizedCRC32Watermark {
             val compressedContent = Compression.deflate(content)
-            return CompressedSizedCRC32Watermark(createRaw(TAG, compressedContent))
+            val watermark =
+                CompressedSizedCRC32Watermark(
+                    SizedCRC32Watermark.createRaw(TYPE_TAG, compressedContent),
+                )
+            watermark.updateChecksum()
+            return watermark
         }
     }
 
-    override fun getContent(): List<Byte> {
-        val uncompressedContent = getContentSafe()
+    override fun getSource(): String = SOURCE
 
-        if (!uncompressedContent.isSuccess) {
-            throw DecompressionException("$SOURCE: ${uncompressedContent.getMessage()}")
-        }
+    override fun getTag(): UByte = TYPE_TAG
 
-        return uncompressedContent.value!!
-    }
+    override fun getSizeRange(): IntRange =
+        SizedCRC32Watermark.SIZE_START_INDEX..SizedCRC32Watermark.SIZE_END_INDEX
 
-    fun getContentSafe(): Result<List<Byte>> {
-        val compressedContent = super.getContent()
+    override fun getChecksumRange(): IntRange =
+        SizedCRC32Watermark.CHECKSUM_START_INDEX..SizedCRC32Watermark.CHECKSUM_END_INDEX
+
+    override fun getContent(): Result<List<Byte>> {
+        val contentOffset =
+            TAG_SIZE + SizedCRC32Watermark.SIZE_SIZE + SizedCRC32Watermark.CHECKSUM_SIZE
+        val compressedContent = watermarkContent.drop(contentOffset)
         return Compression.inflate(compressedContent)
     }
 
-    override fun validate(): Status {
-        val status = super.validate()
+    override fun calculateChecksum(): Result<UInt> {
+        val checksumContent =
+            with(getChecksumContent()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
 
-        val uncompressedContent = getContentSafe()
-        status.appendStatus(uncompressedContent.status)
-
-        return status
+        return Result.success(CRC32Watermark.calculateChecksum(checksumContent))
     }
 }
 
-class CompressedSHA3256Watermark(content: List<Byte>) : SHA3256Watermark(content) {
+class CompressedSHA3256Watermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Hash {
     companion object {
-        val SOURCE = "Trendmark.CompressedSHA3256Watermark"
-        val TAG: UByte = 104u
+        const val SOURCE = "Trendmark.CompressedSHA3256Watermark"
+        const val TYPE_TAG: UByte = 104u
 
         fun new(content: List<Byte>): CompressedSHA3256Watermark {
             val compressedContent = Compression.deflate(content)
-            return CompressedSHA3256Watermark(createRaw(TAG, compressedContent))
+            val watermark =
+                CompressedSHA3256Watermark(
+                    SHA3256Watermark.createRaw(TYPE_TAG, compressedContent),
+                )
+            watermark.updateHash()
+            return watermark
         }
     }
 
-    override fun getContent(): List<Byte> {
-        val uncompressedContent = getContentSafe()
+    override fun getTag(): UByte = TYPE_TAG
 
-        if (!uncompressedContent.isSuccess) {
-            throw DecompressionException("$SOURCE: ${uncompressedContent.getMessage()}")
-        }
+    override fun getSource(): String = SOURCE
 
-        return uncompressedContent.value!!
+    override fun getHashRange(): IntRange =
+        SHA3256Watermark.HASH_START_INDEX..SHA3256Watermark.HASH_END_INDEX
+
+    override fun calculateHash(): Result<List<Byte>> {
+        val hashInput =
+            with(getHashInput()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
+        return Result.success(SHA3256Watermark.calculateHash(hashInput))
     }
 
-    fun getContentSafe(): Result<List<Byte>> {
-        val compressedContent = super.getContent()
+    override fun getContent(): Result<List<Byte>> {
+        val contentOffset = TAG_SIZE + SHA3256Watermark.HASH_SIZE
+        val compressedContent = watermarkContent.drop(contentOffset)
         return Compression.inflate(compressedContent)
-    }
-
-    override fun validate(): Status {
-        val status = super.validate()
-
-        val uncompressedContent = getContentSafe()
-        status.appendStatus(uncompressedContent.status)
-
-        return status
     }
 }
 
-class CompressedSizedSHA3256Watermark(content: List<Byte>) : SizedSHA3256Watermark(content) {
+class CompressedSizedSHA3256Watermark(content: List<Byte>) :
+    Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedSHA3256Watermark"
         const val TYPE_TAG: UByte = 105u
 
         fun new(content: List<Byte>): CompressedSizedSHA3256Watermark {
             val compressedContent = Compression.deflate(content)
-            return CompressedSizedSHA3256Watermark(createRaw(TYPE_TAG, compressedContent))
+            val watermark =
+                CompressedSizedSHA3256Watermark(
+                    SizedSHA3256Watermark.createRaw(TYPE_TAG, compressedContent),
+                )
+            watermark.updateHash()
+            return watermark
         }
     }
 
-    override fun getContent(): List<Byte> {
-        val uncompressedContent = getContentSafe()
+    override fun getTag(): UByte = TYPE_TAG
 
-        if (!uncompressedContent.isSuccess) {
-            throw DecompressionException("$SOURCE: ${uncompressedContent.getMessage()}")
-        }
+    override fun getSource(): String = SOURCE
 
-        return uncompressedContent.value!!
+    override fun getSizeRange(): IntRange =
+        SizedSHA3256Watermark.SIZE_START_INDEX..SizedSHA3256Watermark.SIZE_END_INDEX
+
+    override fun getHashRange(): IntRange =
+        SizedSHA3256Watermark.HASH_START_INDEX..SizedSHA3256Watermark.HASH_END_INDEX
+
+    override fun calculateHash(): Result<List<Byte>> {
+        val hashInput =
+            with(getHashInput()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
+        return Result.success(SHA3256Watermark.calculateHash(hashInput))
     }
 
-    fun getContentSafe(): Result<List<Byte>> {
-        val compressedContent = super.getContent()
+    override fun getContent(): Result<List<Byte>> {
+        val contentOffset =
+            TAG_SIZE + SizedSHA3256Watermark.SIZE_SIZE + SizedSHA3256Watermark.HASH_SIZE
+        val compressedContent = watermarkContent.drop(contentOffset)
         return Compression.inflate(compressedContent)
-    }
-
-    override fun validate(): Status {
-        val status = super.validate()
-
-        val uncompressedContent = getContentSafe()
-        status.appendStatus(uncompressedContent.status)
-
-        return status
     }
 }

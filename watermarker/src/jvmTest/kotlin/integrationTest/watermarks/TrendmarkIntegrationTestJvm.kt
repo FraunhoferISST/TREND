@@ -7,6 +7,7 @@
 package integrationTest.watermarks
 
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.memberProperties
 import kotlin.test.Test
@@ -16,7 +17,7 @@ import kotlin.test.assertTrue
 class TrendmarkIntegrationTestJvm {
     @Test
     fun trendmark_tags_consistentTags() {
-        check(Trendmark.TAG_SIZE == 1) {
+        check(TrendmarkInterface.TAG_SIZE == 1) {
             "Please update the test as the tag type has been modified."
         }
 

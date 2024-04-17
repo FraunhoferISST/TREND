@@ -9,12 +9,13 @@ package unitTest.watermarks
 import de.fraunhofer.isst.trend.watermarker.helper.toBytesLittleEndian
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.CRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.PlainWatermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.RawWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.SHA3256Watermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedCRC32Watermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedSHA3256Watermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -24,14 +25,16 @@ class TrendmarkTest {
     fun plainWatermark_creation_success() {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
-        val expected = listOf(PlainWatermark.TYPE_TAG.toByte()) + content
+        val expected = listOf(RawWatermark.TYPE_TAG.toByte()) + content
 
         // Act
-        val watermark = PlainWatermark.new(content)
+        val watermark = RawWatermark.new(content)
+        val extractedContent = watermark.getContent()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expected, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -42,18 +45,22 @@ class TrendmarkTest {
         val watermarkContent = listOf((-1).toByte()) + content
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.PlainWatermark",
+                "Trendmark.RawWatermark",
                 0u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = PlainWatermark(watermarkContent)
+        val watermark = RawWatermark(watermarkContent)
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -62,7 +69,8 @@ class TrendmarkTest {
     fun sizedWatermark_creation_success() {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
-        val expectedSize = Trendmark.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size
+        val expectedSize =
+            (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size).toUInt()
         val expected =
             listOf(SizedWatermark.TYPE_TAG.toByte()) +
                 expectedSize.toUInt().toBytesLittleEndian() +
@@ -70,11 +78,15 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedWatermark.new(content)
+        val extractedContent = watermark.getContent()
+        val extractedSize = watermark.extractSize()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedSize, watermark.extractSize())
-        assertEquals(expected, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(expectedSize, extractedSize.value)
+        assertEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -82,10 +94,11 @@ class TrendmarkTest {
     fun sizedWatermark_invalidTag_error() {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
-        val size = Trendmark.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size
+        val expectedSize =
+            (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size).toUInt()
         val watermarkContent =
             listOf((-1).toByte()) +
-                size.toUInt().toBytesLittleEndian() +
+                expectedSize.toUInt().toBytesLittleEndian() +
                 content
         val expectedStatus =
             Trendmark.InvalidTagError(
@@ -96,12 +109,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedWatermark(watermarkContent)
+        val extractedSize = watermark.extractSize()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(size, watermark.extractSize())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(expectedSize, extractedSize.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -110,7 +127,8 @@ class TrendmarkTest {
     fun sizedWatermark_mismatchedSize_warning() {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
-        val invalidSize = Trendmark.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size + 1
+        val invalidSize =
+            (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size + 1).toUInt()
         val watermarkContent =
             listOf(SizedWatermark.TYPE_TAG.toByte()) +
                 invalidSize.toUInt().toBytesLittleEndian() +
@@ -118,18 +136,22 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.MismatchedSizeWarning(
                 "Trendmark.SizedWatermark",
-                invalidSize,
-                invalidSize - 1,
+                invalidSize.toInt(),
+                invalidSize.toInt() - 1,
             ).into().toString()
 
         // Act
         val watermark = SizedWatermark(watermarkContent)
+        val extractedSize = watermark.extractSize()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(invalidSize, watermark.extractSize())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(invalidSize, extractedSize.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus, status.toString())
     }
@@ -144,11 +166,15 @@ class TrendmarkTest {
 
         // Act
         val watermark = CRC32Watermark.new(content)
+        val extractedChecksum = watermark.extractChecksum()
+        val extractedContent = watermark.getContent()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedCrc32, watermark.extractChecksum())
-        assertEquals(expected, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedChecksum.isSuccess)
+        assertEquals(expectedCrc32, extractedChecksum.value)
+        assertEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -168,12 +194,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = CRC32Watermark(watermarkContent)
+        val extractedChecksum = watermark.extractChecksum()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedCrc32, watermark.extractChecksum())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedChecksum.isSuccess)
+        assertEquals(expectedCrc32, extractedChecksum.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -197,12 +227,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = CRC32Watermark(watermarkContent)
+        val extractedChecksum = watermark.extractChecksum()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(invalidCrc32, watermark.extractChecksum())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedChecksum.isSuccess)
+        assertEquals(expectedCrc32, extractedChecksum.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -212,10 +246,12 @@ class TrendmarkTest {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val expectedSize =
-            Trendmark.TAG_SIZE +
+            (
+                TrendmarkInterface.TAG_SIZE +
                 SizedCRC32Watermark.SIZE_SIZE +
                 SizedCRC32Watermark.CHECKSUM_SIZE +
                 content.size
+                ).toUInt()
         val expectedCrc32 = 0x358AD45Du
         val expected =
             listOf(SizedCRC32Watermark.TYPE_TAG.toByte()) +
@@ -225,12 +261,18 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedCRC32Watermark.new(content)
+        val extractedChecksum = watermark.extractChecksum()
+        val extractedContent = watermark.getContent()
+        val extractedSize = watermark.extractSize()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedSize, watermark.extractSize())
-        assertEquals(expectedCrc32, watermark.extractChecksum())
-        assertEquals(expected, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(expectedSize, extractedSize.value)
+        assertTrue(extractedChecksum.isSuccess)
+        assertEquals(expectedCrc32, extractedChecksum.value)
+        assertEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -239,14 +281,16 @@ class TrendmarkTest {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val expectedCrc32 = 0x358AD45Du
-        val expectedSize =
-            Trendmark.TAG_SIZE +
+        val size =
+            (
+                TrendmarkInterface.TAG_SIZE +
                 SizedCRC32Watermark.SIZE_SIZE +
                 SizedCRC32Watermark.CHECKSUM_SIZE +
                 content.size
+                ).toUInt()
         val watermarkContent =
             listOf((-1).toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                size.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus =
@@ -258,12 +302,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedCRC32Watermark(watermarkContent)
+        val extractedChecksum = watermark.extractChecksum()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedCrc32, watermark.extractChecksum())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedChecksum.isSuccess)
+        assertEquals(expectedCrc32, extractedChecksum.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -275,22 +323,24 @@ class TrendmarkTest {
         val expectedCrc32 = 0x358AD45Du
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
-            Trendmark.TAG_SIZE +
+            (
+                TrendmarkInterface.TAG_SIZE +
                 SizedCRC32Watermark.SIZE_SIZE +
                 SizedCRC32Watermark.CHECKSUM_SIZE +
                 content.size +
                 1
+                ).toUInt()
         val watermarkContent =
             listOf(SizedCRC32Watermark.TYPE_TAG.toByte()) +
-                invalidSize.toUInt().toBytesLittleEndian() +
+                invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
             Trendmark.MismatchedSizeWarning(
                 "Trendmark.SizedCRC32Watermark",
-                invalidSize,
-                invalidSize - 1,
+                invalidSize.toInt(),
+                invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
@@ -303,12 +353,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedCRC32Watermark(watermarkContent)
+        val extractedChecksum = watermark.extractChecksum()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(invalidCrc32, watermark.extractChecksum())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedChecksum.isSuccess)
+        assertEquals(expectedCrc32, extractedChecksum.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -327,11 +381,15 @@ class TrendmarkTest {
 
         // Act
         val watermark = SHA3256Watermark.new(content)
+        val extractedHash = watermark.extractHash()
+        val extractedContent = watermark.getContent()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedHash, watermark.extractHash())
-        assertEquals(expectedContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedHash.isSuccess)
+        assertEquals(expectedHash, extractedHash.value)
+        assertEquals(expectedContent, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -356,12 +414,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = SHA3256Watermark(watermarkContent)
+        val extractedHash = watermark.extractHash()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedHash, watermark.extractHash())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedHash.isSuccess)
+        assertEquals(expectedHash, extractedHash.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -386,12 +448,16 @@ class TrendmarkTest {
 
         // Act
         val watermark = SHA3256Watermark(watermarkContent)
+        val extractedHash = watermark.extractHash()
+        val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(invalidHash, watermark.extractHash())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedHash.isSuccess)
+        assertEquals(invalidHash, extractedHash.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -401,10 +467,12 @@ class TrendmarkTest {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val expectedSize =
-            Trendmark.TAG_SIZE +
+            (
+                TrendmarkInterface.TAG_SIZE +
                 SizedSHA3256Watermark.SIZE_SIZE +
                 SizedSHA3256Watermark.HASH_SIZE +
                 content.size
+                ).toUInt()
         val expectedHash =
             listOf<Byte>(
                 32, -89, -126, -79, -44, -17, -77, -73, 0, 122, -59, -47, -95, -19, 55, -19, -90,
@@ -418,12 +486,18 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedSHA3256Watermark.new(content)
+        val extractedSize = watermark.extractSize()
+        val extractedHash = watermark.extractHash()
+        val extractedContent = watermark.getContent()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedSize, watermark.extractSize())
-        assertEquals(expectedHash, watermark.extractHash())
-        assertEquals(expectedContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(expectedSize, extractedSize.value)
+        assertTrue(extractedHash.isSuccess)
+        assertEquals(expectedHash, extractedHash.value)
+        assertEquals(expectedContent, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -432,10 +506,12 @@ class TrendmarkTest {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val expectedSize =
-            Trendmark.TAG_SIZE +
+            (
+                TrendmarkInterface.TAG_SIZE +
                 SizedSHA3256Watermark.SIZE_SIZE +
                 SizedSHA3256Watermark.HASH_SIZE +
                 content.size
+                ).toUInt()
         val expectedHash =
             listOf<Byte>(
                 96, 68, -90, -92, -105, 81, 104, 86, -3, 70, -64, -26, -72, -39, -71, 115, 14, -73,
@@ -456,13 +532,19 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedSHA3256Watermark(watermarkContent)
+        val extractedContent = watermark.getContent()
+        val extractedSize = watermark.extractSize()
+        val extractedHash = watermark.extractHash()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(expectedSize, watermark.extractSize())
-        assertEquals(expectedHash, watermark.extractHash())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(expectedSize, extractedSize.value)
+        assertTrue(extractedHash.isSuccess)
+        assertEquals(expectedHash, extractedHash.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -472,11 +554,13 @@ class TrendmarkTest {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
         val invalidSize =
-            Trendmark.TAG_SIZE +
+            (
+                TrendmarkInterface.TAG_SIZE +
                 SizedSHA3256Watermark.SIZE_SIZE +
                 SizedSHA3256Watermark.HASH_SIZE +
                 content.size +
                 1
+                ).toUInt()
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
             listOf<Byte>(
@@ -487,8 +571,8 @@ class TrendmarkTest {
         expectedStatus.addEvent(
             Trendmark.MismatchedSizeWarning(
                 "Trendmark.SizedSHA3256Watermark",
-                invalidSize,
-                invalidSize - 1,
+                invalidSize.toInt(),
+                invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
@@ -507,13 +591,19 @@ class TrendmarkTest {
 
         // Act
         val watermark = SizedSHA3256Watermark(watermarkContent)
+        val extractedContent = watermark.getContent()
+        val extractedSize = watermark.extractSize()
+        val extractedHash = watermark.extractHash()
         val status = watermark.validate()
 
         // Assert
-        assertEquals(content, watermark.getContent())
-        assertEquals(invalidSize, watermark.extractSize())
-        assertEquals(invalidHash, watermark.extractHash())
-        assertEquals(watermarkContent, watermark.rawContent)
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(content, extractedContent.value)
+        assertTrue(extractedSize.isSuccess)
+        assertEquals(invalidSize, extractedSize.value)
+        assertTrue(extractedHash.isSuccess)
+        assertEquals(invalidHash, extractedHash.value)
+        assertEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -522,7 +612,7 @@ class TrendmarkTest {
     fun parse_valid_success() {
         // Arrange
         val content = "Lorem Ipsum".encodeToByteArray().asList()
-        val plainWatermark = PlainWatermark.new(content)
+        val rawWatermark = RawWatermark.new(content)
         val sizedWatermark = SizedWatermark.new(content)
         val crc32Watermark = CRC32Watermark.new(content)
         val sizedCRC32Watermark = SizedCRC32Watermark.new(content)
@@ -530,55 +620,55 @@ class TrendmarkTest {
         val sizedSHA3256Watermark = SizedSHA3256Watermark.new(content)
 
         // Act
-        val parsedPlainWatermark = Trendmark.parse(plainWatermark.rawContent)
-        val parsedSizedWatermark = Trendmark.parse(sizedWatermark.rawContent)
-        val parsedCRC32Watermark = Trendmark.parse(crc32Watermark.rawContent)
-        val parsedSizedCRC32Watermark = Trendmark.parse(sizedCRC32Watermark.rawContent)
-        val parsedSHA3256Watermark = Trendmark.parse(sha3256Watermark.rawContent)
-        val parsedSizedSHA3256Watermark = Trendmark.parse(sizedSHA3256Watermark.rawContent)
+        val parsedPlainWatermark = Trendmark.parse(rawWatermark.watermarkContent)
+        val parsedSizedWatermark = Trendmark.parse(sizedWatermark.watermarkContent)
+        val parsedCRC32Watermark = Trendmark.parse(crc32Watermark.watermarkContent)
+        val parsedSizedCRC32Watermark = Trendmark.parse(sizedCRC32Watermark.watermarkContent)
+        val parsedSHA3256Watermark = Trendmark.parse(sha3256Watermark.watermarkContent)
+        val parsedSizedSHA3256Watermark = Trendmark.parse(sizedSHA3256Watermark.watermarkContent)
 
         // Assert
         assertTrue(parsedPlainWatermark.isSuccess)
         var parsedWatermark = parsedPlainWatermark.value!!
-        assertTrue(parsedWatermark is PlainWatermark)
-        assertEquals(content, parsedWatermark.getContent())
-        assertEquals(plainWatermark.rawContent, parsedWatermark.rawContent)
+        assertTrue(parsedWatermark is RawWatermark)
+        assertEquals(content, parsedWatermark.getContent().value)
+        assertEquals(rawWatermark.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedSizedWatermark.isSuccess)
         parsedWatermark = parsedSizedWatermark.value!!
         assertTrue(parsedWatermark is SizedWatermark)
         assertEquals(sizedWatermark.extractSize(), parsedWatermark.extractSize())
-        assertEquals(content, parsedWatermark.getContent())
-        assertEquals(sizedWatermark.rawContent, parsedWatermark.rawContent)
+        assertEquals(content, parsedWatermark.getContent().value)
+        assertEquals(sizedWatermark.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedCRC32Watermark.isSuccess)
         parsedWatermark = parsedCRC32Watermark.value!!
         assertTrue(parsedWatermark is CRC32Watermark)
         assertEquals(crc32Watermark.extractChecksum(), parsedWatermark.extractChecksum())
-        assertEquals(content, parsedWatermark.getContent())
-        assertEquals(crc32Watermark.rawContent, parsedWatermark.rawContent)
+        assertEquals(content, parsedWatermark.getContent().value)
+        assertEquals(crc32Watermark.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedSizedCRC32Watermark.isSuccess)
         parsedWatermark = parsedSizedCRC32Watermark.value!!
         assertTrue(parsedWatermark is SizedCRC32Watermark)
         assertEquals(sizedCRC32Watermark.extractSize(), parsedWatermark.extractSize())
         assertEquals(sizedCRC32Watermark.extractChecksum(), parsedWatermark.extractChecksum())
-        assertEquals(content, parsedWatermark.getContent())
-        assertEquals(sizedCRC32Watermark.rawContent, parsedWatermark.rawContent)
+        assertEquals(content, parsedWatermark.getContent().value)
+        assertEquals(sizedCRC32Watermark.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedSHA3256Watermark.isSuccess)
         parsedWatermark = parsedSHA3256Watermark.value!!
         assertTrue(parsedWatermark is SHA3256Watermark)
         assertEquals(sha3256Watermark.extractHash(), parsedWatermark.extractHash())
-        assertEquals(content, parsedWatermark.getContent())
-        assertEquals(sha3256Watermark.rawContent, parsedWatermark.rawContent)
+        assertEquals(content, parsedWatermark.getContent().value)
+        assertEquals(sha3256Watermark.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedSizedSHA3256Watermark.isSuccess)
         parsedWatermark = parsedSizedSHA3256Watermark.value!!
         assertTrue(parsedWatermark is SizedSHA3256Watermark)
         assertEquals(sizedSHA3256Watermark.extractSize(), parsedWatermark.extractSize())
         assertEquals(sizedSHA3256Watermark.extractHash(), parsedWatermark.extractHash())
-        assertEquals(content, parsedWatermark.getContent())
-        assertEquals(sizedSHA3256Watermark.rawContent, parsedWatermark.rawContent)
+        assertEquals(content, parsedWatermark.getContent().value)
+        assertEquals(sizedSHA3256Watermark.watermarkContent, parsedWatermark.watermarkContent)
     }
 }

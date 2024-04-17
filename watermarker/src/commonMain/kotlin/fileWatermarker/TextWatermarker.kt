@@ -127,9 +127,9 @@ class TextWatermark private constructor(
     /** Returns the uncompressed bytes from the Watermark */
     fun getBytes(): Result<List<Byte>> {
         return if (compression) {
-            Compression.inflate(rawContent)
+            Compression.inflate(watermarkContent)
         } else {
-            Result.success(rawContent)
+            Result.success(watermarkContent)
         }
     }
 
@@ -147,7 +147,7 @@ class TextWatermark private constructor(
         }
     }
 
-    /** Represents the Watermark as String from [rawContent] */
+    /** Represents the Watermark as String from [watermarkContent] */
     override fun toString(): String {
         val result = getText()
         return if (result.hasValue) {
@@ -168,7 +168,7 @@ class TextWatermark private constructor(
         fun fromWatermark(
             watermark: Watermark,
             compression: Boolean = COMPRESSION_DEFAULT,
-        ): TextWatermark = TextWatermark(watermark.rawContent, compression)
+        ): TextWatermark = TextWatermark(watermark.watermarkContent, compression)
 
         /**
          * Creates a TextWatermark from [text] using deflate compression
@@ -449,7 +449,7 @@ class TextWatermarker(
 
     /** Transforms a [watermark] into a separated watermark */
     private fun getSeparatedWatermark(watermark: Watermark): Sequence<Char> {
-        val encodedWatermark = transcoding.encode(watermark.rawContent)
+        val encodedWatermark = transcoding.encode(watermark.watermarkContent)
 
         val separatedWatermark =
             when (separatorStrategy) {
