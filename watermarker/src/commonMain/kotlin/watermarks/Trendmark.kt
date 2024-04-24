@@ -689,7 +689,7 @@ class CompressedRawWatermark(content: List<Byte>) :
     Trendmark(TYPE_TAG, content), Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedRawWatermark"
-        const val TYPE_TAG: UByte = 100u
+        const val TYPE_TAG: UByte = 254u
 
         fun new(content: List<Byte>): CompressedRawWatermark {
             val compressedContent = Compression.deflate(content)
@@ -711,7 +711,7 @@ class CompressedSizedWatermark(content: List<Byte>) :
     Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedWatermark"
-        const val TYPE_TAG: UByte = 101u
+        const val TYPE_TAG: UByte = 253u
 
         fun new(content: List<Byte>): CompressedSizedWatermark {
             val compressedContent = Compression.deflate(content)
@@ -736,7 +736,7 @@ class CompressedCRC32Watermark(content: List<Byte>) :
     Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CompressedCRC32Watermark"
-        const val TYPE_TAG: UByte = 102u
+        const val TYPE_TAG: UByte = 252u
 
         fun new(content: List<Byte>): CompressedCRC32Watermark {
             val compressedContent = Compression.deflate(content)
@@ -774,7 +774,7 @@ class CompressedSizedCRC32Watermark(content: List<Byte>) :
     Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedCRC32Watermark"
-        const val TYPE_TAG: UByte = 103u
+        const val TYPE_TAG: UByte = 251u
 
         fun new(content: List<Byte>): CompressedSizedCRC32Watermark {
             val compressedContent = Compression.deflate(content)
@@ -819,7 +819,7 @@ class CompressedSHA3256Watermark(content: List<Byte>) :
     Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSHA3256Watermark"
-        const val TYPE_TAG: UByte = 104u
+        const val TYPE_TAG: UByte = 250u
 
         fun new(content: List<Byte>): CompressedSHA3256Watermark {
             val compressedContent = Compression.deflate(content)
@@ -859,7 +859,7 @@ class CompressedSizedSHA3256Watermark(content: List<Byte>) :
     Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedSHA3256Watermark"
-        const val TYPE_TAG: UByte = 105u
+        const val TYPE_TAG: UByte = 249u
 
         fun new(content: List<Byte>): CompressedSizedSHA3256Watermark {
             val compressedContent = Compression.deflate(content)
