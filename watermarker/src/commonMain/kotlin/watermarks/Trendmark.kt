@@ -144,11 +144,11 @@ sealed class Trendmark(
             val content = getRawContent()
             val sizeRange = getSizeRange()
             if (content.size <= sizeRange.last) {
-                return NotEnoughDataError(getSource(), sizeRange.last).into<_>()
+                return NotEnoughDataError(getSource(), sizeRange.last + 1).into<_>()
             }
 
             return Result.success(
-                UInt.fromBytesLittleEndian(content.subList(sizeRange.first, sizeRange.last)),
+                UInt.fromBytesLittleEndian(content.subList(sizeRange.first, sizeRange.last + 1)),
             )
         }
 
@@ -177,16 +177,16 @@ sealed class Trendmark(
 
         fun extractChecksum(): Result<UInt> {
             val checksumRange = getChecksumRange()
-            val checksumSize = checksumRange.last - checksumRange.first
+            val checksumSize = checksumRange.last - checksumRange.first + 1
             // Ensure checksum fits into an Int, otherwise impl must be changed
             check(checksumSize <= 4)
 
             val content = getRawContent()
             if (content.size <= checksumRange.last) {
-                return NotEnoughDataError(getSource(), checksumRange.last).into<_>()
+                return NotEnoughDataError(getSource(), checksumRange.last + 1).into<_>()
             }
 
-            val checksumBytes = content.subList(checksumRange.first, checksumRange.last)
+            val checksumBytes = content.subList(checksumRange.first, checksumRange.last + 1)
             val checksum = UInt.fromBytesLittleEndian(checksumBytes)
 
             return Result.success(checksum)
@@ -194,7 +194,7 @@ sealed class Trendmark(
 
         fun getChecksumPlaceholder(): List<Byte> {
             val checksumRange = getChecksumRange()
-            val size = checksumRange.last - checksumRange.first
+            val size = checksumRange.last - checksumRange.first + 1
             return List(size) { CHECKSUM_PLACEHOLDER }
         }
 
@@ -203,17 +203,17 @@ sealed class Trendmark(
          * This function must be overridden if more than the checksum itself is excluded from the
          * checksum input. E.g., when a placeholder for a hash is required.
          */
-        fun getChecksumContent(): Result<List<Byte>> {
+        fun getChecksumInput(): Result<List<Byte>> {
             val rawContent = getRawContent()
             val checksumRange = getChecksumRange()
             if (rawContent.size <= checksumRange.last) {
-                return NotEnoughDataError(getSource(), checksumRange.last).into<_>()
+                return NotEnoughDataError(getSource(), checksumRange.last + 1).into<_>()
             }
 
             val checksumInput = ArrayList<Byte>(rawContent.size)
             checksumInput.addAll(rawContent.subList(0, checksumRange.first))
             checksumInput.addAll(getChecksumPlaceholder())
-            checksumInput.addAll(rawContent.subList(checksumRange.last, rawContent.size))
+            checksumInput.addAll(rawContent.subList(checksumRange.last + 1, rawContent.size))
 
             return Result.success(checksumInput)
         }
@@ -226,8 +226,14 @@ sealed class Trendmark(
                     if (!isSuccess) return status
                     value!!
                 }.toBytesLittleEndian().iterator()
+            val checksumRange = getChecksumRange()
+
             val content = getRawContent().toMutableList()
-            for (i in getChecksumRange()) {
+            if (content.size <= checksumRange.last) {
+                return NotEnoughDataError(SOURCE, checksumRange.last + 1).into()
+            }
+
+            for (i in checksumRange) {
                 content[i] = checksum.next()
             }
             check(!checksum.hasNext())
@@ -268,15 +274,15 @@ sealed class Trendmark(
             val hashRange = getHashRange()
 
             if (content.size <= hashRange.last) {
-                return NotEnoughDataError(getSource(), hashRange.last).into<_>()
+                return NotEnoughDataError(getSource(), hashRange.last + 1).into<_>()
             }
 
-            return Result.success(content.subList(hashRange.first, hashRange.last))
+            return Result.success(content.subList(hashRange.first, hashRange.last + 1))
         }
 
         fun getHashPlaceholder(): List<Byte> {
             val hashRange = getHashRange()
-            val size = hashRange.last - hashRange.first
+            val size = hashRange.last - hashRange.first + 1
             return List(size) { HASH_PLACEHOLDER }
         }
 
@@ -289,13 +295,13 @@ sealed class Trendmark(
             val rawContent = getRawContent()
             val hashRange = getHashRange()
             if (rawContent.size <= hashRange.last) {
-                return NotEnoughDataError(getSource(), hashRange.last).into<_>()
+                return NotEnoughDataError(getSource(), hashRange.last + 1).into<_>()
             }
 
             val hashInput = ArrayList<Byte>(rawContent.size)
             hashInput.addAll(rawContent.subList(0, hashRange.first))
             hashInput.addAll(getHashPlaceholder())
-            hashInput.addAll(rawContent.subList(hashRange.last, rawContent.size))
+            hashInput.addAll(rawContent.subList(hashRange.last + 1, rawContent.size))
 
             return Result.success(hashInput)
         }
@@ -421,7 +427,7 @@ class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
         /** Number of bytes used to specify the length of the watermark */
         const val SIZE_SIZE: Int = 4
         const val SIZE_START_INDEX = TAG_SIZE
-        const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE
+        const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
 
         fun new(content: List<Byte>): SizedWatermark {
             return SizedWatermark(createRaw(TYPE_TAG, content))
@@ -458,7 +464,7 @@ class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
         const val TYPE_TAG: UByte = 2u
         const val CHECKSUM_SIZE = 4
         const val CHECKSUM_START_INDEX = TAG_SIZE
-        const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE
+        const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
 
         fun new(content: List<Byte>): CRC32Watermark {
             val watermark = CRC32Watermark(createRaw(TYPE_TAG, content))
@@ -494,7 +500,7 @@ class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
 
     override fun calculateChecksum(): Result<UInt> {
         val checksumContent =
-            with(getChecksumContent()) {
+            with(getChecksumInput()) {
                 if (!isSuccess) return status.into<_>()
                 value!!
             }
@@ -510,10 +516,10 @@ class SizedCRC32Watermark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 3u
         const val SIZE_SIZE: Int = 4
         const val SIZE_START_INDEX = TAG_SIZE
-        const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE
+        const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
         const val CHECKSUM_SIZE = 4
-        const val CHECKSUM_START_INDEX = SIZE_END_INDEX
-        const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE
+        const val CHECKSUM_START_INDEX = SIZE_END_INDEX + 1
+        const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
 
         fun new(content: List<Byte>): SizedCRC32Watermark {
             val watermark = SizedCRC32Watermark(createRaw(TYPE_TAG, content))
@@ -532,7 +538,7 @@ class SizedCRC32Watermark(content: List<Byte>) :
             watermark.add(tag.toByte())
             watermark.addAll(encodedSize)
             repeat(CHECKSUM_SIZE) {
-                Checksum.CHECKSUM_PLACEHOLDER
+                watermark.add(Checksum.CHECKSUM_PLACEHOLDER)
             }
             watermark.addAll(content)
 
@@ -551,9 +557,10 @@ class SizedCRC32Watermark(content: List<Byte>) :
 
     override fun getChecksumRange(): IntRange = CHECKSUM_START_INDEX..CHECKSUM_END_INDEX
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun calculateChecksum(): Result<UInt> {
         val checksumContent =
-            with(getChecksumContent()) {
+            with(getChecksumInput()) {
                 if (!isSuccess) return status.into<_>()
                 value!!
             }
@@ -568,7 +575,7 @@ class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Tren
         const val TYPE_TAG: UByte = 4u
         const val HASH_SIZE = 32
         const val HASH_START_INDEX = TAG_SIZE
-        const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE
+        const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
 
         fun new(content: List<Byte>): SHA3256Watermark {
             val watermark = SHA3256Watermark(createRaw(TYPE_TAG, content))
@@ -624,10 +631,10 @@ class SizedSHA3256Watermark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 5u
         const val SIZE_SIZE = 4
         const val SIZE_START_INDEX = TAG_SIZE
-        const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE
+        const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
         const val HASH_SIZE = 32
-        const val HASH_START_INDEX = SIZE_END_INDEX
-        const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE
+        const val HASH_START_INDEX = SIZE_END_INDEX + 1
+        const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
 
         fun new(content: List<Byte>): SizedSHA3256Watermark {
             val watermark = SizedSHA3256Watermark(createRaw(TYPE_TAG, content))
@@ -658,7 +665,10 @@ class SizedSHA3256Watermark(content: List<Byte>) :
 
     override fun getTag(): UByte = TYPE_TAG
 
-    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE + HASH_SIZE))
+    override fun getContent() =
+        Result.success(
+            watermarkContent.drop(TAG_SIZE + SIZE_SIZE + HASH_SIZE),
+        )
 
     override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 
@@ -751,7 +761,7 @@ class CompressedCRC32Watermark(content: List<Byte>) :
 
     override fun calculateChecksum(): Result<UInt> {
         val checksumContent =
-            with(getChecksumContent()) {
+            with(getChecksumInput()) {
                 if (!isSuccess) return status.into<_>()
                 value!!
             }
@@ -796,7 +806,7 @@ class CompressedSizedCRC32Watermark(content: List<Byte>) :
 
     override fun calculateChecksum(): Result<UInt> {
         val checksumContent =
-            with(getChecksumContent()) {
+            with(getChecksumInput()) {
                 if (!isSuccess) return status.into<_>()
                 value!!
             }
