@@ -364,12 +364,12 @@ sealed class Trendmark(
     }
 
     class UnknownTagError(val tag: UByte) : Event.Error(SOURCE) {
-        override fun getMessage(): String = "Unknown watermark type: $tag."
+        override fun getMessage(): String = "Unknown watermark tag: $tag."
     }
 
     class InvalidTagError(source: String, val expectedTag: UByte, val actualTag: UByte) :
         Event.Error(source) {
-        override fun getMessage(): String = "Expected tag :$expectedTag, but was: $actualTag."
+        override fun getMessage(): String = "Expected tag: $expectedTag, but was: $actualTag."
     }
 
     class MismatchedSizeWarning(source: String, val expectedSize: Int, val actualSize: Int) :
