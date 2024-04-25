@@ -1405,4 +1405,101 @@ class TrendmarkTest {
             }
         }
     }
+
+    @Test
+    fun emptyError_string_success() {
+        // Arrange
+        val error = Trendmark.EmptyError
+        val expected = "Error (Trendmark): Cannot validate an empty watermark."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun notEnoughDataError_string_success() {
+        // Arrange
+        val error = Trendmark.NotEnoughDataError("Unittest", 42)
+        val expected = "Error (Unittest): At least 42 bytes are required."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun unknownTagError_string_success() {
+        // Arrange
+        val error = Trendmark.UnknownTagError(42u)
+        val expected = "Error (Trendmark): Unknown watermark tag: 42."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun invalidTagError_string_success() {
+        // Arrange
+        val error = Trendmark.InvalidTagError("Unittest", 42u, 43u)
+        val expected = "Error (Unittest): Expected tag: 42, but was: 43."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun mismatchedSizeWarning_string_success() {
+        // Arrange
+        val error = Trendmark.MismatchedSizeWarning("Unittest", 42, 43)
+        val expected = "Warning (Unittest): Expected 42 bytes, but extracted 43 bytes."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun invalidChecksumWarning_string_success() {
+        // Arrange
+        val error = Trendmark.InvalidChecksumWarning("Unittest", 0xdeadbeefu, 0xcafebabeu)
+        val expected = "Warning (Unittest): Expected checksum: 0xdeadbeef, but was: 0xcafebabe."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun invalidHashWarning_string_success() {
+        // Arrange
+        val error =
+            Trendmark.InvalidHashWarning(
+                "Unittest",
+                listOf<Byte>(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte()),
+                listOf<Byte>(0xca.toByte(), 0xfe.toByte(), 0xba.toByte(), 0xbe.toByte()),
+            )
+        val expected =
+            "Warning (Unittest): Expected hash: [DE, AD, BE, EF], but was: [CA, FE, BA, BE]."
+
+        // Act
+        val result = error.toString()
+
+        // Assert
+        assertEquals(expected, result)
+    }
 }
