@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 /*
  * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
@@ -64,6 +66,13 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
         freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+}
+
+tasks.withType<Test> {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
