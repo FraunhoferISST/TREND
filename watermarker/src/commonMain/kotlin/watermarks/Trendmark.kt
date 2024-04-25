@@ -108,6 +108,13 @@ sealed class Trendmark(
                     SizedCRC32Watermark.TYPE_TAG -> SizedCRC32Watermark(input)
                     SHA3256Watermark.TYPE_TAG -> SHA3256Watermark(input)
                     SizedSHA3256Watermark.TYPE_TAG -> SizedSHA3256Watermark(input)
+                    CompressedRawWatermark.TYPE_TAG -> CompressedRawWatermark(input)
+                    CompressedSizedWatermark.TYPE_TAG -> CompressedSizedWatermark(input)
+                    CompressedCRC32Watermark.TYPE_TAG -> CompressedCRC32Watermark(input)
+                    CompressedSizedCRC32Watermark.TYPE_TAG -> CompressedSizedCRC32Watermark(input)
+                    CompressedSHA3256Watermark.TYPE_TAG -> CompressedSHA3256Watermark(input)
+                    CompressedSizedSHA3256Watermark.TYPE_TAG ->
+                        CompressedSizedSHA3256Watermark(input)
                     else -> return UnknownTagError(tag).into<_>()
                 }
             val status = watermark.validate()
