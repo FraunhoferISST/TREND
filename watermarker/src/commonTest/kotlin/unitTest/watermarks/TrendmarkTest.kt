@@ -28,8 +28,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TrendmarkTest {
-    val content = "Lorem Ipsum".encodeToByteArray().asList()
-    val compressedContent = listOf<Byte>(-13, -55, 47, 74, -51, 85, -16, 44, 40, 46, -51, 5, 0)
+    private val content = "Lorem Ipsum".encodeToByteArray().asList()
+    private val compressedContent =
+        listOf<Byte>(-13, -55, 47, 74, -51, 85, -16, 44, 40, 46, -51, 5, 0)
 
     @Test
     fun rawWatermark_creation_success() {
@@ -122,7 +123,7 @@ class TrendmarkTest {
             (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size).toUInt()
         val expected =
             listOf(SizedWatermark.TYPE_TAG.toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 content
 
         // Act
@@ -146,7 +147,7 @@ class TrendmarkTest {
             (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size).toUInt()
         val watermarkContent =
             listOf((-1).toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
             Trendmark.InvalidTagError(
@@ -178,7 +179,7 @@ class TrendmarkTest {
             (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size + 1).toUInt()
         val watermarkContent =
             listOf(SizedWatermark.TYPE_TAG.toByte()) +
-                invalidSize.toUInt().toBytesLittleEndian() +
+                invalidSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
             Trendmark.MismatchedSizeWarning(
@@ -214,7 +215,7 @@ class TrendmarkTest {
             ).toUInt()
         val expected =
             listOf(CompressedSizedWatermark.TYPE_TAG.toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 compressedContent
 
         // Act
@@ -242,7 +243,7 @@ class TrendmarkTest {
             ).toUInt()
         val watermarkContent =
             listOf((-1).toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
             Trendmark.InvalidTagError(
@@ -279,7 +280,7 @@ class TrendmarkTest {
             ).toUInt()
         val watermarkContent =
             listOf(CompressedSizedWatermark.TYPE_TAG.toByte()) +
-                invalidSize.toUInt().toBytesLittleEndian() +
+                invalidSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
             Trendmark.MismatchedSizeWarning(
@@ -920,7 +921,7 @@ class TrendmarkTest {
             )
         val expectedContent =
             listOf(SizedSHA3256Watermark.TYPE_TAG.toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 content
 
@@ -965,7 +966,7 @@ class TrendmarkTest {
 
         val watermarkContent =
             listOf((-1).toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 content
 
@@ -1063,7 +1064,7 @@ class TrendmarkTest {
             )
         val expectedContent =
             listOf(CompressedSizedSHA3256Watermark.TYPE_TAG.toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 compressedContent
 
@@ -1108,7 +1109,7 @@ class TrendmarkTest {
 
         val watermarkContent =
             listOf((-1).toByte()) +
-                expectedSize.toUInt().toBytesLittleEndian() +
+                expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 compressedContent
 
@@ -1407,7 +1408,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun emptyError_string_success() {
+    fun emptyError_defaultInput_correctWarningMessage() {
         // Arrange
         val error = Trendmark.EmptyError
         val expected = "Error (Trendmark): Cannot validate an empty watermark."
@@ -1420,7 +1421,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun notEnoughDataError_string_success() {
+    fun notEnoughDataError_defaultInput_correctWarningMessage() {
         // Arrange
         val error = Trendmark.NotEnoughDataError("Unittest", 42)
         val expected = "Error (Unittest): At least 42 bytes are required."
@@ -1433,7 +1434,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun unknownTagError_string_success() {
+    fun unknownTagError_defaultInput_correctWarningMessage() {
         // Arrange
         val error = Trendmark.UnknownTagError(42u)
         val expected = "Error (Trendmark): Unknown watermark tag: 42."
@@ -1446,7 +1447,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun invalidTagError_string_success() {
+    fun invalidTagError_defaultInput_correctWarningMessage() {
         // Arrange
         val error = Trendmark.InvalidTagError("Unittest", 42u, 43u)
         val expected = "Error (Unittest): Expected tag: 42, but was: 43."
@@ -1459,7 +1460,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun mismatchedSizeWarning_string_success() {
+    fun mismatchedSizeWarning_defaultInput_correctWarningMessage() {
         // Arrange
         val error = Trendmark.MismatchedSizeWarning("Unittest", 42, 43)
         val expected = "Warning (Unittest): Expected 42 bytes, but extracted 43 bytes."
@@ -1472,7 +1473,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun invalidChecksumWarning_string_success() {
+    fun invalidChecksumWarning_defaultInput_correctErrorMessage() {
         // Arrange
         val error = Trendmark.InvalidChecksumWarning("Unittest", 0xdeadbeefu, 0xcafebabeu)
         val expected = "Warning (Unittest): Expected checksum: 0xdeadbeef, but was: 0xcafebabe."
@@ -1485,7 +1486,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun invalidHashWarning_string_success() {
+    fun invalidHashWarning_defaultInput_correctWarningMessage() {
         // Arrange
         val error =
             Trendmark.InvalidHashWarning(
