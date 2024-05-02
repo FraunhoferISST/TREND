@@ -121,6 +121,9 @@ sealed class Trendmark(
             return status.into(watermark)
         }
 
+        fun fromWatermark(watermark: Watermark): Result<Trendmark> =
+            parse(watermark.watermarkContent)
+
         private fun extractTag(content: List<Byte>): UByte {
             check(TAG_SIZE == 1)
             require(content.isNotEmpty()) { "Cannot extract tag from empty watermark." }
