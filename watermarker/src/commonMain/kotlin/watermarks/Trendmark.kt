@@ -147,6 +147,30 @@ sealed class Trendmark(
         watermarkContent = content
     }
 
+    override fun equals(other: Any?): Boolean {
+        val equalClass = when (this) {
+            is RawWatermark -> other is RawWatermark
+            is SizedWatermark -> other is SizedWatermark
+            is CRC32Watermark -> other is CRC32Watermark
+            is SizedCRC32Watermark -> other is SizedCRC32Watermark
+            is SHA3256Watermark -> other is SHA3256Watermark
+            is SizedSHA3256Watermark -> other is SizedSHA3256Watermark
+            is CompressedRawWatermark -> other is CompressedRawWatermark
+            is CompressedSizedWatermark -> other is CompressedSizedWatermark
+            is CompressedCRC32Watermark -> other is CompressedCRC32Watermark
+            is CompressedSizedCRC32Watermark -> other is CompressedSizedCRC32Watermark
+            is CompressedSHA3256Watermark -> other is CompressedSHA3256Watermark
+            is CompressedSizedSHA3256Watermark -> other is CompressedSizedSHA3256Watermark
+        }
+        if (!equalClass) return false
+
+        return super.equals(other)
+    }
+
+    override fun toString(): String {
+        return "${getSource()}(${super.toString()})"
+    }
+
     sealed interface Sized : TrendmarkInterface {
         fun getSizeRange(): IntRange
 
