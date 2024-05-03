@@ -416,6 +416,8 @@ class RawWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
 
         fun new(content: List<Byte>): RawWatermark = RawWatermark(createRaw(TYPE_TAG, content))
 
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+
         internal fun createRaw(
             tag: UByte,
             content: List<Byte>,
@@ -442,6 +444,8 @@ class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
         fun new(content: List<Byte>): SizedWatermark {
             return SizedWatermark(createRaw(TYPE_TAG, content))
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
             tag: UByte,
@@ -481,6 +485,8 @@ class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
             watermark.updateChecksum()
             return watermark
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
             tag: UByte,
@@ -537,6 +543,8 @@ class SizedCRC32Watermark(content: List<Byte>) :
             return watermark
         }
 
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+
         internal fun createRaw(
             tag: UByte,
             content: List<Byte>,
@@ -592,6 +600,8 @@ class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Tren
             watermark.updateHash()
             return watermark
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
             tag: UByte,
@@ -652,6 +662,8 @@ class SizedSHA3256Watermark(content: List<Byte>) :
             return watermark
         }
 
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+
         internal fun createRaw(
             tag: UByte,
             content: List<Byte>,
@@ -705,6 +717,8 @@ class CompressedRawWatermark(content: List<Byte>) :
             val compressedContent = Compression.deflate(content)
             return CompressedRawWatermark(RawWatermark.createRaw(TYPE_TAG, compressedContent))
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
     override fun getSource(): String = SOURCE
@@ -727,6 +741,8 @@ class CompressedSizedWatermark(content: List<Byte>) :
             val compressedContent = Compression.deflate(content)
             return CompressedSizedWatermark(SizedWatermark.createRaw(TYPE_TAG, compressedContent))
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
     override fun getSource(): String = SOURCE
@@ -755,6 +771,8 @@ class CompressedCRC32Watermark(content: List<Byte>) :
             watermark.updateChecksum()
             return watermark
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
     override fun getSource(): String = SOURCE
@@ -795,6 +813,8 @@ class CompressedSizedCRC32Watermark(content: List<Byte>) :
             watermark.updateChecksum()
             return watermark
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
     override fun getSource(): String = SOURCE
@@ -840,6 +860,8 @@ class CompressedSHA3256Watermark(content: List<Byte>) :
             watermark.updateHash()
             return watermark
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
     override fun getTag(): UByte = TYPE_TAG
@@ -880,6 +902,8 @@ class CompressedSizedSHA3256Watermark(content: List<Byte>) :
             watermark.updateHash()
             return watermark
         }
+
+        fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
     override fun getTag(): UByte = TYPE_TAG
