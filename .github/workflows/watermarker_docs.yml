@@ -47,4 +47,6 @@ jobs:
           branch: gh-pages
           folder: watermarker/build/dokka/html
           target-folder: docs
+          git-config-name: github-actions[bot]
+          git-config-email: github-actions[bot]@users.noreply.github.com
           commit-message: "docs(watermarker): updated API docs from @ ${{ github.repository }}@${{ github.sha }} 🚀"
