@@ -451,11 +451,6 @@ class TextWatermarker(
         val separatedWatermark = getSeparatedWatermark(watermark)
         return separatedWatermark.count()
     }
-    
-    /** Counts the available number of insert positions in a [file] */
-    fun getAvailableInsertPositions(file: TextFile): Int {
-        return placement(file.content).count()
-    }
 
     /** Transforms a [watermark] into a separated watermark */
     private fun getSeparatedWatermark(watermark: Watermark): Sequence<Char> {
