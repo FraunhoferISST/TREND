@@ -11,7 +11,10 @@ import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import kotlin.js.JsExport
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 interface FileWatermarker<File : WatermarkableFile, SpecificWatermark : Watermark> {
     /** Adds a [watermark] to [file] */
     fun addWatermark(

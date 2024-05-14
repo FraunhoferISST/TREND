@@ -11,6 +11,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toBytesLittleEndian
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import kotlin.js.JsExport
 
 /**
  * | Expected zip File Format:   | Length (bytes)       | Expected Value |
@@ -38,6 +39,9 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
  *
  * All numbers are expected in little endian order.
  */
+
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 class ZipFile internal constructor(
     path: String?,
     val header: ZipFileHeader,
@@ -90,6 +94,8 @@ class ZipFile internal constructor(
     }
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 class ZipFileHeader internal constructor(
     internal val magicBytes: UInt,
     internal val minimumVersion: UShort,

@@ -15,11 +15,14 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.DecodeToStringError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import kotlin.js.JsExport
 import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.math.pow
 
 /** Defines how multiple watermarks are separated */
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 sealed class SeparatorStrategy {
     /** Leaves one insertable position empty to mark the end of a watermark */
     object SkipInsertPosition : SeparatorStrategy()
@@ -31,6 +34,8 @@ sealed class SeparatorStrategy {
     class StartEndSeparatorChars(val start: Char, val end: Char) : SeparatorStrategy()
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 interface Transcoding {
     val alphabet: List<Char>
 
@@ -41,6 +46,8 @@ interface Transcoding {
     fun decode(chars: Sequence<Char>): Result<List<Byte>>
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 object DefaultTranscoding : Transcoding {
     override val alphabet =
         listOf(
@@ -115,6 +122,8 @@ object DefaultTranscoding : Transcoding {
     }
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 class TextWatermark private constructor(
     content: List<Byte>,
     private val compression: Boolean,
@@ -220,6 +229,8 @@ class TextWatermark private constructor(
     }
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 class TextWatermarker(
     private val transcoding: Transcoding,
     private val separatorStrategy: SeparatorStrategy,
@@ -440,6 +451,11 @@ class TextWatermarker(
         val separatedWatermark = getSeparatedWatermark(watermark)
         return separatedWatermark.count()
     }
+    
+    /** Counts the available number of insert positions in a [file] */
+    fun getAvailableInsertPositions(file: TextFile): Int {
+        return placement(file.content).count()
+    }
 
     /** Transforms a [watermark] into a separated watermark */
     private fun getSeparatedWatermark(watermark: Watermark): Sequence<Char> {
@@ -518,6 +534,8 @@ class TextWatermarker(
     }
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 class TextWatermarkerBuilder {
     private var transcoding: Transcoding = DefaultTranscoding
     private var separatorStrategy: SeparatorStrategy =

@@ -14,7 +14,10 @@ import de.fraunhofer.isst.trend.watermarker.files.TextFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import kotlin.js.JsExport
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 sealed class SupportedFileType {
     abstract val watermarker: FileWatermarker<*, *>
 
@@ -82,6 +85,8 @@ sealed class SupportedFileType {
     }
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 open class Watermarker {
     /** Watermarks string [text] with [watermark] */
     fun textAddWatermark(

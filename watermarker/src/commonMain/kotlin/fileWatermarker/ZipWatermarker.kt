@@ -10,14 +10,19 @@ import de.fraunhofer.isst.trend.watermarker.files.ZipFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import kotlin.js.JsExport
 
 const val ZIP_WATERMARK_ID: UShort = 0x8777u
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 class ZipWatermark(content: List<Byte>) : Watermark(content) {
     /** Represents the Watermark by [content] as String */
     override fun toString(): String = this.content.toByteArray().contentToString()
 }
 
+@OptIn(kotlin.js.ExperimentalJsExport::class)
+@JsExport
 object ZipWatermarker : FileWatermarker<ZipFile, ZipWatermark> {
     /**
      * Adds a [watermark] to [file]
