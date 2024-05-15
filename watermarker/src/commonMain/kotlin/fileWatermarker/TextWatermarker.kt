@@ -37,7 +37,7 @@ sealed class SeparatorStrategy {
 interface Transcoding {
     val alphabet: List<Char>
 
-    /** Encodes [bytes] to a chars of [alphabet] */
+    /** Encodes [bytes] to chars of [alphabet] */
     fun encode(bytes: List<Byte>): Sequence<Char>
 
     /** Decodes [chars] of [alphabet] to bytes */
