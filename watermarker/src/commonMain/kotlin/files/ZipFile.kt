@@ -40,7 +40,6 @@ import kotlin.js.JsExport
  * All numbers are expected in little endian order.
  */
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class ZipFile internal constructor(
     path: String?,
@@ -94,7 +93,6 @@ class ZipFile internal constructor(
     }
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class ZipFileHeader internal constructor(
     internal val magicBytes: UInt,

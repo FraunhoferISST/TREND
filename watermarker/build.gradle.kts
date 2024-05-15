@@ -4,6 +4,8 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 plugins {
     kotlin("multiplatform") version "1.9.23"
     id("maven-publish")
@@ -47,6 +49,13 @@ kotlin {
             }
         }
         val jsTest by getting
+    }
+}
+
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 

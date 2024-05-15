@@ -19,7 +19,6 @@ import kotlin.js.JsName
  * The variants Warning and Error are abstract: For each event that can occur a unique class must be
  * created that overwrites fun getMessage(): String to explain the event.
  */
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 sealed class Event(
     val source: String?,
@@ -87,7 +86,6 @@ sealed class Event(
  * A Status represents the outcome of a function that can produces Errors and Warnings, holding any
  * number of events.
  */
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class Status(event: Event? = null) {
     /**

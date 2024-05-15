@@ -21,7 +21,6 @@ import kotlin.math.log
 import kotlin.math.pow
 
 /** Defines how multiple watermarks are separated */
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 sealed class SeparatorStrategy {
     /** Leaves one insertable position empty to mark the end of a watermark */
@@ -34,7 +33,6 @@ sealed class SeparatorStrategy {
     class StartEndSeparatorChars(val start: Char, val end: Char) : SeparatorStrategy()
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 interface Transcoding {
     val alphabet: List<Char>
@@ -46,7 +44,6 @@ interface Transcoding {
     fun decode(chars: Sequence<Char>): Result<List<Byte>>
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 object DefaultTranscoding : Transcoding {
     override val alphabet =
@@ -122,7 +119,6 @@ object DefaultTranscoding : Transcoding {
     }
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class TextWatermark private constructor(
     content: List<Byte>,
@@ -229,7 +225,6 @@ class TextWatermark private constructor(
     }
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class TextWatermarker(
     private val transcoding: Transcoding,
@@ -529,7 +524,6 @@ class TextWatermarker(
     }
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class TextWatermarkerBuilder {
     private var transcoding: Transcoding = DefaultTranscoding

@@ -10,7 +10,6 @@ package de.fraunhofer.isst.trend.watermarker.files
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import kotlin.js.JsExport
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 abstract class WatermarkableFile(internal val path: String?) {
     /** Converts the WatermarkableFile into raw bytes */

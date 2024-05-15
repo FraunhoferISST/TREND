@@ -16,7 +16,6 @@ import kotlin.js.JsName
  *
  * A Result with a Status of type Success or Warning are expected to have a value.
  */
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class Result<T> constructor(
     val status: Status,

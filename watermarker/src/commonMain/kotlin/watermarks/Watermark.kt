@@ -9,7 +9,6 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import kotlin.js.JsExport
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 open class Watermark(val content: List<Byte>) {
     /** Represents the bytes of the watermark in hex */

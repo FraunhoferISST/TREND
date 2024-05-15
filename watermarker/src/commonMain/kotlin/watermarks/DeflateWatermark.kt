@@ -11,7 +11,6 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import kotlin.js.JsExport
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 open class DeflateWatermark(content: List<Byte>) : Watermark(content) {
     /** Returns the inflated bytes from the Watermark */
@@ -38,7 +37,6 @@ open class DeflateWatermark(content: List<Byte>) : Watermark(content) {
     }
 }
 
-@OptIn(kotlin.js.ExperimentalJsExport::class)
 @JsExport
 class DecodeToStringError(val reason: String) : Event.Error("DeflateWatermark.decodeToString") {
     /** Returns a String explaining the event */
