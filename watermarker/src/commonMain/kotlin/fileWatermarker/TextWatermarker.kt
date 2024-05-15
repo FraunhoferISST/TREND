@@ -230,7 +230,7 @@ class TextWatermarker(
     private val transcoding: Transcoding,
     private val separatorStrategy: SeparatorStrategy,
     val compression: Boolean,
-    val placement: (String) -> Sequence<Int>,
+    val placement: (String) -> List<Int>,
 ) : FileWatermarker<TextFile, TextWatermark> {
     // Build a list of all chars that are contained in a watermark
     private val fullAlphabet: List<Char> =
@@ -532,12 +532,12 @@ class TextWatermarkerBuilder {
     private var compression: Boolean = TextWatermark.COMPRESSION_DEFAULT
 
     /** Yields all positions where a Char of the watermark can be inserted */
-    private var placement: (string: String) -> Sequence<Int> = { string ->
+    private var placement: (string: String) -> List<Int> = { string ->
         sequence {
             for ((index, char) in string.withIndex()) {
                 if (char == ' ') yield(index)
             }
-        }
+        }.toList()
     }
 
     /** Sets a custom transcoding alphabet */
@@ -565,7 +565,7 @@ class TextWatermarkerBuilder {
     }
 
     /** Sets a custom placement function used to identify insertion positions */
-    fun setPlacement(placement: (String) -> Sequence<Int>): TextWatermarkerBuilder {
+    fun setPlacement(placement: (String) -> List<Int>): TextWatermarkerBuilder {
         this.placement = placement
         return this
     }
