@@ -30,7 +30,7 @@ kotlin {
     }
     js(IR) {
         browser { }
-        binaries.library()
+        binaries.executable()
     }
     sourceSets {
         val commonMain by getting
