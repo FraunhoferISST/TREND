@@ -1,50 +1,103 @@
 # Contributing to the Project
 
-Thank you for your interest in contributing to the TREND Watermarker!
+Thank you for your interest in contributing to the TREND project!
 
 ## Table of contents
 
 * [CLA](#cla)
-* [Issues and Pull Requests](#issues-and-pull-requests)
-* [License Header](#license-header)
-* [Open Project in IntelliJ](#open-project-in-intellij)
+* [Git(Hub) Process](#github-process)
+    * [Issues](#issues)
+    * [Forks & Branches](#forks--branches)
+    * [Pull Requests](#pull-requests)
+    * [Commits](#commits)
+    * [License Header](#license-header)
+* [IntelliJ](#intellij)
 * [Style Guide](#style-guide)
     * [IntelliJ IDEA configuration](#intellij-idea-configuration)
-    * [Git](#Git)
 
 ## CLA
 
 When contributing to this project, the _Corporate Contributor License Agreement (“CLA”)_ must be
 accepted. See the `CLA.md` file for more information.
 
-## Issues and Pull Requests
+## Git(Hub) Process
+
+Please carefully follow our guidelines for the process with Git and GitHub. Failure to comply 
+may result in rejection of the contribution.
+
+### Issues
 
 To organize and structure all contributions, open an issue for enhancements, feature requests or
-bugs. In case of security issues, please see `SECURITY.md` for more details.
+bugs. Please use the provided templates and fill out all possible sections. In case of security
+issues, see `SECURITY.md` for more details.
 
-Code changes are handled entirely over pull requests. We use
-the [squash and merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits)
+### Forks & Branches
+
+When working on an issue, create a branch in the repository (if you have write permission) or fork
+the repository (if you haven't write permission). Create a branch with a descriptive name (like
+`docs/update-readme`), commit your changes as described here and create a pull request afterward.
+
+### Pull Requests
+
+Code changes are handled entirely over pull requests. When proposing a change, create a pull
+request from your working branch to the upstream `main` branch, fill out the template, link it 
+to at least one issue (mandatory) and accept the CLA by keeping the text untouched.
+
+We use the
+[squash and merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits)
 strategy. Therefore, remember to use a pull request title in the
 [conventional commits](https://www.conventionalcommits.org/) format since it is used as the squashed
-commit message.
+commit message. Since this repository uses a
+[monolithic repository approach](https://en.wikipedia.org/wiki/Monorepo), the conventional
+commit _scope_ should be set to the affected component, resulting in the following format for
+the pull request title:
 
-## License Header
+```
+<type>(<component>): <descriptive title>
+```
+
+An example for an added compression feature in the `watermarker` library would be:
+
+```
+feat(watermarker): add watermark compression option
+```
+
+Further note that every pull request has to be related to at least one issue. This guarantees
+that every proposed contribution is related to a previously discussed issue. Pull requests
+shouldn't be too big to allow a fast integration of changes. We recommend keeping the content
+below 1000 lines of code (LOC).
+
+To ensure code quality, every pull request needs at least one approved review from one of the
+Committer team. Further check that all pipelines succeed before requesting a review.
+
+### Commits
+
+Due to the _squash and merge_, the final squashed commit is based on the title of the pull
+request with a link to the pull request. The above example results in:
+```
+feat(watermarker): add watermark compression option (#123)
+```
+Even if all commits are squashed, we highly recommend to use conventional commits to reflect all 
+changes. Further, we highly recommend to sign every commit with a GPG signature to enable the 
+_Verfied_ flag on GitHub.
+
+### License Header
 
 Every source code file in this project must contain a license header. Example:
 
 ```
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
 ```
 
-## Open Project in IntelliJ
+## IntelliJ
 
-To work on all subprojects from one IntelliJ instance, you may have to manually add
-the `build.gradle.kts` files.
+When using IntelliJ, the following describes on how to open and use the project. To work on all
+subprojects from one IntelliJ instance, you may have to manually add the `build.gradle.kts` files.
 
 - If the Gradle tool window is missing in IntelliJ and is not listen in "View -> Tool Windows ->
   Gradle" open one of the `build.gradle.kts` files in a subproject (e.g. watermaker). IntelliJ
@@ -70,6 +123,9 @@ with minor adjustments:
 
 - Hard wrap at: 100
 - KDoc max comment line length: 100
+
+Remember that every method must contain a comment since it is used in the automatic 
+documentation generation process.
 
 ### Autoformatter
 
@@ -106,7 +162,3 @@ The code style should be shipped in the `.idea` folder. Otherwise, configure it 
             - Removes unused imports
             - Ensures styleguides on imports
     - [Source](https://www.jetbrains.com/help/idea/reformat-and-rearrange-code.html#reformat-on-save)
-
-### Git
-
-We follow the [conventional commit guidelines](https://www.conventionalcommits.org).
