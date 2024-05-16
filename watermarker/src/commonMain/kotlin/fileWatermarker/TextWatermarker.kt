@@ -378,21 +378,16 @@ class TextWatermarker(
             if (content.count() > 0) {
                 val decoded =
                     with(transcoding.decode(content)) {
-                        if (isSuccess) {
-                            value!!
-                        } else if (value != null) {
-                            status.appendStatus(this.status)
-                            value
-                        } else {
+                        if (!hasValue) {
                             return this.status.into()
                         }
+                        status.appendStatus(this.status)
+                        value!!
                     }
 
                 if (compression) {
                     with(TextWatermark.fromCompressedBytes(decoded, compression)) {
-                        if (!status.isSuccess) {
-                            this.status.appendStatus(status)
-                        }
+                        status.appendStatus(this.status)
                         if (hasValue) {
                             watermarks.add(value!!)
                         }
