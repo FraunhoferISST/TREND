@@ -27,45 +27,38 @@ class WatermarkerTest {
     private val watermarker = Watermarker()
 
     private val textWithoutWatermark =
-        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
-            "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et " +
-            "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata" +
-            " sanctus est Lorem ipsum dolor sit amet."
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
+            "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
+            "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
+            "sanctus est Lorem ipsum dolor sit amet."
 
     private val watermarkString = "Test"
     private val watermark = watermarkString.encodeToByteArray().asList()
 
     private val textWithWatermark =
-        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed " +
-            "diam nonumy eirmod tempor invidunt ut labore et dolore magn" +
-            "a aliquyam erat, sed diam voluptua. At vero eos et acc" +
-            "usam et justo duo dolores et ea rebum. Stet clita kasd" +
-            " gubergren, no sea takimata sanctus est Lorem ipsum dolor" +
-            " sit amet."
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
+            "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
+            "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
+            "sanctus est Lorem ipsum dolor sit amet."
 
     private val differentWatermarks = listOf("Test", "Okay", "Okay", "Okay", "Okay", "Okay")
 
     private val longTextWithDifferentWatermarks =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed " +
-            "do eiusmod tempor incididunt ut labore et dolore magna ali" +
-            "qua. Commodo sed egestas egestas fringilla phasellus faucibus" +
-            " scelerisque eleifend. Adipiscing diam donec adipiscing tristi" +
-            "que risus nec feugiat. Duis ut diam quam nulla porttito" +
-            "r massa. Elementum tempus egestas sed sed. Amet commodo " +
-            "nulla facilisi nullam vehicula ipsum. Ornare aenean euismod" +
-            " elementum nisi quis eleifend quam adipiscing.  Non tel" +
-            "lus orci ac auctor augue. Tristique et egestas quis ips" +
-            "um suspendisse. Ut pharetra sit amet aliquam. In iaculis" +
-            " nunc sed augue. Cursus sit amet dictum sit amet jus" +
-            "to donec enim diam. Ultricies lacus sed turpis tincidunt" +
-            " id aliquet risus feugiat in. Risus commodo viverra mae" +
-            "cenas accumsan"
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun" +
+            "t ut labore et dolore magna aliqua. Commodo sed egestas egestas fringilla phasellus " +
+            "faucibus scelerisque eleifend. Adipiscing diam donec adipiscing tristique risus nec " +
+            "feugiat. Duis ut diam quam nulla porttitor massa. Elementum tempus egestas sed sed. " +
+            "Amet commodo nulla facilisi nullam vehicula ipsum. Ornare aenean euismod elementum n" +
+            "isi quis eleifend quam adipiscing.  Non tellus orci ac auctor augue. Tristique et eg" +
+            "estas quis ipsum suspendisse. Ut pharetra sit amet aliquam. In iaculis nunc sed augu" +
+            "e. Cursus sit amet dictum sit amet justo donec enim diam. Ultricies lacus sed turpis" +
+            " tincidunt id aliquet risus feugiat in. Risus commodo viverra maecenas accumsan"
 
     private val textWithTrendmarks =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
-        "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accus" +
-        "am et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus " +
-        "est Lorem ipsum dolor sit amet."
+            "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
+            "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
+            "sanctus est Lorem ipsum dolor sit amet."
 
     private val textWithWatermarksAndTrendmarks =
         textWithWatermark +
@@ -74,9 +67,9 @@ class WatermarkerTest {
 
     private val textWithInvalidUTF8Trendmark =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
-        "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accus" +
-        "am et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus " +
-        "est Lorem ipsum dolor sit amet."
+            "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
+            "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
+            "sanctus est Lorem ipsum dolor sit amet."
 
     private val textWithInvalidandValidUTF8Trendmarks =
         textWithInvalidUTF8Trendmark +
