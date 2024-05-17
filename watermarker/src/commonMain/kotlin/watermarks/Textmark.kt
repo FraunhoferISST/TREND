@@ -27,7 +27,10 @@ class Textmark private constructor(
         fun compressedAndSized(text: String): Textmark =
             Textmark(text, compressed = true, sized = true)
 
-        fun fromTrendmark(trendmark: Trendmark): Result<Textmark> {
+        fun fromTrendmark(
+            trendmark: Trendmark,
+            errorOnInvalidUTF8: Boolean = false,
+        ): Result<Textmark> {
             val (content, status) =
                 with(trendmark.getContent()) {
                     if (!hasValue) return status.into<_>()
@@ -35,7 +38,9 @@ class Textmark private constructor(
                 }
             val text =
                 try {
-                    content.toByteArray().decodeToString()
+                    content
+                        .toByteArray()
+                        .decodeToString(throwOnInvalidSequence = errorOnInvalidUTF8)
                 } catch (e: Exception) {
                     status.addEvent(DecodeToStringError(e.message ?: e.stackTraceToString()))
                     return status.into()
