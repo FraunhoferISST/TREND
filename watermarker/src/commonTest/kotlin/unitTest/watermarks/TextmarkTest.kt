@@ -23,6 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class TextmarkTest {
@@ -174,6 +175,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -188,6 +190,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -203,6 +206,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -218,6 +222,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -232,6 +237,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -246,6 +252,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -261,6 +268,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test
@@ -276,6 +284,7 @@ class TextmarkTest {
         // Assert
         assertTrue(textmarkResult.isError)
         assertEquals(expectedStatus.getMessage(), textmarkResult.status.getMessage())
+        assertNull(textmarkResult.value)
     }
 
     @Test

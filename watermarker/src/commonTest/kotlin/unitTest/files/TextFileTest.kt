@@ -9,6 +9,7 @@ package unitTest.files
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class TextFileTest {
@@ -44,6 +45,7 @@ class TextFileTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test

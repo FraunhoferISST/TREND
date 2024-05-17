@@ -12,6 +12,7 @@ import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarkerBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class DefaultTranscodingTest {
@@ -201,6 +202,7 @@ class TextWatermarkerBuilderTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expected, result.getMessage())
+        assertNull(result.value)
     }
 
     @Test
