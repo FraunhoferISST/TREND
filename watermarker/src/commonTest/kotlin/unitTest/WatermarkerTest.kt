@@ -405,10 +405,11 @@ class WatermarkerTest {
             "Error (Textmark.fromTrendmark): Failed to decode bytes to string: Input length = 1."
 
         // Act
-        val textmarks = watermarker.textGetTextmarks(
-            textWithInvalidUTF8Trendmark,
-            errorOnInvalidUTF8 = true,
-        )
+        val textmarks =
+            watermarker.textGetTextmarks(
+                textWithInvalidUTF8Trendmark,
+                errorOnInvalidUTF8 = true,
+            )
 
         // Assert
         assertTrue(textmarks.isError)
@@ -425,14 +426,15 @@ class WatermarkerTest {
         val expectedTextmarks =
             listOf(
                 Textmark.new("0"),
-                Textmark.sized(watermarkString)
+                Textmark.sized(watermarkString),
             )
 
         // Act
-        val textmarks = watermarker.textGetTextmarks(
-            textWithInvalidandValidUTF8Trendmarks,
-            errorOnInvalidUTF8 = true,
-        )
+        val textmarks =
+            watermarker.textGetTextmarks(
+                textWithInvalidandValidUTF8Trendmarks,
+                errorOnInvalidUTF8 = true,
+            )
 
         // Assert
         assertTrue(textmarks.isWarning)

@@ -9,7 +9,6 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 
 class Textmark private constructor(
     var text: String,
