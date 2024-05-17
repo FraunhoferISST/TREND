@@ -13,6 +13,9 @@ import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 
@@ -70,15 +73,15 @@ sealed class SupportedFileType {
             Text.watermarker = watermarker
         }
 
-        val source: String = "SupportedFileType"
+        const val SOURCE: String = "SupportedFileType"
     }
 
-    class NoFileTypeError(val path: String) : Event.Error(source) {
+    class NoFileTypeError(val path: String) : Event.Error(SOURCE) {
         /** Returns a String explaining the event */
         override fun getMessage(): String = "Could not determine file type of $path!"
     }
 
-    class UnsupportedTypeError(val type: String) : Event.Error(source) {
+    class UnsupportedTypeError(val type: String) : Event.Error(SOURCE) {
         /** Returns a String explaining the event */
         override fun getMessage(): String = "Unsupported file type: $type!"
     }
@@ -86,6 +89,10 @@ sealed class SupportedFileType {
 
 @JsExport
 open class Watermarker {
+    companion object {
+        const val SOURCE = "Watermarker"
+    }
+
     /** Watermarks string [text] with [watermark] */
     fun textAddWatermark(
         text: String,
@@ -99,7 +106,26 @@ open class Watermarker {
             TextWatermark.fromUncompressedBytes(watermark, watermarker.compression)
         val status = watermarker.addWatermark(textFile, parsedWatermark)
 
-        return status.into(textFile.content)
+        return if (status.isError) {
+            status.into()
+        } else {
+            status.into(textFile.content)
+        }
+    }
+
+    fun textAddWatermark(
+        text: String,
+        watermark: Trendmark,
+    ): Result<String> {
+        val watermarkBytes = watermark.watermarkContent
+        return textAddWatermark(text, watermarkBytes)
+    }
+
+    fun textAddWatermark(
+        text: String,
+        watermark: TrendmarkBuilder,
+    ): Result<String> {
+        return textAddWatermark(text, watermark.finish())
     }
 
     /** Checks if [text] contains a watermark */
@@ -132,6 +158,67 @@ open class Watermarker {
         return result
     }
 
+    fun textGetTrendmarks(
+        text: String,
+        squash: Boolean = true,
+    ): Result<List<Trendmark>> {
+        val (watermarks, status) =
+            with(textGetWatermarks(text, squash)) {
+                if (!hasValue) {
+                    return this.status.into()
+                }
+                value!! to status
+            }
+
+        val trendmarks =
+            watermarks.mapNotNull { watermark ->
+                val trendmark = Trendmark.fromWatermark(watermark)
+                status.appendStatus(trendmark.status)
+                trendmark.value
+            }
+
+        if (status.isError && trendmarks.isNotEmpty()) {
+            status.addEvent(FailedTrendmarkExtractionsWarning(), overrideSeverity = true)
+        }
+
+        return if (status.isError) {
+            status.into()
+        } else {
+            status.into(trendmarks)
+        }
+    }
+
+    fun textGetTextmarks(
+        text: String,
+        squash: Boolean = true,
+        errorOnInvalidUTF8: Boolean = false,
+    ): Result<List<Textmark>> {
+        val (trendmarks, status) =
+            with(textGetTrendmarks(text, squash)) {
+                if (!hasValue) {
+                    return this.status.into()
+                }
+                value!! to status
+            }
+
+        val textmarks =
+            trendmarks.mapNotNull { trendmark ->
+                val textmark = Textmark.fromTrendmark(trendmark, errorOnInvalidUTF8)
+                status.appendStatus(textmark.status)
+                textmark.value
+            }
+
+        if (status.isError && textmarks.isNotEmpty()) {
+            status.addEvent(FailedTextmarkExtractionsWarning(), overrideSeverity = true)
+        }
+
+        return if (status.isError) {
+            status.into()
+        } else {
+            status.into(textmarks)
+        }
+    }
+
     /** Returns [text] without watermarks */
     fun textRemoveWatermarks(text: String): Result<String> {
         val watermarker = SupportedFileType.Text.watermarker
@@ -141,6 +228,16 @@ open class Watermarker {
         val status = watermarker.removeWatermarks(textFile).status
 
         return status.into(textFile.content)
+    }
+
+    class FailedTrendmarkExtractionsWarning() : Event.Warning("$SOURCE.textGetTrendmarks") {
+        override fun getMessage(): String =
+            "Could not extract and convert all watermarks to Trendmarks"
+    }
+
+    class FailedTextmarkExtractionsWarning() : Event.Warning("$SOURCE.textGetTextmarks") {
+        override fun getMessage(): String =
+            "Could not extract and convert all watermarks to Textmarks"
     }
 }
 
