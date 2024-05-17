@@ -43,18 +43,6 @@ class WatermarkerTest {
             " gubergren, no sea takimata sanctus est Lorem ipsum dolor" +
             " sit amet."
 
-    private val longText =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " +
-            "incididunt ut labore et dolore magna aliqua. Commodo sed egestas egestas fringilla " +
-            "phasellus faucibus scelerisque eleifend. Adipiscing diam donec adipiscing tristique " +
-            "risus nec feugiat. Duis ut diam quam nulla porttitor massa. Elementum tempus egestas" +
-            "sed sed. Amet commodo nulla facilisi nullam vehicula ipsum. Ornare aenean euismod " +
-            "elementum nisi quis eleifend quam adipiscing.  Non tellus orci ac auctor augue. " +
-            "Tristique et egestas quis ipsum suspendisse. Ut pharetra sit amet aliquam. In " +
-            "iaculis nunc sed augue. Cursus sit amet dictum sit amet justo donec enim diam. " +
-            "Ultricies lacus sed turpis tincidunt id aliquet risus feugiat in. Risus commodo " +
-            "viverra maecenas accumsan"
-
     private val differentWatermarks = listOf("Test", "Okay", "Okay", "Okay", "Okay", "Okay")
 
     private val longTextWithDifferentWatermarks =
