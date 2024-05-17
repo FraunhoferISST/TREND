@@ -28,12 +28,10 @@ class Textmark private constructor(
             Textmark(text, compressed = true, sized = true)
 
         fun fromTrendmark(trendmark: Trendmark): Result<Textmark> {
-            val status = Status.success()
-            val content =
+            val (content, status) =
                 with(trendmark.getContent()) {
-                    if (!hasValue) return this.status.into<_>()
-                    status.appendStatus(this.status)
-                    this.value!!
+                    if (!hasValue) return status.into<_>()
+                    value!! to status
                 }
             val text =
                 try {
