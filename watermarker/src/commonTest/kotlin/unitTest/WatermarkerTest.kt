@@ -8,9 +8,14 @@ package unitTest
 
 import de.fraunhofer.isst.trend.watermarker.SupportedFileType
 import de.fraunhofer.isst.trend.watermarker.Watermarker
+import de.fraunhofer.isst.trend.watermarker.Watermarker.FailedTextmarkExtractionsWarning
+import de.fraunhofer.isst.trend.watermarker.Watermarker.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -67,6 +72,28 @@ class WatermarkerTest {
             "to donec enim diam. Ultricies lacus sed turpis tincidunt" +
             " id aliquet risus feugiat in. Risus commodo viverra mae" +
             "cenas accumsan"
+
+    private val textWithTrendmarks =
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
+        "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accus" +
+        "am et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus " +
+        "est Lorem ipsum dolor sit amet."
+
+    private val textWithWatermarksAndTrendmarks =
+        textWithWatermark +
+            DefaultTranscoding.SEPARATOR_CHAR +
+            textWithTrendmarks
+
+    private val textWithInvalidUTF8Trendmark =
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
+        "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accus" +
+        "am et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus " +
+        "est Lorem ipsum dolor sit amet."
+
+    private val textWithInvalidandValidUTF8Trendmarks =
+        textWithInvalidUTF8Trendmark +
+            DefaultTranscoding.SEPARATOR_CHAR +
+            textWithTrendmarks
 
     @Test
     fun textAddWatermark_successfulAddition_successAndWatermarkedString() {
@@ -297,5 +324,138 @@ class WatermarkerTest {
 
         // Assert
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun textGetTrendmarks_trendmarkedString_success() {
+        // Arrange
+        val expectedTrendmarks = listOf(SizedWatermark.fromString(watermarkString))
+
+        // Act
+        val trendmarks = watermarker.textGetTrendmarks(textWithTrendmarks)
+
+        // Assert
+        assertTrue(trendmarks.isSuccess)
+        assertEquals(expectedTrendmarks, trendmarks.value)
+    }
+
+    @Test
+    fun textGetTrendmarks_watermarkedString_error() {
+        // Arrange
+        val expectedError = Trendmark.UnknownTagError(0x54u).into()
+
+        // Act
+        val trendmarks = watermarker.textGetTrendmarks(textWithWatermark)
+
+        // Assert
+        assertTrue(trendmarks.isError)
+        assertEquals(expectedError.toString(), trendmarks.toString())
+        assertNull(trendmarks.value)
+    }
+
+    @Test
+    fun textGetTrendmarks_watermarkedAndTrendmarkedString_warning() {
+        // Arrange
+        val unkownTagError = Trendmark.UnknownTagError(0x54u)
+        val expectedStatus = unkownTagError.into()
+        expectedStatus.addEvent(unkownTagError)
+        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning())
+        val expectedTrendmarks = listOf(SizedWatermark.fromString(watermarkString))
+
+        // Act
+        val trendmarks = watermarker.textGetTrendmarks(textWithWatermarksAndTrendmarks)
+
+        // Assert
+        assertTrue(trendmarks.isWarning)
+        assertEquals(expectedStatus.toString(), trendmarks.toString())
+        assertEquals(expectedTrendmarks, trendmarks.value)
+    }
+
+    @Test
+    fun textGetTextmarks_trendmarkedString_success() {
+        // Arrange
+        val expectedTextmark = Textmark.sized(watermarkString)
+        val expectedTextmarks = listOf(expectedTextmark)
+
+        // Act
+        val textmarks = watermarker.textGetTextmarks(textWithTrendmarks)
+
+        // Assert
+        assertTrue(textmarks.isSuccess)
+        assertEquals(expectedTextmarks, textmarks.value)
+    }
+
+    @Test
+    fun textGetTextmarks_watermarkedString_error() {
+        // Arrange
+        val expectedError = Trendmark.UnknownTagError(0x54u).into()
+
+        // Act
+        val textmarks = watermarker.textGetTextmarks(textWithWatermark)
+
+        // Assert
+        assertTrue(textmarks.isError)
+        assertEquals(expectedError.toString(), textmarks.toString())
+        assertNull(textmarks.value)
+    }
+
+    @Test
+    fun textGetTextmarks_watermarkedAndTrendmarkedString_warning() {
+        // Arrange
+        val unknownTagError = Trendmark.UnknownTagError(0x54u)
+        val expectedStatus = unknownTagError.into()
+        expectedStatus.addEvent(unknownTagError)
+        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning())
+        val expectedTextmarks = listOf(Textmark.sized(watermarkString))
+
+        // Act
+        val textmarks = watermarker.textGetTextmarks(textWithWatermarksAndTrendmarks)
+
+        // Assert
+        assertTrue(textmarks.isWarning)
+        assertEquals(expectedStatus.toString(), textmarks.toString())
+        assertEquals(expectedTextmarks, textmarks.value)
+    }
+
+    @Test
+    fun textGetTextmarks_invalidUTF8Watermarks_error() {
+        // Arrange
+        val expectedError =
+            "Error (Textmark.fromTrendmark): Failed to decode bytes to string: Input length = 1."
+
+        // Act
+        val textmarks = watermarker.textGetTextmarks(
+            textWithInvalidUTF8Trendmark,
+            errorOnInvalidUTF8 = true,
+        )
+
+        // Assert
+        assertTrue(textmarks.isError)
+        assertEquals(expectedError, textmarks.toString())
+        assertNull(textmarks.value)
+    }
+
+    @Test
+    fun textGetTextmarks_invalidAndValidUTF8Trendmarks_warning() {
+        // Arrange
+        val expectedStatus =
+            Textmark.DecodeToStringError("Input length = 1").into()
+        expectedStatus.addEvent(FailedTextmarkExtractionsWarning(), overrideSeverity = true)
+        val expectedTextmarks =
+            listOf(
+                Textmark.new("0"),
+                Textmark.sized(watermarkString)
+            )
+
+        // Act
+        val textmarks = watermarker.textGetTextmarks(
+            textWithInvalidandValidUTF8Trendmarks,
+            errorOnInvalidUTF8 = true,
+        )
+
+        // Assert
+        assertTrue(textmarks.isWarning)
+        assertEquals(expectedStatus.toString(), textmarks.toString())
+        assertEquals(expectedTextmarks, textmarks.value)
     }
 }
