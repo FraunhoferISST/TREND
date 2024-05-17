@@ -46,7 +46,7 @@ In order to use this library in plain JavaScript, follow these steps:
    ```Javascript
    watermarker = watermarker.de.fraunhofer.isst.trend.watermarker;
    ```
-4. Now you are ready to use the watermarker in plain JS. An example HTML file can be found [here](../examples/plain_js/plain_js_minimal_example.html). You can open the file in the browser, no web server required.
+4. Now you are ready to use the watermarker in plain JS. An example HTML file can be found [here](../samples/plain_js/plain_js_minimal_example.html). You can open the file in the browser, no web server required.
 
 #### Javascript modules
 
@@ -73,4 +73,4 @@ In order to use this library in JavaScript modules, follow these steps:
    ```Javascript
    watermarker = watermarker.de.fraunhofer.isst.trend.watermarker; // note that imports in ESM are implicitly constant
    ```
-4. Now you are ready to use the watermarker in your module. An example node script can be found [here](../examples/js_modules/js_modules_minimal_example.js). Run it using `node npm_minimal_example.js`
+4. Now you are ready to use the watermarker in your module. An example node script can be found [here](../samples/js_modules/js_modules_minimal_example.js). Run it using `node npm_minimal_example.js`
