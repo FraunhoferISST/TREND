@@ -25,10 +25,15 @@ sealed class SeparatorStrategy {
     object SkipInsertPosition : SeparatorStrategy()
 
     /** Inserts [char] as separator between watermarks */
-    class SingleSeparatorChar(val char: Char) : SeparatorStrategy()
+    class SingleSeparatorChar(
+        val char: Char = DefaultTranscoding.SEPARATOR_CHAR,
+    ) : SeparatorStrategy()
 
     /** Inserts [start] before a Watermark and [end] after a Watermark as separators */
-    class StartEndSeparatorChars(val start: Char, val end: Char) : SeparatorStrategy()
+    class StartEndSeparatorChars(
+        val start: Char = DefaultTranscoding.START_SEPARATOR_CHAR,
+        val end: Char = DefaultTranscoding.END_SEPARATOR_CHAR,
+    ) : SeparatorStrategy()
 }
 
 interface Transcoding {
@@ -53,7 +58,11 @@ object DefaultTranscoding : Transcoding {
             // Medium mathematical space
             '\u205F',
         )
+
     const val SEPARATOR_CHAR = '\u2004' // Three-per-em space
+
+    const val START_SEPARATOR_CHAR = '\u2004' // Three-per-em space
+    const val END_SEPARATOR_CHAR = '\u2005' // Four-per-em space (TODO: change)
 
     private val base = alphabet.size
     private val digitsPerByte = calculateDigitsPerByte(base)
@@ -521,7 +530,7 @@ class TextWatermarker(
 class TextWatermarkerBuilder {
     private var transcoding: Transcoding = DefaultTranscoding
     private var separatorStrategy: SeparatorStrategy =
-        SeparatorStrategy.SingleSeparatorChar(DefaultTranscoding.SEPARATOR_CHAR)
+        SeparatorStrategy.SingleSeparatorChar()
     private var compression: Boolean = TextWatermark.COMPRESSION_DEFAULT
 
     /** Yields all positions where a Char of the watermark can be inserted */
