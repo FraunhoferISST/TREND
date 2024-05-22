@@ -537,7 +537,7 @@ class TextWatermarkerBuilder {
             for ((index, char) in string.withIndex()) {
                 if (char == ' ') yield(index)
             }
-        }.toList()
+        }.toMutableList() // mutable for JS compatibility on empty lists
     }
 
     /** Sets a custom transcoding alphabet */
