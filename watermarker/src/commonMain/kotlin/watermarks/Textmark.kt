@@ -6,7 +6,6 @@
  */
 package de.fraunhofer.isst.trend.watermarker.watermarks
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 
@@ -14,7 +13,6 @@ class Textmark private constructor(
     var text: String,
     private var compressed: Boolean = false,
     private var sized: Boolean = false,
-    private var textWatermarker: TextWatermarker? = null,
 ) : TrendmarkBuilder {
     companion object {
         fun new(text: String): Textmark = Textmark(text)
@@ -110,8 +108,7 @@ class Textmark private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (other !is Textmark) return false
-        return text == other.text && compressed == other.compressed && sized == other.sized &&
-            textWatermarker == other.textWatermarker
+        return text == other.text && compressed == other.compressed && sized == other.sized
     }
 
     class DecodeToStringError(val reason: String) : Event.Error("Textmark.fromTrendmark") {
