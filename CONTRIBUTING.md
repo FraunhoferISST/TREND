@@ -34,14 +34,14 @@ issues, see `SECURITY.md` for more details.
 ### Forks & Branches
 
 When working on an issue, create a branch in the repository (if you have write permission) or fork
-the repository (if you haven't write permission). Create a branch with a descriptive name (like
+the repository (if you do not have write permission). Create a branch with a descriptive name (like
 `docs/update-readme`), commit your changes as described here and create a pull request afterward.
 
 ### Pull Requests
 
 Code changes are handled entirely over pull requests. When proposing a change, create a pull
-request from your working branch to the upstream `main` branch, fill out the template, link it 
-to at least one issue (mandatory) and accept the CLA by keeping the text untouched.
+request from your working branch or fork to the upstream `main` branch, fill out the template, 
+link it to at least one issue (mandatory) and accept the CLA by keeping the text untouched.
 
 We use the
 [squash and merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits)
@@ -62,13 +62,13 @@ An example for an added compression feature in the `watermarker` library would b
 feat(watermarker): add watermark compression option
 ```
 
-Further note that every pull request has to be related to at least one issue. This guarantees
+As already mentioned, every pull request has to be related to at least one issue. This guarantees
 that every proposed contribution is related to a previously discussed issue. Pull requests
 shouldn't be too big to allow a fast integration of changes. We recommend keeping the content
 below 1000 lines of code (LOC).
 
 To ensure code quality, every pull request needs at least one approved review from one of the
-Committer team. Further check that all pipelines succeed before requesting a review.
+Committer team. Further check that all pipelines succeed before a review can be started.
 
 ### Commits
 
@@ -77,9 +77,10 @@ request with a link to the pull request. The above example results in:
 ```
 feat(watermarker): add watermark compression option (#123)
 ```
-Even if all commits are squashed, we highly recommend to use conventional commits to reflect all 
-changes. Further, we highly recommend to sign every commit with a GPG signature to enable the 
-_Verfied_ flag on GitHub.
+Even if all commits are squashed, we highly recommend using conventional commits to reflect all 
+changes. Tools like [commitlint](https://github.com/conventional-changelog/commitlint) are 
+suggested and can help to stay with the format. Further, we highly recommend to sign every commit 
+with a GPG signature to enable the _Verfied_ flag on [GitHub](https://docs.github.com/en/authentication/managing-commit-signature-verification/displaying-verification-statuses-for-all-of-your-commits).
 
 ### License Header
 
@@ -125,7 +126,9 @@ with minor adjustments:
 - KDoc max comment line length: 100
 
 Remember that every method must contain a comment since it is used in the automatic 
-documentation generation process.
+documentation generation process. Therefore, get familiar with the
+[KDoc syntax](https://kotlinlang.org/docs/kotlin-doc.html#kdoc-syntax) (similar to Javadoc) and 
+use it for code comments in classes and functions.
 
 ### Autoformatter
 
