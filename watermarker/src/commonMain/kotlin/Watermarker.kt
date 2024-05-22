@@ -115,7 +115,7 @@ open class Watermarker {
 
     fun textAddWatermark(
         text: String,
-        watermark: Trendmark,
+        watermark: Watermark,
     ): Result<String> {
         val watermarkBytes = watermark.watermarkContent
         return textAddWatermark(text, watermarkBytes)
