@@ -178,7 +178,7 @@ open class Watermarker {
             }
 
         if (status.isError && trendmarks.isNotEmpty()) {
-            status.addEvent(FailedTrendmarkExtractionsWarning(), overrideSeverity = true)
+            status.addEvent(FailedTrendmarkExtractionsWarning("$SOURCE.textGetTrendmarks"), overrideSeverity = true)
         }
 
         return if (status.isError) {
@@ -209,7 +209,7 @@ open class Watermarker {
             }
 
         if (status.isError && textmarks.isNotEmpty()) {
-            status.addEvent(FailedTextmarkExtractionsWarning(), overrideSeverity = true)
+            status.addEvent(FailedTextmarkExtractionsWarning("$SOURCE.textGetTextmarks"), overrideSeverity = true)
         }
 
         return if (status.isError) {
@@ -230,12 +230,12 @@ open class Watermarker {
         return status.into(textFile.content)
     }
 
-    class FailedTrendmarkExtractionsWarning() : Event.Warning("$SOURCE.textGetTrendmarks") {
+    class FailedTrendmarkExtractionsWarning(source: String) : Event.Warning(source) {
         override fun getMessage(): String =
             "Could not extract and convert all watermarks to Trendmarks"
     }
 
-    class FailedTextmarkExtractionsWarning() : Event.Warning("$SOURCE.textGetTextmarks") {
+    class FailedTextmarkExtractionsWarning(source: String) : Event.Warning(source) {
         override fun getMessage(): String =
             "Could not extract and convert all watermarks to Textmarks"
     }

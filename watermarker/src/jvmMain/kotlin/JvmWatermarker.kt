@@ -12,6 +12,8 @@ import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.trend.watermarker.files.writeToFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import java.io.File
 import kotlin.io.path.Path
@@ -46,6 +48,9 @@ fun readFile(path: String): Result<ByteArray> {
 }
 
 class JvmWatermarker : Watermarker() {
+    companion object {
+        const val SOURCE = "JvmWatermarker"
+    }
     /**
      * Adds a [watermark] to [source] and writes changes to [target]
      *
@@ -63,6 +68,20 @@ class JvmWatermarker : Watermarker() {
             }
 
         return addWatermarkDoWork(supportedFileType.watermarker, source, target, watermark)
+    }
+
+    /**
+     * Adds a [textmark] to [source] and writes changes to [target]
+     *
+     * When [fileType] is null the type is taken from [source]'s extension
+     */
+    fun addTextmark(
+        source: String,
+        target: String,
+        textmark: Textmark,
+        fileType: String? = null,
+    ): Status {
+        return addWatermark(source, target, textmark.finish(), fileType)
     }
 
     private fun <T : WatermarkableFile, U : Watermark> addWatermarkDoWork(
@@ -173,6 +192,86 @@ class JvmWatermarker : Watermarker() {
         }
 
         return status.into(watermarks)
+    }
+
+    /**
+     * Returns all Trendmarks in [source]
+     *
+     * When [fileType] is null the type is taken from [source]'s extension
+     * When [squash] is true watermarks with the same content are merged
+     */
+    fun getTrendmarks(
+        source: String,
+        fileType: String? = null,
+        squash: Boolean = true,
+    ): Result<List<Trendmark>> {
+        val (watermarks, status) =
+            with(getWatermarks(source, fileType, squash)) {
+                if (value == null) {
+                    return status.into()
+                }
+                value to status
+            }
+
+        val trendmarks =
+            watermarks.mapNotNull { watermark ->
+                val trendmark = Trendmark.fromWatermark(watermark)
+                status.appendStatus(trendmark.status)
+                trendmark.value
+            }
+
+        if (status.isError && trendmarks.isNotEmpty()) {
+            status.addEvent(
+                FailedTrendmarkExtractionsWarning("$SOURCE.getTrendmarks"),
+                overrideSeverity = true,
+            )
+        }
+
+        return if (status.isError) {
+            status.into()
+        } else {
+            status.into(trendmarks)
+        }
+    }
+
+    /**
+     * Returns all Textmarks in [source]
+     *
+     * When [fileType] is null the type is taken from [source]'s extension
+     * When [squash] is true watermarks with the same content are merged
+     */
+    fun getTextmarks(
+        source: String,
+        fileType: String? = null,
+        squash: Boolean = true,
+    ): Result<List<Textmark>> {
+        val (trendmarks, status) =
+            with(getTrendmarks(source, fileType, squash)) {
+                if (value == null) {
+                    return status.into()
+                }
+                value to status
+            }
+
+        val textmarks =
+            trendmarks.mapNotNull { trendmark ->
+                val textmark = Textmark.fromTrendmark(trendmark)
+                status.appendStatus(textmark.status)
+                textmark.value
+            }
+
+        if (status.isError && textmarks.isNotEmpty()) {
+            status.addEvent(
+                FailedTextmarkExtractionsWarning("$SOURCE.getTextmarks"),
+                overrideSeverity = true,
+            )
+        }
+
+        return if (status.isError) {
+            status.into()
+        } else {
+            status.into(textmarks)
+        }
     }
 
     /**
