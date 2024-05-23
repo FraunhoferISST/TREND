@@ -191,7 +191,10 @@ open class Watermarker {
             }
 
         if (status.isError && trendmarks.isNotEmpty()) {
-            status.addEvent(FailedTrendmarkExtractionsWarning("$SOURCE.textGetTrendmarks"), overrideSeverity = true)
+            status.addEvent(
+                FailedTrendmarkExtractionsWarning("$SOURCE.textGetTrendmarks"),
+                overrideSeverity = true,
+            )
         }
 
         return if (status.isError) {
@@ -235,7 +238,10 @@ open class Watermarker {
             }
 
         if (status.isError && textmarks.isNotEmpty()) {
-            status.addEvent(FailedTextmarkExtractionsWarning("$SOURCE.textGetTextmarks"), overrideSeverity = true)
+            status.addEvent(
+                FailedTextmarkExtractionsWarning("$SOURCE.textGetTextmarks"),
+                overrideSeverity = true,
+            )
         }
 
         return if (status.isError) {

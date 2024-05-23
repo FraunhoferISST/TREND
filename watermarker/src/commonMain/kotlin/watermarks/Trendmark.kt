@@ -208,6 +208,7 @@ sealed class Trendmark(
     object ChecksumConstants {
         const val CHECKSUM_PLACEHOLDER: Byte = 0
     }
+
     sealed interface Checksum : TrendmarkInterface {
         fun getChecksumRange(): IntRange
 
@@ -301,6 +302,7 @@ sealed class Trendmark(
     object HashConstants {
         const val HASH_PLACEHOLDER: Byte = 0
     }
+
     sealed interface Hash : TrendmarkInterface {
         fun getHashRange(): IntRange
 

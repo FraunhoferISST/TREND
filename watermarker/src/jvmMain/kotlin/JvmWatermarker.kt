@@ -51,6 +51,7 @@ class JvmWatermarker : Watermarker() {
     companion object {
         const val SOURCE = "JvmWatermarker"
     }
+
     /**
      * Adds a [watermark] to [source] and writes changes to [target].
      *
