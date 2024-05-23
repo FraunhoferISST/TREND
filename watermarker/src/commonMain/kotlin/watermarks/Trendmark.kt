@@ -14,7 +14,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.EmptyError
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.IncompleteTagError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.InvalidTagError
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface.Companion.TAG_SIZE
 import org.kotlincrypto.hash.sha3.SHA3_256
@@ -54,7 +54,7 @@ sealed interface TrendmarkInterface {
     fun validate(): Status {
         val content = getRawContent()
         if (content.size < TAG_SIZE) {
-            return EmptyError.into()
+            return IncompleteTagError.into()
         }
         val status = Status.success()
         val extractedTag = extractTag()
@@ -82,11 +82,17 @@ sealed interface TrendmarkInterface {
 }
 
 /**
- * Trendmark defines a list of Watermarks with specific format.
+ * Trendmark defines a list of Watermarks with specific format. The format is encoded in the first
+ * byte of the watermark, which allows to parse unknown types of Trendmarks. The implemented
+ * variants of Trendmark allow to encode addition information like the size or a hash into the
+ * watermark. For detailed information about the different formats see
+ * [Trendmark.md](https://github.com/FraunhoferISST/TREND/blob/main/docs/Trendmark.md)
  *
  * The constructor expects bytes that represent the given type.
  * To create a new watermark with arbitrary content the companion function `new` of that type must
  * be used.
+ *
+ * @param content: expects bytes that represent a Trendmark.
  */
 @JsExport
 sealed class Trendmark(
@@ -507,8 +513,9 @@ sealed class Trendmark(
         fun validateCompression(): Status = getContent().status
     }
 
-    object EmptyError : Event.Error(SOURCE) {
-        override fun getMessage(): String = "Cannot validate an empty watermark."
+    object IncompleteTagError : Event.Error(SOURCE) {
+        override fun getMessage(): String =
+            "Cannot validate a watermark without a complete tag ($TAG_SIZE byte(s))."
     }
 
     class NotEnoughDataError(source: String, val minimumBytesRequired: Int) : Event.Error(source) {
@@ -588,7 +595,11 @@ class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
         const val SOURCE = "Trendmark.SizedWatermark"
         const val TYPE_TAG: UByte = 1u
 
-        /** Number of bytes used to specify the length of the watermark */
+        /**
+         *  Number of bytes used to specify the length of the watermark. The decision to use 4 bytes
+         * (i.e. 32-bit unsigned integer) was made to find a balance between maximum text size and
+         * minimal additional watermark size. This decision might be reevaluated in the future.
+         */
         const val SIZE_SIZE: Int = 4
         const val SIZE_START_INDEX = TAG_SIZE
         const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1

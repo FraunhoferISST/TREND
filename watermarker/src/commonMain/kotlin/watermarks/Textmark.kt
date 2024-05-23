@@ -13,6 +13,18 @@ import kotlin.js.JsExport
 /**
  * The Textmark class provides convenient functions to create and read Trendmarks with UTF-8 text as
  * content.
+ *
+ * Textmarks can be created using the companion functions. The functions `new`, `raw`,
+ * `compressed`, `sized`, and `compressedAndSized` allow to create new Textmarks from a String and
+ * specifying the format of the produced Trendmark.
+ *
+ * Sized Textmarks will create Trendmarks that encode the size of the Trendmark into the watermark.
+ *
+ * Compressed Textmarks will compress the Text using a compression algorithm. This can be useful
+ * when the watermark text is very long, but it might reduce the watermark robustness.
+ *
+ * The function `fromTrendmark` allows to parse all supported Trendmarks into Textmarks, giving
+ * direct access to the contained text without having to consider the format of the Trendmark.
  */
 @JsExport
 class Textmark private constructor(
@@ -45,9 +57,9 @@ class Textmark private constructor(
          * Creates a Textmark from [trendmark].
          * Sets sized and compressed depending on the variant of [trendmark].
          *
-         * Returns an error if:
-         *  - [trendmark]'s content is not a valid UTF-8 string and [errorOnInvalidUTF8] is true
-         *  - [trendmark] contains an unsupported variant.
+         * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
+         *                           is false: invalid bytes sequences are replace with the char �.
+         * Returns an error when [trendmark] contains an unsupported variant.
          */
         fun fromTrendmark(
             trendmark: Trendmark,

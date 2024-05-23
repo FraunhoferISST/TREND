@@ -11,7 +11,7 @@ specification is documented below.
 Trendmark uses the first byte of a watermark as tag to indicate the format. This allows to parse and
 interpret the content of the watermark correctly as long as the watermark follows this
 specification. The table below lists all specified tags and explains their purpose. The tags are
-counted upwards from 0 for watermarks that add additional content and downwards from fe for
+counted upwards from `0` for watermarks that add additional content and downwards from `fe` for
 watermarks that change the content itself (e.g. compression).
 
 | Tag (in hex) | Class name | Meaning |
@@ -33,7 +33,7 @@ watermarks that change the content itself (e.g. compression).
 | ff | Custom | Reserved for custom Trendmark implementations |
 
 ## Details
-In the following each watermark is specified with the text ``Lorem Ipsum`` encoded in UTF-8 bytes
+In the following, each watermark is specified with the text ``Lorem Ipsum`` encoded in UTF-8 bytes
 (4c 6f 72 65 6d 20 69 70 73 75 6d) as example watermark content. All values are in hexadecimal
 format.
 The compressed variants use DEFLATE as compression algorithm (see RFC 1951).
@@ -56,8 +56,8 @@ The size is calculated over the entire watermark.
 | 01 | 10 00 00 00 | 4c 6f 72 65 6d 20 69 70 73 75 6d |
 
 ### CRC32Watermark
-The CRC32 checksum is calculated over the entire watermark, replacing the bytes containing the
-checksum with null bytes.
+The [CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum is calculated over the
+entire watermark, replacing the bytes containing the checksum with null bytes.
 
 | tag | CRC32 checksum little-endian | raw bytes |
 | -- | -- | -- |
@@ -72,8 +72,8 @@ the checksum with null bytes.
 | 03 | 14 00 00 00 | 1e 85 5b 04 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
 ### SHA3256Watermark
-The SHA3-256 hash is calculated over the entire watermark, replacing the bytes containing the hash
-with null bytes.
+The [SHA3-256](https://en.wikipedia.org/wiki/SHA-3) hash is calculated over the entire watermark,
+replacing the bytes containing the hash with null bytes.
 
 | tag | SHA3-256 hash | raw bytes |
 | -- | -- | -- |
@@ -98,7 +98,8 @@ Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 The size is calculated over the entire watermark.
 Only the content is compressed, potentially allowing to use the additional information to increase 
 the watermark robustness.
-Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
+Trendmark uses [DEFLATE](https://en.wikipedia.org/wiki/Deflate) as compression algorithm
+(see RFC 1951).
 
 | tag | size in 32 bits little-endian | compressed bytes |
 | -- | -- | -- |

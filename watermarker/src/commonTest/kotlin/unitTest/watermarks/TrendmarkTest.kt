@@ -1410,8 +1410,9 @@ class TrendmarkTest {
     @Test
     fun emptyError_defaultInput_correctWarningMessage() {
         // Arrange
-        val error = Trendmark.EmptyError
-        val expected = "Error (Trendmark): Cannot validate an empty watermark."
+        val error = Trendmark.IncompleteTagError
+        val expected =
+            "Error (Trendmark): Cannot validate a watermark without a complete tag (1 byte(s))."
 
         // Act
         val result = error.toString()
