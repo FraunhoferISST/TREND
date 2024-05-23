@@ -19,6 +19,7 @@ import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.InvalidTagError
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface.Companion.TAG_SIZE
 import org.kotlincrypto.hash.sha3.SHA3_256
 import kotlin.collections.ArrayList
+import kotlin.js.JsExport
 
 sealed interface TrendmarkInterface {
     companion object {
@@ -88,6 +89,7 @@ sealed interface TrendmarkInterface {
  * be used.
  *
  */
+@JsExport
 sealed class Trendmark(
     val typeTag: UByte,
     content: List<Byte>,
@@ -203,11 +205,10 @@ sealed class Trendmark(
         }
     }
 
+    object ChecksumConstants {
+        const val CHECKSUM_PLACEHOLDER: Byte = 0
+    }
     sealed interface Checksum : TrendmarkInterface {
-        companion object {
-            const val CHECKSUM_PLACEHOLDER: Byte = 0
-        }
-
         fun getChecksumRange(): IntRange
 
         fun extractChecksum(): Result<UInt> {
@@ -230,7 +231,7 @@ sealed class Trendmark(
         fun getChecksumPlaceholder(): List<Byte> {
             val checksumRange = getChecksumRange()
             val size = checksumRange.last - checksumRange.first + 1
-            return List(size) { CHECKSUM_PLACEHOLDER }
+            return List(size) { ChecksumConstants.CHECKSUM_PLACEHOLDER }
         }
 
         /**
@@ -297,11 +298,10 @@ sealed class Trendmark(
         }
     }
 
+    object HashConstants {
+        const val HASH_PLACEHOLDER: Byte = 0
+    }
     sealed interface Hash : TrendmarkInterface {
-        companion object {
-            const val HASH_PLACEHOLDER: Byte = 0
-        }
-
         fun getHashRange(): IntRange
 
         fun extractHash(): Result<List<Byte>> {
@@ -318,7 +318,7 @@ sealed class Trendmark(
         fun getHashPlaceholder(): List<Byte> {
             val hashRange = getHashRange()
             val size = hashRange.last - hashRange.first + 1
-            return List(size) { HASH_PLACEHOLDER }
+            return List(size) { HashConstants.HASH_PLACEHOLDER }
         }
 
         /**
@@ -521,7 +521,7 @@ class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
 
             watermark.add(tag.toByte())
             repeat(CHECKSUM_SIZE) {
-                watermark.add(Checksum.CHECKSUM_PLACEHOLDER)
+                watermark.add(ChecksumConstants.CHECKSUM_PLACEHOLDER)
             }
             watermark.addAll(content)
 
@@ -581,7 +581,7 @@ class SizedCRC32Watermark(content: List<Byte>) :
             watermark.add(tag.toByte())
             watermark.addAll(encodedSize)
             repeat(CHECKSUM_SIZE) {
-                watermark.add(Checksum.CHECKSUM_PLACEHOLDER)
+                watermark.add(ChecksumConstants.CHECKSUM_PLACEHOLDER)
             }
             watermark.addAll(content)
 
@@ -637,7 +637,7 @@ class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Tren
             val watermark = ArrayList<Byte>(size)
             watermark.add(tag.toByte())
             repeat(HASH_SIZE) {
-                watermark.add(Hash.HASH_PLACEHOLDER)
+                watermark.add(HashConstants.HASH_PLACEHOLDER)
             }
             watermark.addAll(content)
 
@@ -700,7 +700,7 @@ class SizedSHA3256Watermark(content: List<Byte>) :
             watermark.add(tag.toByte())
             watermark.addAll(encodedSize)
             repeat(HASH_SIZE) {
-                watermark.add(Hash.HASH_PLACEHOLDER)
+                watermark.add(HashConstants.HASH_PLACEHOLDER)
             }
             watermark.addAll(content)
 

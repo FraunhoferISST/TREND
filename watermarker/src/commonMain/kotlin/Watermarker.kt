@@ -18,6 +18,7 @@ import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @JsExport
 sealed class SupportedFileType {
@@ -94,6 +95,7 @@ open class Watermarker {
     }
 
     /** Watermarks string [text] with [watermark] */
+    @JsName("textAddWatermarkBytes")
     fun textAddWatermark(
         text: String,
         watermark: List<Byte>,
@@ -123,6 +125,7 @@ open class Watermarker {
     }
 
     /** Watermarks string [text] with [trendmarkBuilder] */
+    @JsName("textAddTrendmarkBuilder")
     fun textAddWatermark(
         text: String,
         trendmarkBuilder: TrendmarkBuilder,

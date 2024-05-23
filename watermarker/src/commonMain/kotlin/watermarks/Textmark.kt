@@ -8,11 +8,13 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import kotlin.js.JsExport
 
 /**
  * The Textmark class provides convenient functions to create and read Trendmarks with UTF-8 text as
  * content.
  */
+@JsExport
 class Textmark private constructor(
     var text: String,
     private var compressed: Boolean = false,

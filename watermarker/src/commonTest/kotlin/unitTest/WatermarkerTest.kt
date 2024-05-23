@@ -16,6 +16,7 @@ import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import platform
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -340,7 +341,7 @@ class WatermarkerTest {
         val unkownTagError = Trendmark.UnknownTagError(0x54u)
         val expectedStatus = unkownTagError.into()
         expectedStatus.addEvent(unkownTagError)
-        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning())
+        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTrendmarks"))
         val expectedTrendmarks = listOf(SizedWatermark.fromString(watermarkString))
 
         // Act
@@ -386,7 +387,7 @@ class WatermarkerTest {
         val unknownTagError = Trendmark.UnknownTagError(0x54u)
         val expectedStatus = unknownTagError.into()
         expectedStatus.addEvent(unknownTagError)
-        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning())
+        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTrendmarks"))
         val expectedTextmarks = listOf(Textmark.sized(watermarkString))
 
         // Act
@@ -401,8 +402,12 @@ class WatermarkerTest {
     @Test
     fun textGetTextmarks_invalidUTF8Watermarks_error() {
         // Arrange
-        val expectedError =
-            "Error (Textmark.fromTrendmark): Failed to decode bytes to string: Input length = 1."
+        val expectedExceptionMessage =
+            when (platform) {
+                Platform.Jvm -> "Input length = 1"
+                Platform.Js -> "Malformed sequence starting at 0"
+            }
+        val expectedStatus = Textmark.DecodeToStringError(expectedExceptionMessage).into()
 
         // Act
         val textmarks =
@@ -413,16 +418,23 @@ class WatermarkerTest {
 
         // Assert
         assertTrue(textmarks.isError)
-        assertEquals(expectedError, textmarks.toString())
+        assertEquals(expectedStatus.toString(), textmarks.toString())
         assertNull(textmarks.value)
     }
 
     @Test
     fun textGetTextmarks_invalidAndValidUTF8Trendmarks_warning() {
         // Arrange
-        val expectedStatus =
-            Textmark.DecodeToStringError("Input length = 1").into()
-        expectedStatus.addEvent(FailedTextmarkExtractionsWarning(), overrideSeverity = true)
+        val expectedExceptionMessage =
+            when (platform) {
+                Platform.Jvm -> "Input length = 1"
+                Platform.Js -> "Malformed sequence starting at 0"
+            }
+        val expectedStatus = Textmark.DecodeToStringError(expectedExceptionMessage).into()
+        expectedStatus.addEvent(
+            FailedTextmarkExtractionsWarning("Watermarker.textGetTextmarks"),
+            overrideSeverity = true,
+        )
         val expectedTextmarks =
             listOf(
                 Textmark.new("0"),
