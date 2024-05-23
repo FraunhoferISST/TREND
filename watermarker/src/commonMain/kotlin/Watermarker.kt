@@ -113,6 +113,7 @@ open class Watermarker {
         }
     }
 
+    /** Watermarks string [text] with [watermark] */
     fun textAddWatermark(
         text: String,
         watermark: Watermark,
@@ -121,11 +122,12 @@ open class Watermarker {
         return textAddWatermark(text, watermarkBytes)
     }
 
+    /** Watermarks string [text] with [trendmarkBuilder] */
     fun textAddWatermark(
         text: String,
-        watermark: TrendmarkBuilder,
+        trendmarkBuilder: TrendmarkBuilder,
     ): Result<String> {
-        return textAddWatermark(text, watermark.finish())
+        return textAddWatermark(text, trendmarkBuilder.finish())
     }
 
     /** Checks if [text] contains a watermark */
@@ -138,9 +140,9 @@ open class Watermarker {
     }
 
     /**
-     * Returns all watermarks in [text]
+     * Returns all watermarks in [text].
      *
-     * When [squash] is true watermarks with the same content are merged
+     * When [squash] is true: watermarks with the same content are merged.
      */
     fun textGetWatermarks(
         text: String,
@@ -158,6 +160,14 @@ open class Watermarker {
         return result
     }
 
+    /**
+     * Returns all Trendmarks in [text].
+     *
+     * When [squash] is true: watermarks with the same content are merged.
+     *
+     * Returns a warning if some watermarks could not be converted to Trendmarks.
+     * Returns an error if no watermark could be converted to a Trendmark.
+     */
     fun textGetTrendmarks(
         text: String,
         squash: Boolean = true,
@@ -188,6 +198,19 @@ open class Watermarker {
         }
     }
 
+    /**
+     * Returns all Textmarks in [text]
+     *
+     * When [squash] is true: watermarks with the same content are merged.
+     * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
+     *                           is false: invalid bytes sequences are replace with the char �.
+     *
+     * Returns a warning if some watermarks could not be converted to Trendmarks.
+     * Returns an error if no watermark could be converted to a Trendmark.
+     *
+     * Returns a warning if some Trendmarks could not be converted to Textmarks.
+     * Returns an error if no Trendmark could be converted to a Textmark.
+     */
     fun textGetTextmarks(
         text: String,
         squash: Boolean = true,
@@ -231,11 +254,13 @@ open class Watermarker {
     }
 
     class FailedTrendmarkExtractionsWarning(source: String) : Event.Warning(source) {
+        /** Returns a String explaining the event */
         override fun getMessage(): String =
             "Could not extract and convert all watermarks to Trendmarks"
     }
 
     class FailedTextmarkExtractionsWarning(source: String) : Event.Warning(source) {
+        /** Returns a String explaining the event */
         override fun getMessage(): String =
             "Could not extract and convert all watermarks to Textmarks"
     }

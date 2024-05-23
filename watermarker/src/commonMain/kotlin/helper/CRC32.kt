@@ -7,5 +7,6 @@
 package de.fraunhofer.isst.trend.watermarker.helper
 
 expect object CRC32 {
+    /** Calculates the CRC32 checksum of [bytes] */
     fun checksum(bytes: List<Byte>): UInt
 }

@@ -9,21 +9,43 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 
+/**
+ * The Textmark class provides convenient functions to create and read Trendmarks with UTF-8 text as
+ * content.
+ */
 class Textmark private constructor(
     var text: String,
     private var compressed: Boolean = false,
     private var sized: Boolean = false,
 ) : TrendmarkBuilder {
     companion object {
+        /** Creates a Textmark in default configuration.
+         *
+         * The default configuration is: no compression, no size information.
+         */
         fun new(text: String): Textmark = Textmark(text)
 
+        /** Creates a Textmark from [text] without compression and without size information */
+        fun raw(text: String): Textmark = Textmark(text)
+
+        /** Creates a Textmark from [text] with compression but without size information */
         fun compressed(text: String): Textmark = Textmark(text, compressed = true)
 
+        /** Creates a Textmark from [text] with size information but without compression */
         fun sized(text: String): Textmark = Textmark(text, sized = true)
 
+        /** Creates a Textmark from [text] with size information and compression */
         fun compressedAndSized(text: String): Textmark =
             Textmark(text, compressed = true, sized = true)
 
+        /**
+         * Creates a Textmark from [trendmark].
+         * Sets sized and compressed depending on the variant of [trendmark].
+         *
+         * Returns an error if:
+         *  - [trendmark]'s content is not a valid UTF-8 string and [errorOnInvalidUTF8] is true
+         *  - [trendmark] contains an unsupported variant.
+         */
         fun fromTrendmark(
             trendmark: Trendmark,
             errorOnInvalidUTF8: Boolean = false,
@@ -68,18 +90,29 @@ class Textmark private constructor(
         }
     }
 
+    /** sets compressed [active] */
     fun compressed(active: Boolean = true) {
         compressed = active
     }
 
+    /** true if compression is activated */
     fun isCompressed(): Boolean = compressed
 
+    /** sets sized to [active] */
     fun sized(active: Boolean = true) {
         sized = active
     }
 
+    /** true if size information are added to the Trendmark */
     fun isSized(): Boolean = sized
 
+    /**
+     * Generates a Trendmark with [text] as content.
+     *
+     * The used variant of Trendmark depends on:
+     *  - [compressed]
+     *  - [sized].
+     */
     override fun finish(): Trendmark {
         val content = text.encodeToByteArray().asList()
 
@@ -94,6 +127,7 @@ class Textmark private constructor(
         }
     }
 
+    /** Contains the used Trendmark variant followed by [text] */
     override fun toString(): String {
         return if (compressed && sized) {
             "CompressedAndSizedTextmark: '$text'"
@@ -106,6 +140,7 @@ class Textmark private constructor(
         }
     }
 
+    /** Returns true if [this].finish() and [other].finish() produce an equal Trendmark */
     override fun equals(other: Any?): Boolean {
         if (other !is Textmark) return false
         return text == other.text && compressed == other.compressed && sized == other.sized

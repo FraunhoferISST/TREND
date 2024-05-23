@@ -20,7 +20,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.extension
 
 /**
- * Parses the file type from [fileType] or if it is null from [path]'s extension
+ * Parses the file type from [fileType] or if it is null from [path]'s extension.
  * Returns an error if the file type cannot be determined.
  */
 fun SupportedFileType.Companion.getFileType(
@@ -52,9 +52,9 @@ class JvmWatermarker : Watermarker() {
         const val SOURCE = "JvmWatermarker"
     }
     /**
-     * Adds a [watermark] to [source] and writes changes to [target]
+     * Adds a [watermark] to [source] and writes changes to [target].
      *
-     * When [fileType] is null the type is taken from [source]'s extension
+     * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun addWatermark(
         source: String,
@@ -71,9 +71,9 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Adds a [textmark] to [source] and writes changes to [target]
+     * Adds a [textmark] to [source] and writes changes to [target].
      *
-     * When [fileType] is null the type is taken from [source]'s extension
+     * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun addTextmark(
         source: String,
@@ -111,9 +111,9 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Checks if [source] contains watermarks
+     * Checks if [source] contains watermarks.
      *
-     * When [fileType] is null the type is taken from [source]'s extension
+     * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun containsWatermark(
         source: String,
@@ -147,10 +147,10 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all watermarks in [source]
+     * Returns all watermarks in [source].
      *
-     * When [fileType] is null the type is taken from [source]'s extension
-     * When [squash] is true watermarks with the same content are merged
+     * When [fileType] is null the type is taken from [source]'s extension.
+     * When [squash] is true: watermarks with the same content are merged.
      */
     fun getWatermarks(
         source: String,
@@ -195,10 +195,13 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all Trendmarks in [source]
+     * Returns all Trendmarks in [source].
      *
-     * When [fileType] is null the type is taken from [source]'s extension
-     * When [squash] is true watermarks with the same content are merged
+     * When [fileType] is null the type is taken from [source]'s extension.
+     * When [squash] is true: watermarks with the same content are merged.
+     *
+     * Returns a warning if some watermarks could not be converted to Trendmarks.
+     * Returns an error if no watermark could be converted to a Trendmark.
      */
     fun getTrendmarks(
         source: String,
@@ -235,15 +238,25 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all Textmarks in [source]
+     * Returns all Textmarks in [source].
      *
-     * When [fileType] is null the type is taken from [source]'s extension
-     * When [squash] is true watermarks with the same content are merged
+     * When [fileType] is null the type is taken from [source]'s extension.
+     * When [squash] is true: watermarks with the same content are merged.
+     *
+     * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error
+     *                           is false: invalid bytes sequences are replace with the char �
+     *
+     * Returns a warning if some watermarks could not be converted to Trendmarks.
+     * Returns an error if no watermark could be converted to a Trendmark.
+     *
+     * Returns a warning if some Trendmarks could not be converted to Textmarks.
+     * Returns an error if no Trendmark could be converted to a Textmark.
      */
     fun getTextmarks(
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
+        errorOnInvalidUTF8: Boolean = false,
     ): Result<List<Textmark>> {
         val (trendmarks, status) =
             with(getTrendmarks(source, fileType, squash)) {
@@ -255,7 +268,7 @@ class JvmWatermarker : Watermarker() {
 
         val textmarks =
             trendmarks.mapNotNull { trendmark ->
-                val textmark = Textmark.fromTrendmark(trendmark)
+                val textmark = Textmark.fromTrendmark(trendmark, errorOnInvalidUTF8)
                 status.appendStatus(textmark.status)
                 textmark.value
             }
@@ -275,9 +288,9 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Removes all watermarks in [source] and returns them
+     * Removes all watermarks in [source] and returns them.
      *
-     * When [fileType] is null the type is taken from [source]'s extension
+     * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun removeWatermarks(
         source: String,

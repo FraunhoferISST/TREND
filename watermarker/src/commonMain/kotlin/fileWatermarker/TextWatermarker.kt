@@ -161,9 +161,9 @@ class TextWatermark private constructor(
         const val COMPRESSION_DEFAULT = false
 
         /**
-         * Converts a Watermark to a TextWatermark
+         * Converts a Watermark to a TextWatermark.
          *
-         * [compression] defines if the bytes are compressed
+         * [compression] defines if the bytes are compressed.
          */
         fun fromWatermark(
             watermark: Watermark,
@@ -171,9 +171,9 @@ class TextWatermark private constructor(
         ): TextWatermark = TextWatermark(watermark.watermarkContent, compression)
 
         /**
-         * Creates a TextWatermark from [text] using deflate compression
+         * Creates a TextWatermark from [text] using deflate compression.
          *
-         * [compression] defines whether the bytes will be compressed
+         * [compression] defines whether the bytes will be compressed.
          */
         fun fromText(
             text: String,
@@ -184,9 +184,9 @@ class TextWatermark private constructor(
         }
 
         /**
-         * Creates a TextWatermark from [bytes]
+         * Creates a TextWatermark from [bytes].
          *
-         * [compression] defines whether the bytes will be compressed
+         * [compression] defines whether the bytes will be compressed.
          */
         fun fromUncompressedBytes(
             bytes: List<Byte>,
@@ -201,9 +201,9 @@ class TextWatermark private constructor(
         }
 
         /**
-         * Creates a TextWatermark from [bytes]
+         * Creates a TextWatermark from [bytes].
          *
-         * [compression] defines whether the bytes will be compressed
+         * [compression] defines whether the bytes will be compressed.
          */
         fun fromCompressedBytes(
             bytes: List<Byte>,
@@ -244,9 +244,10 @@ class TextWatermarker(
         }
 
     /**
-     * Adds a [watermark] to [file]
-     * Returns a warning if the watermark does not fit at least a single time into the file
-     * Returns an error if the text file contains a character from the transcoding alphabet
+     * Adds a [watermark] to [file].
+     *
+     * Returns a warning if the watermark does not fit at least a single time into the file.
+     * Returns an error if the text file contains a character from the transcoding alphabet.
      */
     override fun addWatermark(
         file: TextFile,
@@ -406,9 +407,9 @@ class TextWatermarker(
     }
 
     /**
-     * Removes all watermarks in [file] and returns them
+     * Removes all watermarks in [file] and returns them.
      *
-     * Returns a warning if getWatermarks() returns a warning or error
+     * Returns a warning if getWatermarks() returns a warning or error.
      */
     override fun removeWatermarks(file: TextFile): Result<List<TextWatermark>> {
         val (status, watermarks) =
@@ -469,8 +470,10 @@ class TextWatermarker(
     companion object {
         private const val SOURCE = "TextWatermarker"
 
+        /** Returns the builder for TextWatermarker */
         fun builder(): TextWatermarkerBuilder = TextWatermarkerBuilder()
 
+        /** Returns an instance of TextWatermarker in default configuration */
         fun default(): TextWatermarker = TextWatermarkerBuilder().build().value!!
     }
 
