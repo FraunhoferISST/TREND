@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -21,7 +21,8 @@ class Textmark private constructor(
     private var sized: Boolean = false,
 ) : TrendmarkBuilder {
     companion object {
-        /** Creates a Textmark in default configuration.
+        /**
+         * Creates a Textmark in default configuration.
          *
          * The default configuration is: no compression, no size information.
          */
@@ -92,7 +93,7 @@ class Textmark private constructor(
         }
     }
 
-    /** sets compressed [active] */
+    /** sets compressed to [active] */
     fun compressed(active: Boolean = true) {
         compressed = active
     }
