@@ -1,0 +1,12 @@
+{
+  "name": "js_modules",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "js_modules_minimal_example.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

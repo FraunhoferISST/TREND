@@ -45,6 +45,7 @@ object DeflateOptions {
     val level: Int = COMPRESSION_LEVEL
 }
 
+@JsExport
 actual object Compression {
     /** Compresses [data] using the deflate algorithm */
     actual fun inflate(data: List<Byte>): Result<List<Byte>> {

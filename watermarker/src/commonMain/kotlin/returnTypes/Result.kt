@@ -7,12 +7,16 @@
 
 package de.fraunhofer.isst.trend.watermarker.returnTypes
 
+import kotlin.js.JsExport
+import kotlin.js.JsName
+
 /**
  * This class represents the result of a function that returns a value but also can fail or produce
  * warnings.
  *
  * A Result with a Status of type Success or Warning are expected to have a value.
  */
+@JsExport
 class Result<T> constructor(
     val status: Status,
     val value: T? = null,
@@ -21,9 +25,11 @@ class Result<T> constructor(
     val hasValue get() = value != null
 
     /** Creates a new Result<T> from [status] and [value] */
+    @JsName("intoResult")
     fun <T> into(value: T? = null) = Result(this.status, value)
 
     /** Converts Result<T> to Status */
+    @JsName("intoStatus")
     fun into(): Status = this.status
 
     /**

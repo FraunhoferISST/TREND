@@ -9,7 +9,9 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 import de.fraunhofer.isst.trend.watermarker.helper.Compression
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import kotlin.js.JsExport
 
+@JsExport
 open class DeflateWatermark(content: List<Byte>) : Watermark(content) {
     /** Returns the inflated bytes from the Watermark */
     fun getBytes(): Result<List<Byte>> {
@@ -35,6 +37,7 @@ open class DeflateWatermark(content: List<Byte>) : Watermark(content) {
     }
 }
 
+@JsExport
 class DecodeToStringError(val reason: String) : Event.Error("DeflateWatermark.decodeToString") {
     /** Returns a String explaining the event */
     override fun getMessage(): String = "Failed to decode bytes to string: $reason."

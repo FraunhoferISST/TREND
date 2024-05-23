@@ -15,11 +15,13 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.DecodeToStringError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import kotlin.js.JsExport
 import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.math.pow
 
 /** Defines how multiple watermarks are separated */
+@JsExport
 sealed class SeparatorStrategy {
     /** Leaves one insertable position empty to mark the end of a watermark */
     object SkipInsertPosition : SeparatorStrategy()
@@ -31,16 +33,18 @@ sealed class SeparatorStrategy {
     class StartEndSeparatorChars(val start: Char, val end: Char) : SeparatorStrategy()
 }
 
+@JsExport
 interface Transcoding {
     val alphabet: List<Char>
 
-    /** Encodes [bytes] to a chars of [alphabet] */
+    /** Encodes [bytes] to chars of [alphabet] */
     fun encode(bytes: List<Byte>): Sequence<Char>
 
     /** Decodes [chars] of [alphabet] to bytes */
     fun decode(chars: Sequence<Char>): Result<List<Byte>>
 }
 
+@JsExport
 object DefaultTranscoding : Transcoding {
     override val alphabet =
         listOf(
@@ -115,6 +119,7 @@ object DefaultTranscoding : Transcoding {
     }
 }
 
+@JsExport
 class TextWatermark private constructor(
     content: List<Byte>,
     private val compression: Boolean,
@@ -220,11 +225,12 @@ class TextWatermark private constructor(
     }
 }
 
+@JsExport
 class TextWatermarker(
     private val transcoding: Transcoding,
     private val separatorStrategy: SeparatorStrategy,
     val compression: Boolean,
-    val placement: (String) -> Sequence<Int>,
+    val placement: (String) -> List<Int>,
 ) : FileWatermarker<TextFile, TextWatermark> {
     // Build a list of all chars that are contained in a watermark
     private val fullAlphabet: List<Char> =
@@ -518,6 +524,7 @@ class TextWatermarker(
     }
 }
 
+@JsExport
 class TextWatermarkerBuilder {
     private var transcoding: Transcoding = DefaultTranscoding
     private var separatorStrategy: SeparatorStrategy =
@@ -525,12 +532,12 @@ class TextWatermarkerBuilder {
     private var compression: Boolean = TextWatermark.COMPRESSION_DEFAULT
 
     /** Yields all positions where a Char of the watermark can be inserted */
-    private var placement: (string: String) -> Sequence<Int> = { string ->
+    private var placement: (string: String) -> List<Int> = { string ->
         sequence {
             for ((index, char) in string.withIndex()) {
                 if (char == ' ') yield(index)
             }
-        }
+        }.toMutableList() // mutable for JS compatibility on empty lists
     }
 
     /** Sets a custom transcoding alphabet */
@@ -558,7 +565,7 @@ class TextWatermarkerBuilder {
     }
 
     /** Sets a custom placement function used to identify insertion positions */
-    fun setPlacement(placement: (String) -> Sequence<Int>): TextWatermarkerBuilder {
+    fun setPlacement(placement: (String) -> List<Int>): TextWatermarkerBuilder {
         this.placement = placement
         return this
     }

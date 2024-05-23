@@ -8,7 +8,9 @@ package de.fraunhofer.isst.trend.watermarker.files
 
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import kotlin.js.JsExport
 
+@JsExport
 class TextFile private constructor(path: String?, var content: String) : WatermarkableFile(path) {
     /** Converts the TextFile into raw bytes */
     override fun toBytes(): List<Byte> {

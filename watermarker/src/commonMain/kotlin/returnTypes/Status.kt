@@ -6,6 +6,9 @@
  */
 package de.fraunhofer.isst.trend.watermarker.returnTypes
 
+import kotlin.js.JsExport
+import kotlin.js.JsName
+
 /**
  * An Event represents different kinds of events that can occur during the execution of a function.
  * There are 3 base Variants:
@@ -16,6 +19,7 @@ package de.fraunhofer.isst.trend.watermarker.returnTypes
  * The variants Warning and Error are abstract: For each event that can occur a unique class must be
  * created that overwrites fun getMessage(): String to explain the event.
  */
+@JsExport
 sealed class Event(
     val source: String?,
     val severity: Int,
@@ -63,9 +67,11 @@ sealed class Event(
     abstract class Error(source: String) : Event(source, 2, ERROR)
 
     /** Creates a Status containing [this] event */
+    @JsName("intoStatus")
     fun into(): Status = Status(this)
 
     /** Creates a Result<T> with a Status containing [this] event */
+    @JsName("intoResult")
     fun <T> into(value: T? = null): Result<T> = Result(this.into(), value)
 
     companion object {
@@ -80,6 +86,7 @@ sealed class Event(
  * A Status represents the outcome of a function that can produces Errors and Warnings, holding any
  * number of events.
  */
+@JsExport
 class Status(event: Event? = null) {
     /**
      * Represents the severity of the Status. Used to be able to override the severity given by
