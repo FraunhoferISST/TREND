@@ -96,7 +96,6 @@ sealed interface TrendmarkInterface {
  */
 @JsExport
 sealed class Trendmark(
-    val typeTag: UByte,
     content: List<Byte>,
 ) : Watermark(content), TrendmarkInterface {
     companion object {
@@ -563,7 +562,7 @@ sealed class Trendmark(
     }
 }
 
-class RawWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
+class RawWatermark(content: List<Byte>) : Trendmark(content) {
     companion object {
         const val SOURCE = "Trendmark.RawWatermark"
         const val TYPE_TAG: UByte = 0u
@@ -590,7 +589,7 @@ class RawWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content) {
     override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE))
 }
 
-class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendmark.Sized {
+class SizedWatermark(content: List<Byte>) : Trendmark(content), Trendmark.Sized {
     companion object {
         const val SOURCE = "Trendmark.SizedWatermark"
         const val TYPE_TAG: UByte = 1u
@@ -641,7 +640,7 @@ class SizedWatermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
     override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 }
 
-class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendmark.Checksum {
+class CRC32Watermark(content: List<Byte>) : Trendmark(content), Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CRC32Watermark"
         const val TYPE_TAG: UByte = 2u
@@ -709,7 +708,7 @@ class CRC32Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendm
 }
 
 class SizedCRC32Watermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Checksum {
+    Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.SizedCRC32Watermark"
         const val TYPE_TAG: UByte = 3u
@@ -782,7 +781,7 @@ class SizedCRC32Watermark(content: List<Byte>) :
     }
 }
 
-class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Trendmark.Hash {
+class SHA3256Watermark(content: List<Byte>) : Trendmark(content), Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.SHA3256Watermark"
         const val TYPE_TAG: UByte = 4u
@@ -853,7 +852,7 @@ class SHA3256Watermark(content: List<Byte>) : Trendmark(TYPE_TAG, content), Tren
 }
 
 class SizedSHA3256Watermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Hash {
+    Trendmark(content), Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.SizedSHA3256Watermark"
         const val TYPE_TAG: UByte = 5u
@@ -928,8 +927,7 @@ class SizedSHA3256Watermark(content: List<Byte>) :
     }
 }
 
-class CompressedRawWatermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Compressed {
+class CompressedRawWatermark(content: List<Byte>) : Trendmark(content), Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedRawWatermark"
         const val TYPE_TAG: UByte = 254u
@@ -958,7 +956,7 @@ class CompressedRawWatermark(content: List<Byte>) :
 }
 
 class CompressedSizedWatermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Compressed {
+    Trendmark(content), Trendmark.Sized, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedWatermark"
         const val TYPE_TAG: UByte = 253u
@@ -991,7 +989,7 @@ class CompressedSizedWatermark(content: List<Byte>) :
 }
 
 class CompressedCRC32Watermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Checksum {
+    Trendmark(content), Trendmark.Compressed, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CompressedCRC32Watermark"
         const val TYPE_TAG: UByte = 252u
@@ -1042,7 +1040,7 @@ class CompressedCRC32Watermark(content: List<Byte>) :
 }
 
 class CompressedSizedCRC32Watermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Sized, Trendmark.Checksum {
+    Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedCRC32Watermark"
         const val TYPE_TAG: UByte = 251u
@@ -1103,7 +1101,7 @@ class CompressedSizedCRC32Watermark(content: List<Byte>) :
 }
 
 class CompressedSHA3256Watermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Hash {
+    Trendmark(content), Trendmark.Compressed, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSHA3256Watermark"
         const val TYPE_TAG: UByte = 250u
@@ -1157,7 +1155,7 @@ class CompressedSHA3256Watermark(content: List<Byte>) :
 }
 
 class CompressedSizedSHA3256Watermark(content: List<Byte>) :
-    Trendmark(TYPE_TAG, content), Trendmark.Compressed, Trendmark.Sized, Trendmark.Hash {
+    Trendmark(content), Trendmark.Compressed, Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedSHA3256Watermark"
         const val TYPE_TAG: UByte = 249u
