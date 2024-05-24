@@ -19,6 +19,7 @@ import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class JvmWatermarkerTest {
@@ -246,6 +247,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -260,6 +262,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -277,6 +280,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -386,6 +390,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -401,6 +406,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -415,6 +421,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -432,6 +439,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -531,6 +539,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -547,6 +556,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -562,6 +572,7 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 
     @Test
@@ -580,5 +591,6 @@ class JvmWatermarkerTest {
         // Assert
         assertTrue(result.isError)
         assertEquals(expectedMessage, result.toString())
+        assertNull(result.value)
     }
 }

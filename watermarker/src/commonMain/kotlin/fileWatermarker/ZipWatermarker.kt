@@ -16,8 +16,8 @@ const val ZIP_WATERMARK_ID: UShort = 0x8777u
 
 @JsExport
 class ZipWatermark(content: List<Byte>) : Watermark(content) {
-    /** Represents the Watermark by [content] as String */
-    override fun toString(): String = this.content.toByteArray().contentToString()
+    /** Represents the Watermark by [watermarkContent] as String */
+    override fun toString(): String = this.watermarkContent.toByteArray().contentToString()
 }
 
 @JsExport
@@ -30,7 +30,7 @@ object ZipWatermarker : FileWatermarker<ZipFile, ZipWatermark> {
         file: ZipFile,
         watermark: Watermark,
     ): Status {
-        return file.header.addExtraField(ZIP_WATERMARK_ID, watermark.content)
+        return file.header.addExtraField(ZIP_WATERMARK_ID, watermark.watermarkContent)
     }
 
     /** Checks if [file] contains a watermark */

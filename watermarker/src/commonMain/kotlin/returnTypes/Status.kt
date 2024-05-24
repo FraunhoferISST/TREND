@@ -157,11 +157,11 @@ class Status(event: Event? = null) {
         other: Status,
         overrideSeverity: Boolean = false,
     ) {
+        other.eventList.forEach { event -> addEvent(event) }
+
         if (overrideSeverity || this.type.severity < other.type.severity) {
             this.type = other.type
         }
-
-        this.eventList.addAll(other.eventList)
     }
 
     /**

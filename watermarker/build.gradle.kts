@@ -4,6 +4,7 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -35,14 +36,22 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation("org.kotlincrypto.hash:sha3:0.5.1")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
         }
         val jvmMain by getting
-        val jvmTest by getting
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("reflect"))
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation(npm("pako", "2.1.0"))
@@ -56,6 +65,13 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.js.ExperimentalJsExport")
         freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+}
+
+tasks.withType<Test> {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = TestExceptionFormat.FULL
     }
 }
 

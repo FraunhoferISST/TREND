@@ -11,6 +11,8 @@ import java.io.File
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+actual val platform = Platform.Jvm
+
 /** Compares [file1] with [file2] and returns true if they are equal */
 fun areFilesEqual(
     file1: String,
