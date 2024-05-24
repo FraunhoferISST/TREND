@@ -452,8 +452,8 @@ class TextWatermarker(
                 is SeparatorStrategy.SkipInsertPosition -> encodedWatermark
                 is SeparatorStrategy.SingleSeparatorChar ->
                     sequence {
-                        yieldAll(encodedWatermark)
                         yield(separatorStrategy.char)
+                        yieldAll(encodedWatermark)
                     }
 
                 is SeparatorStrategy.StartEndSeparatorChars ->
