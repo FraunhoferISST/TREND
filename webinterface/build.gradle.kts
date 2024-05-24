@@ -8,13 +8,13 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 // Versions
-val kvisionVersion = "7.4.4"
+val kvisionVersion = "7.4.5"
 
 val webDir = file("src/jsMain/web")
 
 plugins {
     val kotlinVersion = "1.9.23"
-    val kvisionVersion = "7.4.2"
+    val kvisionVersion = "7.4.5"
 
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
