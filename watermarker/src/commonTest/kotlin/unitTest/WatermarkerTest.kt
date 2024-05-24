@@ -37,10 +37,10 @@ class WatermarkerTest {
     private val watermark = watermarkString.encodeToByteArray().asList()
 
     private val textWithWatermark =
-        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
-            "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
-            "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
-            "sanctus est Lorem ipsum dolor sit amet."
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
+            "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
+            "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
+            "sanctus est Lorem ipsum dolor sit amet."
 
     private val differentWatermarks = listOf("Test", "Okay", "Okay", "Okay", "Okay", "Okay")
 
@@ -95,12 +95,10 @@ class WatermarkerTest {
         val watermark = "Hello, world!".encodeToByteArray().asList()
         val expectedMessage = TextWatermarker.OversizedWatermarkWarning(53, 49).into().toString()
         val expected =
-            "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed" +
-                " diam nonumy eirmod tempor invidunt ut labore et dolo" +
-                "re magna aliquyam erat, sed diam voluptua. At vero eos" +
-                " et accusam et justo duo dolores et ea rebum. Ste" +
-                "t clita kasd gubergren, no sea takimata sanctus est Lo" +
-                "rem ipsum dolor sit amet."
+            "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod temp" +
+                "or invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero " +
+                "eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no s" +
+                "ea takimata sanctus est Lorem ipsum dolor sit amet."
 
         // Act
         val result = watermarker.textAddWatermark(textWithoutWatermark, watermark)
