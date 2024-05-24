@@ -130,6 +130,7 @@ hs_err_pid*
 replay_pid*
 
 ### Kotlin ###
+**/.kotlin/
 # Compiled class file
 
 # Log file
