@@ -19,7 +19,7 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
     id("io.kvision") version kvisionVersion
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
