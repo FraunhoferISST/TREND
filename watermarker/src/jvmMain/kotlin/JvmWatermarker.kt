@@ -74,17 +74,17 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Adds a [textmark] to [source] and writes changes to [target].
+     * Adds a [trendmarkBuilder] to [source] and writes changes to [target].
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      */
-    fun addTextmark(
+    fun addWatermark(
         source: String,
         target: String,
-        textmark: Textmark,
+        trendmarkBuilder: TrendmarkBuilder,
         fileType: String? = null,
     ): Status {
-        return addWatermark(source, target, textmark.finish(), fileType)
+        return addWatermark(source, target, trendmarkBuilder.finish(), fileType)
     }
 
     private fun <T : WatermarkableFile> addWatermarkDoWork(
