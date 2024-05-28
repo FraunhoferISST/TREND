@@ -14,6 +14,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.IncompleteTagError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.InvalidTagError
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface.Companion.TAG_SIZE
@@ -559,6 +560,41 @@ sealed class Trendmark(
             val actualHex = actualHash.toHexString()
             return "Expected hash: $expectedHex, but was: $actualHex."
         }
+    }
+
+    class FailedTrendmarkExtractionsWarning(source: String) : Event.Warning(source) {
+        override fun getMessage(): String =
+            "Could not extract and convert all watermarks to Trendmarks"
+    }
+}
+
+fun Result<List<Watermark>>.toTrendmarks(source: String = "Trendmark"): Result<List<Trendmark>> {
+    val (watermarks, status) =
+        with(this) {
+            if (value == null) {
+                return status.into()
+            }
+            value to status
+        }
+
+    val trendmarks =
+        watermarks.mapNotNull { watermark ->
+            val trendmark = Trendmark.fromWatermark(watermark)
+            status.appendStatus(trendmark.status)
+            trendmark.value
+        }
+
+    if (status.isError && trendmarks.isNotEmpty()) {
+        status.addEvent(
+            FailedTrendmarkExtractionsWarning(source),
+            overrideSeverity = true,
+        )
+    }
+
+    return if (status.isError) {
+        status.into()
+    } else {
+        status.into(trendmarks)
     }
 }
 

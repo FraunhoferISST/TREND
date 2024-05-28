@@ -16,6 +16,8 @@ import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTextmarks
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
@@ -103,7 +105,7 @@ open class Watermarker {
 
         val textFile = TextFile.fromString(text)
 
-        val status = watermarker.addWatermark(textFile, Watermark(watermark))
+        val status = watermarker.addWatermark(textFile, watermark)
 
         return if (status.isError) {
             status.into()
@@ -161,7 +163,7 @@ open class Watermarker {
     }
 
     /**
-     * Returns all Trendmarks in [text].
+     * Returns all watermarks in [text] as Trendmarks.
      *
      * When [squash] is true: watermarks with the same content are merged.
      *
@@ -171,38 +173,11 @@ open class Watermarker {
     fun textGetTrendmarks(
         text: String,
         squash: Boolean = true,
-    ): Result<List<Trendmark>> {
-        val (watermarks, status) =
-            with(textGetWatermarks(text, squash)) {
-                if (!hasValue) {
-                    return this.status.into()
-                }
-                value!! to status
-            }
-
-        val trendmarks =
-            watermarks.mapNotNull { watermark ->
-                val trendmark = Trendmark.fromWatermark(watermark)
-                status.appendStatus(trendmark.status)
-                trendmark.value
-            }
-
-        if (status.isError && trendmarks.isNotEmpty()) {
-            status.addEvent(
-                FailedTrendmarkExtractionsWarning("$SOURCE.textGetTrendmarks"),
-                overrideSeverity = true,
-            )
-        }
-
-        return if (status.isError) {
-            status.into()
-        } else {
-            status.into(trendmarks)
-        }
-    }
+    ): Result<List<Trendmark>> =
+        textGetWatermarks(text, squash).toTrendmarks("$SOURCE.textGetTrendmarks")
 
     /**
-     * Returns all Textmarks in [text]
+     * Returns all watermarks in [text] as Textmarks.
      *
      * When [squash] is true: watermarks with the same content are merged.
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
@@ -218,35 +193,8 @@ open class Watermarker {
         text: String,
         squash: Boolean = true,
         errorOnInvalidUTF8: Boolean = false,
-    ): Result<List<Textmark>> {
-        val (trendmarks, status) =
-            with(textGetTrendmarks(text, squash)) {
-                if (!hasValue) {
-                    return this.status.into()
-                }
-                value!! to status
-            }
-
-        val textmarks =
-            trendmarks.mapNotNull { trendmark ->
-                val textmark = Textmark.fromTrendmark(trendmark, errorOnInvalidUTF8)
-                status.appendStatus(textmark.status)
-                textmark.value
-            }
-
-        if (status.isError && textmarks.isNotEmpty()) {
-            status.addEvent(
-                FailedTextmarkExtractionsWarning("$SOURCE.textGetTextmarks"),
-                overrideSeverity = true,
-            )
-        }
-
-        return if (status.isError) {
-            status.into()
-        } else {
-            status.into(textmarks)
-        }
-    }
+    ): Result<List<Textmark>> =
+        textGetWatermarks(text, squash).toTextmarks(errorOnInvalidUTF8, "$SOURCE.textGetTextmarks")
 
     /** Returns [text] without watermarks */
     fun textRemoveWatermarks(text: String): Result<String> {
@@ -257,18 +205,6 @@ open class Watermarker {
         val status = watermarker.removeWatermarks(textFile).status
 
         return status.into(textFile.content)
-    }
-
-    class FailedTrendmarkExtractionsWarning(source: String) : Event.Warning(source) {
-        /** Returns a String explaining the event */
-        override fun getMessage(): String =
-            "Could not extract and convert all watermarks to Trendmarks"
-    }
-
-    class FailedTextmarkExtractionsWarning(source: String) : Event.Warning(source) {
-        /** Returns a String explaining the event */
-        override fun getMessage(): String =
-            "Could not extract and convert all watermarks to Textmarks"
     }
 }
 

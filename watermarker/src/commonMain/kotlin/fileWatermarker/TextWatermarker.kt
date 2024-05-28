@@ -365,6 +365,8 @@ class TextWatermarker(
         fun default(): TextWatermarker = TextWatermarkerBuilder().build().value!!
     }
 
+    override fun getSource(): String = SOURCE
+
     class IncompleteWatermarkWarning : Event.Warning("$SOURCE.getWatermark") {
         /** Returns a String explaining the event */
         override fun getMessage() = "Could not restore a complete watermark!"
