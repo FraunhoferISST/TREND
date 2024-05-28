@@ -130,7 +130,6 @@ hs_err_pid*
 replay_pid*
 
 ### Kotlin ###
-**/.kotlin/
 # Compiled class file
 
 # Log file
@@ -188,3 +187,6 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+iml,gradle,maven,kotlin,java,git
+
+### Custom ###
+**/.kotlin/
