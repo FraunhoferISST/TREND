@@ -16,6 +16,11 @@ const val ZIP_WATERMARK_ID: UShort = 0x8777u
 
 @JsExport
 object ZipWatermarker : FileWatermarker<ZipFile> {
+    const val SOURCE = "ZipWatermarker"
+
+    /** Returns the name of the FileWatermark. Used in Event messages. */
+    override fun getSource(): String = SOURCE
+
     /**
      * Adds a [watermark] to [file]
      * Returns an error if the size of the ExtraFields exceed UShort::MAX

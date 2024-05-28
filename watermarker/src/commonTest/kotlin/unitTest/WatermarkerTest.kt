@@ -8,13 +8,13 @@ package unitTest
 
 import de.fraunhofer.isst.trend.watermarker.SupportedFileType
 import de.fraunhofer.isst.trend.watermarker.Watermarker
-import de.fraunhofer.isst.trend.watermarker.Watermarker.FailedTextmarkExtractionsWarning
-import de.fraunhofer.isst.trend.watermarker.Watermarker.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark.FailedTextmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import platform
 import kotlin.test.Test
@@ -385,7 +385,7 @@ class WatermarkerTest {
         val unknownTagError = Trendmark.UnknownTagError(0x54u)
         val expectedStatus = unknownTagError.into()
         expectedStatus.addEvent(unknownTagError)
-        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTrendmarks"))
+        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTextmarks"))
         val expectedTextmarks = listOf(Textmark.sized(watermarkString))
 
         // Act
