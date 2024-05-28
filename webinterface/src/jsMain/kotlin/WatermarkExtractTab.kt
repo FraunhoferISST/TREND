@@ -85,7 +85,9 @@ class WatermarkExtractTab : SimplePanel() {
         val result = watermarker.textGetWatermarks(text)
 
         return if (result.isSuccess) {
-            result.value.toString()
+            result.value!!.map { watermark ->
+                watermark.watermarkContent.toByteArray().decodeToString()
+            }.toString()
         } else {
             // TODO: Proper error handling
             result.toString()
