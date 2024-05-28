@@ -7,7 +7,6 @@
 package de.fraunhofer.isst.trend.watermarker
 
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.FileWatermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
@@ -22,7 +21,7 @@ import kotlin.js.JsName
 
 @JsExport
 sealed class SupportedFileType {
-    abstract val watermarker: FileWatermarker<*, *>
+    abstract val watermarker: FileWatermarker<*>
 
     object Text : SupportedFileType() {
         override var watermarker: TextWatermarker = TextWatermarker.default()
@@ -104,9 +103,7 @@ open class Watermarker {
 
         val textFile = TextFile.fromString(text)
 
-        val parsedWatermark =
-            TextWatermark.fromUncompressedBytes(watermark, watermarker.compression)
-        val status = watermarker.addWatermark(textFile, parsedWatermark)
+        val status = watermarker.addWatermark(textFile, Watermark(watermark))
 
         return if (status.isError) {
             status.into()
@@ -150,7 +147,7 @@ open class Watermarker {
     fun textGetWatermarks(
         text: String,
         squash: Boolean = true,
-    ): Result<List<TextWatermark>> {
+    ): Result<List<Watermark>> {
         val watermarker = SupportedFileType.Text.watermarker
 
         val textFile = TextFile.fromString(text)

@@ -6,9 +6,9 @@
  */
 package unitTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.ZipFileHeader
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import openZipFile
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,7 +23,7 @@ class ZipWatermarkerTestJvm {
         // Arrange
         val file = openZipFile("src/jvmTest/resources/multiple_files.zip")
         val watermarkText = "Lorem ipsum dolor sit amet"
-        val watermark = ZipWatermark(watermarkText.encodeToByteArray().asList())
+        val watermark = Watermark.fromString(watermarkText)
         val expected = openZipFile("src/jvmTest/resources/multiple_files_watermarked.zip")
 
         // Act
@@ -38,7 +38,7 @@ class ZipWatermarkerTestJvm {
     fun addWatermark_oversizedWatermark_error() {
         // Arrange
         val file = openZipFile("src/jvmTest/resources/multiple_files.zip")
-        val watermark = ZipWatermark(List<Byte>(UShort.MAX_VALUE.toInt()) { 0 })
+        val watermark = Watermark(List<Byte>(UShort.MAX_VALUE.toInt()) { 0 })
         val expectedMessage = ZipFileHeader.ExtraField.OversizedHeaderError(65567).into().toString()
 
         // Act
@@ -77,10 +77,7 @@ class ZipWatermarkerTestJvm {
     fun getWatermarks_watermark_successAndWatermark() {
         // Arrange
         val file = openZipFile("src/jvmTest/resources/multiple_files_watermarked.zip")
-        val expected =
-            listOf(
-                ZipWatermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList()),
-            )
+        val expected = listOf(Watermark.fromString("Lorem ipsum dolor sit amet"))
 
         // Act
         val result = zipWatermarker.getWatermarks(file)
@@ -107,10 +104,7 @@ class ZipWatermarkerTestJvm {
     fun removeWatermarks_watermark_successAndWatermark() {
         // Arrange
         val file = openZipFile("src/jvmTest/resources/multiple_files_watermarked.zip")
-        val expected =
-            listOf(
-                ZipWatermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList()),
-            )
+        val expected = listOf(Watermark.fromString("Lorem ipsum dolor sit amet"))
 
         // Act
         val result = zipWatermarker.removeWatermarks(file)
@@ -130,6 +124,6 @@ class ZipWatermarkerTestJvm {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
     }
 }

@@ -7,15 +7,14 @@
 package de.fraunhofer.isst.trend.watermarker.fileWatermarker
 
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.helper.Compression
 import de.fraunhofer.isst.trend.watermarker.helper.toIntUnsigned
 import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.DecodeToStringError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.math.pow
@@ -120,118 +119,11 @@ object DefaultTranscoding : Transcoding {
 }
 
 @JsExport
-class TextWatermark private constructor(
-    content: List<Byte>,
-    private val compression: Boolean,
-) : Watermark(content) {
-    /** Returns the uncompressed bytes from the Watermark */
-    fun getBytes(): Result<List<Byte>> {
-        return if (compression) {
-            Compression.inflate(watermarkContent)
-        } else {
-            Result.success(watermarkContent)
-        }
-    }
-
-    /** Parses the uncompressed bytes as String */
-    fun getText(): Result<String> {
-        val (status, bytes) =
-            with(getBytes()) {
-                status to (value ?: return into<_>())
-            }
-        return try {
-            status.into(bytes.toByteArray().decodeToString())
-        } catch (e: Exception) {
-            status.addEvent(DecodeToStringError(e.message ?: e.stackTraceToString()))
-            status.into()
-        }
-    }
-
-    /** Represents the Watermark as String from [watermarkContent] */
-    override fun toString(): String {
-        val result = getText()
-        return if (result.hasValue) {
-            result.value!!
-        } else {
-            return result.toString()
-        }
-    }
-
-    companion object {
-        const val COMPRESSION_DEFAULT = false
-
-        /**
-         * Converts a Watermark to a TextWatermark.
-         *
-         * [compression] defines if the bytes are compressed.
-         */
-        fun fromWatermark(
-            watermark: Watermark,
-            compression: Boolean = COMPRESSION_DEFAULT,
-        ): TextWatermark = TextWatermark(watermark.watermarkContent, compression)
-
-        /**
-         * Creates a TextWatermark from [text] using deflate compression.
-         *
-         * [compression] defines whether the bytes will be compressed.
-         */
-        fun fromText(
-            text: String,
-            compression: Boolean = COMPRESSION_DEFAULT,
-        ): TextWatermark {
-            val bytes = text.encodeToByteArray().asList()
-            return fromUncompressedBytes(bytes, compression)
-        }
-
-        /**
-         * Creates a TextWatermark from [bytes].
-         *
-         * [compression] defines whether the bytes will be compressed.
-         */
-        fun fromUncompressedBytes(
-            bytes: List<Byte>,
-            compression: Boolean = COMPRESSION_DEFAULT,
-        ): TextWatermark {
-            return if (compression) {
-                val deflated = Compression.deflate(bytes)
-                TextWatermark(deflated, compression)
-            } else {
-                TextWatermark(bytes, compression)
-            }
-        }
-
-        /**
-         * Creates a TextWatermark from [bytes].
-         *
-         * [compression] defines whether the bytes will be compressed.
-         */
-        fun fromCompressedBytes(
-            bytes: List<Byte>,
-            compression: Boolean = COMPRESSION_DEFAULT,
-        ): Result<TextWatermark> {
-            return if (compression) {
-                Result.success(TextWatermark(bytes, compression))
-            } else {
-                val (status, inflated) =
-                    with(Compression.inflate(bytes)) {
-                        if (!hasValue) {
-                            return status.into()
-                        }
-                        status to value!!
-                    }
-                status.into(TextWatermark(inflated, compression))
-            }
-        }
-    }
-}
-
-@JsExport
 class TextWatermarker(
     private val transcoding: Transcoding,
     private val separatorStrategy: SeparatorStrategy,
-    val compression: Boolean,
     val placement: (String) -> List<Int>,
-) : FileWatermarker<TextFile, TextWatermark> {
+) : FileWatermarker<TextFile> {
     // Build a list of all chars that are contained in a watermark
     private val fullAlphabet: List<Char> =
         when (separatorStrategy) {
@@ -251,7 +143,7 @@ class TextWatermarker(
      */
     override fun addWatermark(
         file: TextFile,
-        watermark: Watermark,
+        watermark: List<Byte>,
     ): Status {
         // Check if file contains any chars from the used alphabet
         if (file.content.any { char -> char in fullAlphabet }) {
@@ -306,7 +198,7 @@ class TextWatermarker(
         }
 
     /** Returns all watermarks in [file] */
-    override fun getWatermarks(file: TextFile): Result<List<TextWatermark>> {
+    override fun getWatermarks(file: TextFile): Result<List<Watermark>> {
         val watermarkRanges: Sequence<Pair<Int, Int>> =
             when (separatorStrategy) {
                 is SeparatorStrategy.SkipInsertPosition -> {
@@ -368,7 +260,7 @@ class TextWatermarker(
             }
 
         val status = Status()
-        val watermarks = ArrayList<TextWatermark>()
+        val watermarks = ArrayList<Watermark>()
         for ((start, end) in sanitizedWatermarkRanges) {
             val content =
                 file.content.asSequence()
@@ -386,20 +278,11 @@ class TextWatermarker(
                         value!!
                     }
 
-                if (compression) {
-                    with(TextWatermark.fromCompressedBytes(decoded, compression)) {
-                        status.appendStatus(this.status)
-                        if (hasValue) {
-                            watermarks.add(value!!)
-                        }
-                    }
-                } else {
-                    watermarks.add(TextWatermark.fromUncompressedBytes(decoded, compression))
-                }
+                watermarks.add(Watermark(decoded))
             }
         }
 
-        if (watermarkRanges.count() <= 0 && watermarks.size > 0) {
+        if (watermarkRanges.count() <= 0 && watermarks.isNotEmpty()) {
             status.addEvent(IncompleteWatermarkWarning())
         }
 
@@ -411,7 +294,7 @@ class TextWatermarker(
      *
      * Returns a warning if getWatermarks() returns a warning or error.
      */
-    override fun removeWatermarks(file: TextFile): Result<List<TextWatermark>> {
+    override fun removeWatermarks(file: TextFile): Result<List<Watermark>> {
         val (status, watermarks) =
             with(this.getWatermarks(file)) {
                 status to (value ?: listOf())
@@ -438,14 +321,19 @@ class TextWatermarker(
     }
 
     /** Counts the minimum number of insert positions needed in a text to insert the [watermark] */
-    fun getMinimumInsertPositions(watermark: Watermark): Int {
+    @JsName("getMinimumInsertPositionsBytes")
+    fun getMinimumInsertPositions(watermark: List<Byte>): Int {
         val separatedWatermark = getSeparatedWatermark(watermark)
         return separatedWatermark.count()
     }
 
+    /** Counts the minimum number of insert positions needed in a text to insert the [watermark] */
+    fun getMinimumInsertPositions(watermark: Watermark): Int =
+        getMinimumInsertPositions(watermark.watermarkContent)
+
     /** Transforms a [watermark] into a separated watermark */
-    private fun getSeparatedWatermark(watermark: Watermark): Sequence<Char> {
-        val encodedWatermark = transcoding.encode(watermark.watermarkContent)
+    private fun getSeparatedWatermark(watermark: List<Byte>): Sequence<Char> {
+        val encodedWatermark = transcoding.encode(watermark)
 
         val separatedWatermark =
             when (separatorStrategy) {
@@ -527,7 +415,6 @@ class TextWatermarkerBuilder {
     private var transcoding: Transcoding = DefaultTranscoding
     private var separatorStrategy: SeparatorStrategy =
         SeparatorStrategy.SingleSeparatorChar(DefaultTranscoding.SEPARATOR_CHAR)
-    private var compression: Boolean = TextWatermark.COMPRESSION_DEFAULT
 
     /** Yields all positions where a Char of the watermark can be inserted */
     private var placement: (string: String) -> List<Int> = { string ->
@@ -547,18 +434,6 @@ class TextWatermarkerBuilder {
     /** Set a custom separator strategy */
     fun setSeparatorStrategy(separatorStrategy: SeparatorStrategy): TextWatermarkerBuilder {
         this.separatorStrategy = separatorStrategy
-        return this
-    }
-
-    /** Enables text watermark compression */
-    fun enableCompression(): TextWatermarkerBuilder {
-        compression = true
-        return this
-    }
-
-    /** Disables text watermark compression */
-    fun disableCompression(): TextWatermarkerBuilder {
-        compression = false
         return this
     }
 
@@ -607,7 +482,7 @@ class TextWatermarkerBuilder {
         return if (status.isError) {
             return status.into()
         } else {
-            status.into(TextWatermarker(transcoding, separatorStrategy, compression, placement))
+            status.into(TextWatermarker(transcoding, separatorStrategy, placement))
         }
     }
 

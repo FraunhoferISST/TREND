@@ -6,9 +6,9 @@
  */
 package integrationTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -27,7 +27,7 @@ class TextWatermarkerIntegrationTest {
                 "Urna neque viverra justo"
         val watermark = "Hello World"
         val textFile = TextFile.fromString(text)
-        val parsedWatermark = TextWatermark.fromText(watermark)
+        val parsedWatermark = Watermark.fromString(watermark)
 
         // Add watermark
         // Act
@@ -43,7 +43,7 @@ class TextWatermarkerIntegrationTest {
         // Assert
         assertTrue(watermarks.isSuccess)
         assertEquals(watermarks.value!!.size, 1)
-        val firstWatermark = watermarks.value!![0].getText().value!!
+        val firstWatermark = watermarks.value[0].watermarkContent.toByteArray().decodeToString()
         assertEquals(watermark, firstWatermark)
     }
 
@@ -59,7 +59,7 @@ class TextWatermarkerIntegrationTest {
                 "culpa qui officia deserunt mollit anim id est laborum."
         val watermark = "Hello World"
         val textFile = TextFile.fromString(text)
-        val parsedWatermark = TextWatermark.fromText(watermark)
+        val parsedWatermark = Watermark.fromString(watermark)
 
         // Add watermark
         // Act
@@ -75,7 +75,7 @@ class TextWatermarkerIntegrationTest {
         // Assert
         assertTrue(watermarks.isSuccess)
         assertEquals(watermarks.value!!.size, 1)
-        val firstWatermark = watermarks.value!![0].getText().value!!
+        val firstWatermark = watermarks.value[0].watermarkContent.toByteArray().decodeToString()
         assertEquals(watermark, firstWatermark)
     }
 }
