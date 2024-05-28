@@ -7,8 +7,8 @@
 package unitTest.fileWatermarker
 
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import openTextFile
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,7 +22,7 @@ class TextWatermarkerTestJvm {
     fun addWatermark_valid_success() {
         // Arrange
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum.txt")
-        val watermark = TextWatermark.fromText("Hello World")
+        val watermark = Watermark.fromString("Hello World")
         val expected = openTextFile("src/jvmTest/resources/lorem_ipsum_watermarked.txt")
         val expectedMessage = TextWatermarker.Success(listOf(5, 273, 538)).into().toString()
 
@@ -40,7 +40,7 @@ class TextWatermarkerTestJvm {
         // Arrange
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum_watermarked.txt")
         val watermarkBytes = "Hello World".encodeToByteArray().asList()
-        val watermark = TextWatermark.fromUncompressedBytes(watermarkBytes)
+        val watermark = Watermark(watermarkBytes)
         val expectedMessage =
             TextWatermarker.ContainsAlphabetCharsError(
                 sequence {
@@ -61,7 +61,7 @@ class TextWatermarkerTestJvm {
     fun addWatermark_oversizedWatermark_warning() {
         // Arrange
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum.txt")
-        val watermark = TextWatermark.fromText("This is a watermark that does not fit")
+        val watermark = Watermark.fromString("This is a watermark that does not fit")
         val expectedMessage = TextWatermarker.OversizedWatermarkWarning(149, 96).into().toString()
 
         // Act
@@ -102,8 +102,8 @@ class TextWatermarkerTestJvm {
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum_watermarked.txt")
         val expected =
             listOf(
-                TextWatermark.fromText("Hello World"),
-                TextWatermark.fromText("Hello World"),
+                Watermark.fromString("Hello World"),
+                Watermark.fromString("Hello World"),
             )
 
         // Act
@@ -124,7 +124,7 @@ class TextWatermarkerTestJvm {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
     }
 
     @Test
@@ -139,7 +139,7 @@ class TextWatermarkerTestJvm {
         // Assert
         assertTrue(result.isWarning)
         assertEquals(expectedMessage, result.toString())
-        assertFalse(result.value?.isEmpty() ?: true)
+        assertFalse(result.value?.isEmpty() != false)
     }
 
     @Test
@@ -148,8 +148,8 @@ class TextWatermarkerTestJvm {
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum_watermarked.txt")
         val expected =
             listOf(
-                TextWatermark.fromText("Hello World"),
-                TextWatermark.fromText("Hello World"),
+                Watermark.fromString("Hello World"),
+                Watermark.fromString("Hello World"),
             )
 
         // Act
@@ -170,7 +170,7 @@ class TextWatermarkerTestJvm {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
     }
 
     @Test
@@ -186,7 +186,7 @@ class TextWatermarkerTestJvm {
 
         // Assert
         assertTrue(result.isWarning)
-        assertFalse(result.value?.isEmpty() ?: true)
+        assertFalse(result.value?.isEmpty() != false)
         assertEquals(expectedMessage, result.toString())
     }
 }

@@ -11,6 +11,14 @@ import kotlin.js.JsExport
 
 @JsExport
 open class Watermark(var watermarkContent: List<Byte>) {
+    companion object {
+        /** Creates a Watermark from [text] */
+        fun fromString(text: String): Watermark {
+            val bytes = text.encodeToByteArray().asList()
+            return Watermark(bytes)
+        }
+    }
+
     /** Represents the bytes of the watermark in hex */
     override fun toString(): String = watermarkContent.toHexString()
 

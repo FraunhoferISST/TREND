@@ -11,11 +11,11 @@ import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.Watermarker.FailedTextmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.Watermarker.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import platform
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -156,7 +156,7 @@ class WatermarkerTest {
         // Arrange
         val expected =
             listOf(
-                TextWatermark.fromText(watermarkString),
+                Watermark.fromString(watermarkString),
             )
 
         // Act
@@ -172,7 +172,7 @@ class WatermarkerTest {
         // Arrange
         val expected =
             differentWatermarks.map {
-                TextWatermark.fromText(it)
+                Watermark.fromString(it)
             }
 
         // Act
@@ -188,7 +188,7 @@ class WatermarkerTest {
         // Arrange
         val expected =
             differentWatermarks.toSet().map {
-                TextWatermark.fromText(it)
+                Watermark.fromString(it)
             }
 
         // Act
@@ -207,7 +207,7 @@ class WatermarkerTest {
                 " diam nonumy eirmod tempor invidunt ut labore et"
         val expected =
             listOf(
-                TextWatermark.fromText(watermarkString),
+                Watermark.fromString(watermarkString),
             )
         val expectedMessage =
             TextWatermarker.IncompleteWatermarkWarning()
@@ -231,7 +231,7 @@ class WatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
     }
 
     @Test

@@ -15,22 +15,16 @@ import kotlin.js.JsExport
 const val ZIP_WATERMARK_ID: UShort = 0x8777u
 
 @JsExport
-class ZipWatermark(content: List<Byte>) : Watermark(content) {
-    /** Represents the Watermark by [watermarkContent] as String */
-    override fun toString(): String = this.watermarkContent.toByteArray().contentToString()
-}
-
-@JsExport
-object ZipWatermarker : FileWatermarker<ZipFile, ZipWatermark> {
+object ZipWatermarker : FileWatermarker<ZipFile> {
     /**
      * Adds a [watermark] to [file]
      * Returns an error if the size of the ExtraFields exceed UShort::MAX
      */
     override fun addWatermark(
         file: ZipFile,
-        watermark: Watermark,
+        watermark: List<Byte>,
     ): Status {
-        return file.header.addExtraField(ZIP_WATERMARK_ID, watermark.watermarkContent)
+        return file.header.addExtraField(ZIP_WATERMARK_ID, watermark)
     }
 
     /** Checks if [file] contains a watermark */
@@ -42,21 +36,21 @@ object ZipWatermarker : FileWatermarker<ZipFile, ZipWatermark> {
     }
 
     /** Returns all watermarks in [file] */
-    override fun getWatermarks(file: ZipFile): Result<List<ZipWatermark>> {
-        val watermarks = ArrayList<ZipWatermark>()
+    override fun getWatermarks(file: ZipFile): Result<List<Watermark>> {
+        val watermarks = ArrayList<Watermark>()
         for (extraField in file.header.extraFields) {
             if (extraField.id == ZIP_WATERMARK_ID) {
-                watermarks.add(ZipWatermark(extraField.data))
+                watermarks.add(Watermark(extraField.data))
             }
         }
         return Result.success(watermarks)
     }
 
     /** Removes all watermarks in [file] and returns them */
-    override fun removeWatermarks(file: ZipFile): Result<List<ZipWatermark>> {
-        val watermarks = ArrayList<ZipWatermark>()
+    override fun removeWatermarks(file: ZipFile): Result<List<Watermark>> {
+        val watermarks = ArrayList<Watermark>()
         for (extraField in file.header.removeExtraFields(ZIP_WATERMARK_ID)) {
-            watermarks.add(ZipWatermark(extraField.data))
+            watermarks.add(Watermark(extraField.data))
         }
         return Result.success(watermarks)
     }

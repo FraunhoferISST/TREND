@@ -9,8 +9,6 @@ package unitTest
 import areFilesEqual
 import de.fraunhofer.isst.trend.watermarker.JvmWatermarker
 import de.fraunhofer.isst.trend.watermarker.SupportedFileType
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermark
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
 import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.trend.watermarker.files.ZipFileHeader
@@ -54,7 +52,7 @@ class JvmWatermarkerTest {
         // Arrange
         val source = "src/jvmTest/resources/lorem_ipsum.txt"
         val target = "src/jvmTest/resources/lorem_ipsum_test.txt"
-        val watermark = TextWatermark.fromText("Hello World")
+        val watermark = Watermark.fromString("Hello World")
         val expected = "src/jvmTest/resources/lorem_ipsum_watermarked.txt"
 
         // Act
@@ -177,7 +175,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value ?: false)
+        assertTrue(result.value == true)
     }
 
     @Test
@@ -190,7 +188,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertFalse(result.value ?: true)
+        assertFalse(result.value != false)
     }
 
     @Test
@@ -203,7 +201,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value ?: false)
+        assertTrue(result.value == true)
     }
 
     @Test
@@ -216,7 +214,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertFalse(result.value ?: true)
+        assertFalse(result.value != false)
     }
 
     @Test
@@ -289,7 +287,7 @@ class JvmWatermarkerTest {
         val source = "src/jvmTest/resources/multiple_files_watermarked.zip"
         val expected =
             listOf(
-                ZipWatermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList()),
+                Watermark.fromString("Lorem ipsum dolor sit amet"),
             )
 
         // Act
@@ -310,7 +308,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
     }
 
     @Test
@@ -319,7 +317,7 @@ class JvmWatermarkerTest {
         val source = "src/jvmTest/resources/lorem_ipsum_watermarked.txt"
         val expected =
             listOf(
-                TextWatermark.fromText("Hello World"),
+                Watermark.fromString("Hello World"),
             )
 
         // Act
@@ -336,7 +334,7 @@ class JvmWatermarkerTest {
         val source = "src/jvmTest/resources/lorem_ipsum_long_different_watermarks.txt"
         val expected =
             listOf("Test", "Okay", "Okay", "Okay", "Okay", "Okay").map {
-                TextWatermark.fromText(it)
+                Watermark.fromString(it)
             }
 
         // Act
@@ -353,7 +351,7 @@ class JvmWatermarkerTest {
         val source = "src/jvmTest/resources/lorem_ipsum_long_different_watermarks.txt"
         val expected =
             listOf("Test", "Okay").map {
-                TextWatermark.fromText(it)
+                Watermark.fromString(it)
             }
 
         // Act
@@ -374,7 +372,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
     }
 
     @Test
@@ -450,7 +448,7 @@ class JvmWatermarkerTest {
         val expected = "src/jvmTest/resources/multiple_files.zip"
         val expectedWatermarks =
             listOf(
-                ZipWatermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList()),
+                Watermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList()),
             )
 
         // Act
@@ -476,7 +474,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
         assertTrue(areFilesEqual(source, target))
 
         // Cleanup
@@ -491,8 +489,8 @@ class JvmWatermarkerTest {
         val expected = "src/jvmTest/resources/lorem_ipsum.txt"
         val expectedWatermarks =
             listOf(
-                TextWatermark.fromText("Hello World"),
-                TextWatermark.fromText("Hello World"),
+                Watermark.fromString("Hello World"),
+                Watermark.fromString("Hello World"),
             )
 
         // Act
@@ -518,7 +516,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertTrue(result.value?.isEmpty() ?: false)
+        assertTrue(result.value?.isEmpty() == true)
         assertTrue(areFilesEqual(source, target))
 
         // Cleanup

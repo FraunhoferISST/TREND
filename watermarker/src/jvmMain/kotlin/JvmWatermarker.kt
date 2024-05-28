@@ -85,8 +85,8 @@ class JvmWatermarker : Watermarker() {
         return addWatermark(source, target, textmark.finish(), fileType)
     }
 
-    private fun <T : WatermarkableFile, U : Watermark> addWatermarkDoWork(
-        watermarker: FileWatermarker<T, U>,
+    private fun <T : WatermarkableFile> addWatermarkDoWork(
+        watermarker: FileWatermarker<T>,
         source: String,
         target: String,
         watermark: Watermark,
@@ -128,8 +128,8 @@ class JvmWatermarker : Watermarker() {
         return containsWatermarkDoWork(supportedFileType.watermarker, source)
     }
 
-    private fun <T : WatermarkableFile, U : Watermark> containsWatermarkDoWork(
-        watermarker: FileWatermarker<T, U>,
+    private fun <T : WatermarkableFile> containsWatermarkDoWork(
+        watermarker: FileWatermarker<T>,
         source: String,
     ): Result<Boolean> {
         val (status, bytes) =
@@ -166,8 +166,8 @@ class JvmWatermarker : Watermarker() {
         return getWatermarksDoWork(supportedFileType.watermarker, source, squash)
     }
 
-    private fun <T : WatermarkableFile, U : Watermark> getWatermarksDoWork(
-        watermarker: FileWatermarker<T, U>,
+    private fun <T : WatermarkableFile> getWatermarksDoWork(
+        watermarker: FileWatermarker<T>,
         source: String,
         squash: Boolean,
     ): Result<List<Watermark>> {
@@ -306,8 +306,8 @@ class JvmWatermarker : Watermarker() {
         return removeWatermarksDoWork(supportedFileType.watermarker, source, target)
     }
 
-    private fun <T : WatermarkableFile, U : Watermark> removeWatermarksDoWork(
-        watermarker: FileWatermarker<T, U>,
+    private fun <T : WatermarkableFile> removeWatermarksDoWork(
+        watermarker: FileWatermarker<T>,
         source: String,
         target: String,
     ): Result<List<Watermark>> {

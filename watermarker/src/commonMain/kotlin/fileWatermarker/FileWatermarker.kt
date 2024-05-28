@@ -12,23 +12,32 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @JsExport
-interface FileWatermarker<File : WatermarkableFile, SpecificWatermark : Watermark> {
+interface FileWatermarker<File : WatermarkableFile> {
+    @JsName("addWatermarkBytes")
+    fun addWatermark(
+        file: File,
+        watermark: List<Byte>,
+    ): Status
+
     /** Adds a [watermark] to [file] */
     fun addWatermark(
         file: File,
         watermark: Watermark,
-    ): Status
+    ): Status {
+        return addWatermark(file, watermark.watermarkContent)
+    }
 
     /** Checks if [file] contains watermarks */
     fun containsWatermark(file: File): Boolean
 
     /** Returns all watermarks in [file] */
-    fun getWatermarks(file: File): Result<List<SpecificWatermark>>
+    fun getWatermarks(file: File): Result<List<Watermark>>
 
     /** Removes all watermarks in [file] and returns them */
-    fun removeWatermarks(file: File): Result<List<SpecificWatermark>>
+    fun removeWatermarks(file: File): Result<List<Watermark>>
 
     /** Parses [bytes] as File */
     fun parseBytes(bytes: List<Byte>): Result<File>
