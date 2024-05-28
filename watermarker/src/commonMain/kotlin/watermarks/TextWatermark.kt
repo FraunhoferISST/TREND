@@ -8,55 +8,56 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark.FailedTextmarkExtractionsWarning
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
 import kotlin.js.JsExport
 import kotlin.jvm.JvmName
 
 /**
- * The Textmark class provides convenient functions to create and read Trendmarks with UTF-8 text as
- * content.
+ * The TextWatermark class provides convenient functions to create and read Trendmarks with UTF-8
+ * text as content.
  *
- * Textmarks can be created using the companion functions. The functions `new`, `raw`,
- * `compressed`, `sized`, and `compressedAndSized` allow to create new Textmarks from a String and
- * specifying the format of the produced Trendmark.
+ * TextWatermark can be instantiated using the companion functions. The functions `new`, `raw`,
+ * `compressed`, `sized`, and `compressedAndSized` allow to create a new TextWatermark from a String
+ * and specifying the format of the produced Trendmark.
  *
- * Sized Textmarks will create Trendmarks that encode the size of the Trendmark into the watermark.
+ * Sized TextWatermarks will create Trendmarks that encode the size of the Trendmark into the
+ * watermark.
  *
- * Compressed Textmarks will compress the Text using a compression algorithm. This can be useful
- * when the watermark text is very long, but it might reduce the watermark robustness.
+ * Compressed TextWatermarks will compress the Text using a compression algorithm. This can be
+ * useful when the watermark text is very long, but it might reduce the watermark robustness.
  *
- * The function `fromTrendmark` allows to parse all supported Trendmarks into Textmarks, giving
+ * The function `fromTrendmark` allows to parse a supported Trendmark into a TextWatermark, giving
  * direct access to the contained text without having to consider the format of the Trendmark.
  */
 @JsExport
-class Textmark private constructor(
+class TextWatermark private constructor(
     var text: String,
     private var compressed: Boolean = false,
     private var sized: Boolean = false,
 ) : TrendmarkBuilder {
     companion object {
         /**
-         * Creates a Textmark in default configuration.
+         * Creates a TextWatermark in default configuration.
          *
          * The default configuration is: no compression, no size information.
          */
-        fun new(text: String): Textmark = Textmark(text)
+        fun new(text: String): TextWatermark = TextWatermark(text)
 
-        /** Creates a Textmark from [text] without compression and without size information */
-        fun raw(text: String): Textmark = Textmark(text)
+        /** Creates a TextWatermark from [text] without compression and without size information */
+        fun raw(text: String): TextWatermark = TextWatermark(text)
 
-        /** Creates a Textmark from [text] with compression but without size information */
-        fun compressed(text: String): Textmark = Textmark(text, compressed = true)
+        /** Creates a TextWatermark from [text] with compression but without size information */
+        fun compressed(text: String): TextWatermark = TextWatermark(text, compressed = true)
 
-        /** Creates a Textmark from [text] with size information but without compression */
-        fun sized(text: String): Textmark = Textmark(text, sized = true)
+        /** Creates a TextWatermark from [text] with size information but without compression */
+        fun sized(text: String): TextWatermark = TextWatermark(text, sized = true)
 
-        /** Creates a Textmark from [text] with size information and compression */
-        fun compressedAndSized(text: String): Textmark =
-            Textmark(text, compressed = true, sized = true)
+        /** Creates a TextWatermark from [text] with size information and compression */
+        fun compressedAndSized(text: String): TextWatermark =
+            TextWatermark(text, compressed = true, sized = true)
 
         /**
-         * Creates a Textmark from [trendmark].
+         * Creates a TextWatermark from [trendmark].
          * Sets sized and compressed depending on the variant of [trendmark].
          *
          * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
@@ -66,7 +67,7 @@ class Textmark private constructor(
         fun fromTrendmark(
             trendmark: Trendmark,
             errorOnInvalidUTF8: Boolean = false,
-        ): Result<Textmark> {
+        ): Result<TextWatermark> {
             val (content, status) =
                 with(trendmark.getContent()) {
                     if (!hasValue) return status.into<_>()
@@ -82,12 +83,13 @@ class Textmark private constructor(
                     return status.into()
                 }
 
-            val textmark =
+            val textWatermark =
                 when (trendmark) {
-                    is RawWatermark -> Textmark(text)
-                    is SizedWatermark -> Textmark(text, sized = true)
-                    is CompressedRawWatermark -> Textmark(text, compressed = true)
-                    is CompressedSizedWatermark -> Textmark(text, compressed = true, sized = true)
+                    is RawWatermark -> TextWatermark(text)
+                    is SizedWatermark -> TextWatermark(text, sized = true)
+                    is CompressedRawWatermark -> TextWatermark(text, compressed = true)
+                    is CompressedSizedWatermark ->
+                        TextWatermark(text, compressed = true, sized = true)
 
                     is CRC32Watermark,
                     is SizedCRC32Watermark,
@@ -103,7 +105,7 @@ class Textmark private constructor(
                     }
                 }
 
-            return status.into(textmark)
+            return status.into(textWatermark)
         }
     }
 
@@ -147,45 +149,46 @@ class Textmark private constructor(
     /** Contains the used Trendmark variant followed by [text] */
     override fun toString(): String {
         return if (compressed && sized) {
-            "CompressedAndSizedTextmark: '$text'"
+            "CompressedAndSizedTextWatermark: '$text'"
         } else if (compressed) {
-            "CompressedTextmark: '$text'"
+            "CompressedTextWatermark: '$text'"
         } else if (sized) {
-            "SizedTextmark: '$text'"
+            "SizedTextWatermark: '$text'"
         } else {
-            "Textmark: '$text'"
+            "TextWatermark: '$text'"
         }
     }
 
     /** Returns true if [this].finish() and [other].finish() produce an equal Trendmark */
     override fun equals(other: Any?): Boolean {
-        if (other !is Textmark) return false
+        if (other !is TextWatermark) return false
         return text == other.text && compressed == other.compressed && sized == other.sized
     }
 
-    class DecodeToStringError(val reason: String) : Event.Error("Textmark.fromTrendmark") {
+    class DecodeToStringError(val reason: String) : Event.Error("TextWatermark.fromTrendmark") {
         /** Returns a String explaining the event */
         override fun getMessage(): String = "Failed to decode bytes to string: $reason."
     }
 
-    class UnsupportedTrendmarkError(val trendmark: String) : Event.Error("Textmark.fromTrendmark") {
+    class UnsupportedTrendmarkError(val trendmark: String) :
+        Event.Error("TextWatermark.fromTrendmark") {
         /** Returns a String explaining the event */
         override fun getMessage(): String =
-            "The Trendmark type $trendmark is not supported by Textmark."
+            "The Trendmark type $trendmark is not supported by TextWatermark."
     }
 
-    class FailedTextmarkExtractionsWarning(source: String) : Event.Warning(source) {
+    class FailedTextWatermarkExtractionsWarning(source: String) : Event.Warning(source) {
         /** Returns a String explaining the event */
         override fun getMessage(): String =
-            "Could not extract and convert all watermarks to Textmarks"
+            "Could not extract and convert all watermarks to TextWatermarks"
     }
 }
 
-@JvmName("intoTextmarks")
-fun Result<List<Trendmark>>.toTextmarks(
+@JvmName("intoTextWatermarks")
+fun Result<List<Trendmark>>.toTextWatermarks(
     errorOnInvalidUTF8: Boolean = false,
-    source: String = "toTextmark",
-): Result<List<Textmark>> {
+    source: String = "toTextWatermarks",
+): Result<List<TextWatermark>> {
     val (trendmarks, status) =
         with(this) {
             if (value == null) {
@@ -194,16 +197,16 @@ fun Result<List<Trendmark>>.toTextmarks(
             value to status
         }
 
-    val textmarks =
+    val textWatermarks =
         trendmarks.mapNotNull { trendmark ->
-            val textmark = Textmark.fromTrendmark(trendmark, errorOnInvalidUTF8)
-            status.appendStatus(textmark.status)
-            textmark.value
+            val textWatermark = TextWatermark.fromTrendmark(trendmark, errorOnInvalidUTF8)
+            status.appendStatus(textWatermark.status)
+            textWatermark.value
         }
 
-    if (status.isError && textmarks.isNotEmpty()) {
+    if (status.isError && textWatermarks.isNotEmpty()) {
         status.addEvent(
-            FailedTextmarkExtractionsWarning(source),
+            FailedTextWatermarkExtractionsWarning(source),
             overrideSeverity = true,
         )
     }
@@ -211,13 +214,13 @@ fun Result<List<Trendmark>>.toTextmarks(
     return if (status.isError) {
         status.into()
     } else {
-        status.into(textmarks)
+        status.into(textWatermarks)
     }
 }
 
-fun Result<List<Watermark>>.toTextmarks(
+fun Result<List<Watermark>>.toTextWatermarks(
     errorOnInvalidUTF8: Boolean = false,
-    source: String = "toTextmark",
-): Result<List<Textmark>> {
-    return this.toTrendmarks(source).toTextmarks(errorOnInvalidUTF8, source)
+    source: String = "toTextWatermarks",
+): Result<List<TextWatermark>> {
+    return this.toTrendmarks(source).toTextWatermarks(errorOnInvalidUTF8, source)
 }

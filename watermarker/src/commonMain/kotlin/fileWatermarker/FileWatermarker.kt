@@ -10,11 +10,11 @@ package de.fraunhofer.isst.trend.watermarker.fileWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextmarks
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
 import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -60,7 +60,7 @@ interface FileWatermarker<File : WatermarkableFile> {
         getWatermarks(file).toTrendmarks("${getSource()}.getTrendmarks")
 
     /**
-     * Returns all watermarks in [file] as Textmark.
+     * Returns all watermarks in [file] as TextWatermarks.
      *
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
      *                           is false: invalid bytes sequences are replace with the char �.
@@ -68,14 +68,14 @@ interface FileWatermarker<File : WatermarkableFile> {
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
      *
-     * Returns a warning if some Trendmarks could not be converted to Textmarks.
-     * Returns an error if no Trendmark could be converted to a Textmark.
+     * Returns a warning if some Trendmarks could not be converted to TextWatermarks.
+     * Returns an error if no Trendmark could be converted to a TextWatermark.
      */
-    fun getTextmarks(
+    fun getTextWatermarks(
         file: File,
         errorOnInvalidUTF8: Boolean = false,
-    ): Result<List<Textmark>> =
-        getWatermarks(file).toTextmarks(errorOnInvalidUTF8, "${getSource()}.getTextmarks")
+    ): Result<List<TextWatermark>> =
+        getWatermarks(file).toTextWatermarks(errorOnInvalidUTF8, "${getSource()}.getTextWatermarks")
 
     /** Removes all watermarks in [file] and returns them */
     fun removeWatermarks(file: File): Result<List<Watermark>>
