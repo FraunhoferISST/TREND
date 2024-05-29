@@ -5,7 +5,7 @@
 # that can be found in the LICENSE file.
 #
 
-name: "Watermarker: Test"
+name: "Test: Watermarker"
 
 on:
   push:

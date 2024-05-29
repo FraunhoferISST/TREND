@@ -5,7 +5,7 @@
 # that can be found in the LICENSE file.
 #
 
-name: "Webinterface: Test"
+name: "Test: Webinterface"
 
 on:
   push:

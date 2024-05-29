@@ -5,12 +5,10 @@
 # that can be found in the LICENSE file.
 #
 
-name: "Watermarker: Generate API docs"
+name: "Deploy: Watermarker API docs"
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
