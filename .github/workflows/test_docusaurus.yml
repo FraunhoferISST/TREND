@@ -1,0 +1,39 @@
+#
+# This workflow is based on the example workflow from the docusaurus documentation:
+# https://docusaurus.io/docs/deployment#triggering-deployment-with-github-actions
+# The Docusaurus documentation is licensed under the CC-BY-4.0 license. See
+# https://github.com/facebook/docusaurus/blob/6c7f2fde20b2448a1b966dd5f674205c0a08eeba/LICENSE-docs
+# for more information.
+#
+
+name: "Test: Docusaurus Documentation Deployment"
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-deploy-docusaurus:
+    name: Test deployment
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./docs
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+          cache-dependency-path: './docs/package-lock.json'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Test build website
+        run: yarn build

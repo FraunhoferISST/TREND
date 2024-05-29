@@ -1,3 +1,10 @@
+<!--
+ Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+
+ This work is licensed under the Fraunhofer License (on the basis of the MIT license)
+ that can be found in the LICENSE file.
+-->
+
 # Trendmark
 The watermarker library uses bytes as the watermark content. This approach is very flexible and
 allows almost any content to be inserted as a watermark. However, when extracting a watermark, it is

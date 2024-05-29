@@ -1,4 +1,11 @@
-# Created by https://www.toptal.com/developers/gitignore/api/intellij+iml,gradle,maven,kotlin,java,git
+#
+# Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+#
+# This work is licensed under the Fraunhofer License (on the basis of the MIT license)
+# that can be found in the LICENSE file.
+#
+# The initial version of this file was created by .gitignore from Toptal.
+# See https://www.toptal.com/developers/gitignore/api/intellij+iml,gradle,maven,kotlin,java,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+iml,gradle,maven,kotlin,java,git
 
 ### Git ###

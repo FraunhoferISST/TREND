@@ -5,7 +5,7 @@
 # that can be found in the LICENSE file.
 #
 
-name: "CLI: Test"
+name: "Test: CLI"
 
 on:
   push:
