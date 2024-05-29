@@ -14,7 +14,7 @@ val webDir = file("src/jsMain/web")
 
 plugins {
     val kotlinVersion = "2.0.0"
-    val kvisionVersion = "7.4.5"
+    val kvisionVersion = "7.5.0"
 
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
