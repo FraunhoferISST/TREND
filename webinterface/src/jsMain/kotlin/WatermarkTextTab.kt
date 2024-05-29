@@ -6,8 +6,8 @@
  */
 
 import de.fraunhofer.isst.trend.watermarker.Watermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import io.kvision.core.onInput
 import io.kvision.form.FormMethod
 import io.kvision.form.formPanel
@@ -190,11 +190,7 @@ class WatermarkTextTab : SimplePanel() {
         watermark: String,
         text: String,
     ): Int {
-        val parsedWatermark =
-            TextWatermark.fromUncompressedBytes(
-                watermark.encodeToByteArray()
-                    .asList(),
-            )
+        val parsedWatermark = Watermark.fromString(watermark)
 
         val numberOfInsertPositions = textWatermarker.placement(text).count()
         val numberOfNeededPositions = textWatermarker.getMinimumInsertPositions(parsedWatermark)

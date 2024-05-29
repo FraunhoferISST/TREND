@@ -6,7 +6,6 @@
  */
 
 import de.fraunhofer.isst.trend.watermarker.JvmWatermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
@@ -147,7 +146,7 @@ fun add(
 ) {
     val realTarget = target ?: source
 
-    val watermark = TextWatermark.fromText(message)
+    val watermark = Watermark.fromString(message)
 
     watermarker
         .addWatermark(source, realTarget, watermark, fileType)
@@ -171,7 +170,7 @@ fun list(
 
     println()
     println("Found ${watermarks.size} watermark(s) in '$source':")
-    printWatermarks(watermarks.map { TextWatermark.fromWatermark(it) })
+    printWatermarks(watermarks)
 }
 
 /**
@@ -255,7 +254,7 @@ fun printWatermarks(watermarks: List<Watermark>) {
     for ((index, watermark) in watermarks.withIndex()) {
         print("-- %${indexStringLen}d ".format(index + 1))
         println("-".repeat(80 - indexStringLen - 4))
-        println("'$watermark'")
+        println("'${watermark.watermarkContent.toByteArray().decodeToString()}'")
     }
 
     if (watermarks.isNotEmpty()) println("-".repeat(80))
