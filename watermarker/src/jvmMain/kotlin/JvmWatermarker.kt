@@ -15,6 +15,8 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTextmarks
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
 import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.extension
@@ -196,7 +198,7 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all Trendmarks in [source].
+     * Returns all watermarks in [source] as Trendmark.
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
@@ -209,37 +211,11 @@ class JvmWatermarker : Watermarker() {
         fileType: String? = null,
         squash: Boolean = true,
     ): Result<List<Trendmark>> {
-        val (watermarks, status) =
-            with(getWatermarks(source, fileType, squash)) {
-                if (value == null) {
-                    return status.into()
-                }
-                value to status
-            }
-
-        val trendmarks =
-            watermarks.mapNotNull { watermark ->
-                val trendmark = Trendmark.fromWatermark(watermark)
-                status.appendStatus(trendmark.status)
-                trendmark.value
-            }
-
-        if (status.isError && trendmarks.isNotEmpty()) {
-            status.addEvent(
-                FailedTrendmarkExtractionsWarning("$SOURCE.getTrendmarks"),
-                overrideSeverity = true,
-            )
-        }
-
-        return if (status.isError) {
-            status.into()
-        } else {
-            status.into(trendmarks)
-        }
+        return getWatermarks(source, fileType, squash).toTrendmarks(SOURCE)
     }
 
     /**
-     * Returns all Textmarks in [source].
+     * Returns all watermarks in [source] as Textmarks.
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
@@ -259,33 +235,7 @@ class JvmWatermarker : Watermarker() {
         squash: Boolean = true,
         errorOnInvalidUTF8: Boolean = false,
     ): Result<List<Textmark>> {
-        val (trendmarks, status) =
-            with(getTrendmarks(source, fileType, squash)) {
-                if (value == null) {
-                    return status.into()
-                }
-                value to status
-            }
-
-        val textmarks =
-            trendmarks.mapNotNull { trendmark ->
-                val textmark = Textmark.fromTrendmark(trendmark, errorOnInvalidUTF8)
-                status.appendStatus(textmark.status)
-                textmark.value
-            }
-
-        if (status.isError && textmarks.isNotEmpty()) {
-            status.addEvent(
-                FailedTextmarkExtractionsWarning("$SOURCE.getTextmarks"),
-                overrideSeverity = true,
-            )
-        }
-
-        return if (status.isError) {
-            status.into()
-        } else {
-            status.into(textmarks)
-        }
+        return getWatermarks(source, fileType, squash).toTextmarks(errorOnInvalidUTF8, SOURCE)
     }
 
     /**

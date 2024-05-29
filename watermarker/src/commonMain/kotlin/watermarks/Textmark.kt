@@ -8,7 +8,9 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
 
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark.FailedTextmarkExtractionsWarning
 import kotlin.js.JsExport
+import kotlin.jvm.JvmName
 
 /**
  * The Textmark class provides convenient functions to create and read Trendmarks with UTF-8 text as
@@ -171,4 +173,51 @@ class Textmark private constructor(
         override fun getMessage(): String =
             "The Trendmark type $trendmark is not supported by Textmark."
     }
+
+    class FailedTextmarkExtractionsWarning(source: String) : Event.Warning(source) {
+        /** Returns a String explaining the event */
+        override fun getMessage(): String =
+            "Could not extract and convert all watermarks to Textmarks"
+    }
+}
+
+@JvmName("intoTextmarks")
+fun Result<List<Trendmark>>.toTextmarks(
+    errorOnInvalidUTF8: Boolean = false,
+    source: String = "toTextmark",
+): Result<List<Textmark>> {
+    val (trendmarks, status) =
+        with(this) {
+            if (value == null) {
+                return status.into()
+            }
+            value to status
+        }
+
+    val textmarks =
+        trendmarks.mapNotNull { trendmark ->
+            val textmark = Textmark.fromTrendmark(trendmark, errorOnInvalidUTF8)
+            status.appendStatus(textmark.status)
+            textmark.value
+        }
+
+    if (status.isError && textmarks.isNotEmpty()) {
+        status.addEvent(
+            FailedTextmarkExtractionsWarning(source),
+            overrideSeverity = true,
+        )
+    }
+
+    return if (status.isError) {
+        status.into()
+    } else {
+        status.into(textmarks)
+    }
+}
+
+fun Result<List<Watermark>>.toTextmarks(
+    errorOnInvalidUTF8: Boolean = false,
+    source: String = "toTextmark",
+): Result<List<Textmark>> {
+    return this.toTrendmarks(source).toTextmarks(errorOnInvalidUTF8, source)
 }
