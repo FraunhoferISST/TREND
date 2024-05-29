@@ -29,7 +29,7 @@ const FeatureList = [
     description: (
       <>
         A Command Line Interface (CLI) for embedding watermarks directly from a command line. It
-          uses the watermarker library.
+        uses the watermarker library.
       </>
     ),
   },
