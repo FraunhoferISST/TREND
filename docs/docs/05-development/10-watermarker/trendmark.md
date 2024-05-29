@@ -1,3 +1,7 @@
+---
+title: Trendmark
+---
+
 <!--
  Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
 
