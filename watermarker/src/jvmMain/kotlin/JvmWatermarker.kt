@@ -12,10 +12,11 @@ import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.trend.watermarker.files.writeToFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextmarks
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
 import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
 import java.io.File
 import kotlin.io.path.Path
@@ -74,17 +75,17 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Adds a [textmark] to [source] and writes changes to [target].
+     * Adds a [trendmarkBuilder] to [source] and writes changes to [target].
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      */
-    fun addTextmark(
+    fun addWatermark(
         source: String,
         target: String,
-        textmark: Textmark,
+        trendmarkBuilder: TrendmarkBuilder,
         fileType: String? = null,
     ): Status {
-        return addWatermark(source, target, textmark.finish(), fileType)
+        return addWatermark(source, target, trendmarkBuilder.finish(), fileType)
     }
 
     private fun <T : WatermarkableFile> addWatermarkDoWork(
@@ -215,7 +216,7 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all watermarks in [source] as Textmarks.
+     * Returns all watermarks in [source] as TextWatermarks.
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
@@ -226,16 +227,16 @@ class JvmWatermarker : Watermarker() {
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
      *
-     * Returns a warning if some Trendmarks could not be converted to Textmarks.
-     * Returns an error if no Trendmark could be converted to a Textmark.
+     * Returns a warning if some Trendmarks could not be converted to TextWatermarks.
+     * Returns an error if no Trendmark could be converted to a TextWatermark.
      */
-    fun getTextmarks(
+    fun getTextWatermarks(
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
         errorOnInvalidUTF8: Boolean = false,
-    ): Result<List<Textmark>> {
-        return getWatermarks(source, fileType, squash).toTextmarks(errorOnInvalidUTF8, SOURCE)
+    ): Result<List<TextWatermark>> {
+        return getWatermarks(source, fileType, squash).toTextWatermarks(errorOnInvalidUTF8, SOURCE)
     }
 
     /**

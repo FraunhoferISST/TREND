@@ -11,8 +11,8 @@ import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark.FailedTextmarkExtractionsWarning
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
@@ -352,103 +352,105 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTextmarks_trendmarkedString_success() {
+    fun textGetTextWatermarks_trendmarkedString_success() {
         // Arrange
-        val expectedTextmark = Textmark.sized(watermarkString)
-        val expectedTextmarks = listOf(expectedTextmark)
+        val expectedTextWatermark = TextWatermark.sized(watermarkString)
+        val expectedTextWatermarks = listOf(expectedTextWatermark)
 
         // Act
-        val textmarks = watermarker.textGetTextmarks(textWithTrendmarks)
+        val textWatermarks = watermarker.textGetTextWatermarks(textWithTrendmarks)
 
         // Assert
-        assertTrue(textmarks.isSuccess)
-        assertEquals(expectedTextmarks, textmarks.value)
+        assertTrue(textWatermarks.isSuccess)
+        assertEquals(expectedTextWatermarks, textWatermarks.value)
     }
 
     @Test
-    fun textGetTextmarks_watermarkedString_error() {
+    fun textGetTextWatermarks_watermarkedString_error() {
         // Arrange
         val expectedError = Trendmark.UnknownTagError(0x54u).into()
 
         // Act
-        val textmarks = watermarker.textGetTextmarks(textWithWatermark)
+        val textWatermarks = watermarker.textGetTextWatermarks(textWithWatermark)
 
         // Assert
-        assertTrue(textmarks.isError)
-        assertEquals(expectedError.toString(), textmarks.toString())
-        assertNull(textmarks.value)
+        assertTrue(textWatermarks.isError)
+        assertEquals(expectedError.toString(), textWatermarks.toString())
+        assertNull(textWatermarks.value)
     }
 
     @Test
-    fun textGetTextmarks_watermarkedAndTrendmarkedString_warning() {
+    fun textGetTextWatermarks_watermarkedAndTrendmarkedString_warning() {
         // Arrange
         val unknownTagError = Trendmark.UnknownTagError(0x54u)
         val expectedStatus = unknownTagError.into()
         expectedStatus.addEvent(unknownTagError)
-        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTextmarks"))
-        val expectedTextmarks = listOf(Textmark.sized(watermarkString))
+        expectedStatus.addEvent(
+            FailedTrendmarkExtractionsWarning("Watermarker.textGetTextWatermarks"),
+        )
+        val expectedTextWatermarks = listOf(TextWatermark.sized(watermarkString))
 
         // Act
-        val textmarks = watermarker.textGetTextmarks(textWithWatermarksAndTrendmarks)
+        val textWatermarks = watermarker.textGetTextWatermarks(textWithWatermarksAndTrendmarks)
 
         // Assert
-        assertTrue(textmarks.isWarning)
-        assertEquals(expectedStatus.toString(), textmarks.toString())
-        assertEquals(expectedTextmarks, textmarks.value)
+        assertTrue(textWatermarks.isWarning)
+        assertEquals(expectedStatus.toString(), textWatermarks.toString())
+        assertEquals(expectedTextWatermarks, textWatermarks.value)
     }
 
     @Test
-    fun textGetTextmarks_invalidUTF8Watermarks_error() {
+    fun textGetTextWatermarks_invalidUTF8Watermarks_error() {
         // Arrange
         val expectedExceptionMessage =
             when (platform) {
                 Platform.Jvm -> "Input length = 1"
                 Platform.Js -> "Malformed sequence starting at 0"
             }
-        val expectedStatus = Textmark.DecodeToStringError(expectedExceptionMessage).into()
+        val expectedStatus = TextWatermark.DecodeToStringError(expectedExceptionMessage).into()
 
         // Act
-        val textmarks =
-            watermarker.textGetTextmarks(
+        val textWatermarks =
+            watermarker.textGetTextWatermarks(
                 textWithInvalidUTF8Trendmark,
                 errorOnInvalidUTF8 = true,
             )
 
         // Assert
-        assertTrue(textmarks.isError)
-        assertEquals(expectedStatus.toString(), textmarks.toString())
-        assertNull(textmarks.value)
+        assertTrue(textWatermarks.isError)
+        assertEquals(expectedStatus.toString(), textWatermarks.toString())
+        assertNull(textWatermarks.value)
     }
 
     @Test
-    fun textGetTextmarks_invalidAndValidUTF8Trendmarks_warning() {
+    fun textGetTextWatermarks_invalidAndValidUTF8Trendmarks_warning() {
         // Arrange
         val expectedExceptionMessage =
             when (platform) {
                 Platform.Jvm -> "Input length = 1"
                 Platform.Js -> "Malformed sequence starting at 0"
             }
-        val expectedStatus = Textmark.DecodeToStringError(expectedExceptionMessage).into()
+        val expectedStatus = TextWatermark.DecodeToStringError(expectedExceptionMessage).into()
         expectedStatus.addEvent(
-            FailedTextmarkExtractionsWarning("Watermarker.textGetTextmarks"),
+            FailedTextWatermarkExtractionsWarning("Watermarker.textGetTextWatermarks"),
             overrideSeverity = true,
         )
-        val expectedTextmarks =
+        val expectedTextWatermarks =
             listOf(
-                Textmark.new("0"),
-                Textmark.sized(watermarkString),
+                TextWatermark.new("0"),
+                TextWatermark.sized(watermarkString),
             )
 
         // Act
-        val textmarks =
-            watermarker.textGetTextmarks(
+        val textWatermarks =
+            watermarker.textGetTextWatermarks(
                 textWithInvalidandValidUTF8Trendmarks,
                 errorOnInvalidUTF8 = true,
             )
 
         // Assert
-        assertTrue(textmarks.isWarning)
-        assertEquals(expectedStatus.toString(), textmarks.toString())
-        assertEquals(expectedTextmarks, textmarks.value)
+        assertTrue(textWatermarks.isWarning)
+        assertEquals(expectedStatus.toString(), textWatermarks.toString())
+        assertEquals(expectedTextWatermarks, textWatermarks.value)
     }
 }

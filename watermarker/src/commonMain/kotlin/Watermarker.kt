@@ -12,11 +12,11 @@ import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.TextFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.watermarks.Textmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextmarks
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
 import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -177,7 +177,7 @@ open class Watermarker {
         textGetWatermarks(text, squash).toTrendmarks("$SOURCE.textGetTrendmarks")
 
     /**
-     * Returns all watermarks in [text] as Textmarks.
+     * Returns all watermarks in [text] as TextWatermarks.
      *
      * When [squash] is true: watermarks with the same content are merged.
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
@@ -186,15 +186,16 @@ open class Watermarker {
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
      *
-     * Returns a warning if some Trendmarks could not be converted to Textmarks.
-     * Returns an error if no Trendmark could be converted to a Textmark.
+     * Returns a warning if some Trendmarks could not be converted to TextWatermarks.
+     * Returns an error if no Trendmark could be converted to a TextWatermark.
      */
-    fun textGetTextmarks(
+    fun textGetTextWatermarks(
         text: String,
         squash: Boolean = true,
         errorOnInvalidUTF8: Boolean = false,
-    ): Result<List<Textmark>> =
-        textGetWatermarks(text, squash).toTextmarks(errorOnInvalidUTF8, "$SOURCE.textGetTextmarks")
+    ): Result<List<TextWatermark>> =
+        textGetWatermarks(text, squash)
+            .toTextWatermarks(errorOnInvalidUTF8, "$SOURCE.textGetTextWatermarks")
 
     /** Returns [text] without watermarks */
     fun textRemoveWatermarks(text: String): Result<String> {
