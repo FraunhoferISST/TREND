@@ -84,14 +84,14 @@ sealed interface TrendmarkInterface {
 }
 
 /**
- * Trendmark defines a list of Watermarks with specific format. The format is encoded in the first
- * byte of the watermark, which allows to parse unknown types of Trendmarks. The implemented
- * variants of Trendmark allow to encode addition information like the size or a hash into the
- * watermark. For detailed information about the different formats see
+ * Trendmark defines a list of Watermarks with specific formats. The format is encoded in the first
+ * byte of the watermark, which allows parsing unknown types of Trendmarks. The implemented
+ * variants of Trendmark allow encoding additional information like the size or a hash into the
+ * watermark. For detailed information about the different formats, see
  * [Trendmark.md](https://github.com/FraunhoferISST/TREND/blob/main/docs/Trendmark.md)
  *
  * The constructor expects bytes that represent the given type.
- * To create a new watermark with arbitrary content the companion function `new` of that type must
+ * To create a new watermark with arbitrary content, the companion function `new` of that type must
  * be used.
  *
  * @param content: expects bytes that represent a Trendmark.
