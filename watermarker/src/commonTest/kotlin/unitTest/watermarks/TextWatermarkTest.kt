@@ -6,18 +6,18 @@
  */
 package unitTest.watermarks
 
-import de.fraunhofer.isst.trend.watermarker.watermarks.CRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedCRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedRawWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedCRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedSHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.RawWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedCRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedSHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedCRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedRawTrendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedCRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedSHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedTrendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.RawTrendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedCRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedSHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedTrendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,7 +33,7 @@ class TextWatermarkTest {
     @Test
     fun new_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = RawWatermark.new(textBytes)
+        val expectedTrendmark = RawTrendmark.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.new(text)
@@ -52,7 +52,7 @@ class TextWatermarkTest {
     @Test
     fun compressed_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedRawWatermark.new(textBytes)
+        val expectedTrendmark = CompressedRawTrendmark.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressed(text)
@@ -71,7 +71,7 @@ class TextWatermarkTest {
     @Test
     fun sized_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = SizedWatermark.new(textBytes)
+        val expectedTrendmark = SizedTrendmark.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.sized(text)
@@ -90,7 +90,7 @@ class TextWatermarkTest {
     @Test
     fun compressedAndSized_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedSizedWatermark.new(textBytes)
+        val expectedTrendmark = CompressedSizedTrendmark.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressedAndSized(text)
@@ -107,9 +107,9 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_RawWatermark_success() {
+    fun fromTrendmark_RawTrendmark_success() {
         // Arrange
-        val initialTrendmark = RawWatermark.new(textBytes)
+        val initialTrendmark = RawTrendmark.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(initialTrendmark)
@@ -126,9 +126,9 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_SizedWatermark_success() {
+    fun fromTrendmark_SizedTrendmark_success() {
         // Arrange
-        val initialTrendmark = SizedWatermark.new(textBytes)
+        val initialTrendmark = SizedTrendmark.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(initialTrendmark)
@@ -145,9 +145,9 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_CompressedSizedWatermark_success() {
+    fun fromTrendmark_CompressedSizedTrendmark_success() {
         // Arrange
-        val initialTrendmark = CompressedSizedWatermark.new(textBytes)
+        val initialTrendmark = CompressedSizedTrendmark.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(initialTrendmark)
@@ -164,10 +164,10 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_CRC32Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_CRC32Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = CRC32Watermark.new(textBytes)
-        val expectedStatus = TextWatermark.UnsupportedTrendmarkError(CRC32Watermark.SOURCE).into()
+        val trendmark = CRC32Trendmark.new(textBytes)
+        val expectedStatus = TextWatermark.UnsupportedTrendmarkError(CRC32Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -179,11 +179,11 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_SizedCRC32Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_SizedCRC32Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = SizedCRC32Watermark.new(textBytes)
+        val trendmark = SizedCRC32Trendmark.new(textBytes)
         val expectedStatus =
-            TextWatermark.UnsupportedTrendmarkError(SizedCRC32Watermark.SOURCE).into()
+            TextWatermark.UnsupportedTrendmarkError(SizedCRC32Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -195,11 +195,11 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_CompressedCRC32Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_CompressedCRC32Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = CompressedCRC32Watermark.new(textBytes)
+        val trendmark = CompressedCRC32Trendmark.new(textBytes)
         val expectedStatus =
-            TextWatermark.UnsupportedTrendmarkError(CompressedCRC32Watermark.SOURCE).into()
+            TextWatermark.UnsupportedTrendmarkError(CompressedCRC32Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -211,11 +211,11 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_CompressedSizedCRC32Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_CompressedSizedCRC32Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = CompressedSizedCRC32Watermark.new(textBytes)
+        val trendmark = CompressedSizedCRC32Trendmark.new(textBytes)
         val expectedStatus =
-            TextWatermark.UnsupportedTrendmarkError(CompressedSizedCRC32Watermark.SOURCE).into()
+            TextWatermark.UnsupportedTrendmarkError(CompressedSizedCRC32Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -227,10 +227,10 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_SHA3256Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_SHA3256Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = SHA3256Watermark.new(textBytes)
-        val expectedStatus = TextWatermark.UnsupportedTrendmarkError(SHA3256Watermark.SOURCE).into()
+        val trendmark = SHA3256Trendmark.new(textBytes)
+        val expectedStatus = TextWatermark.UnsupportedTrendmarkError(SHA3256Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -242,11 +242,11 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_SizedSHA3256Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_SizedSHA3256Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = SizedSHA3256Watermark.new(textBytes)
+        val trendmark = SizedSHA3256Trendmark.new(textBytes)
         val expectedStatus =
-            TextWatermark.UnsupportedTrendmarkError(SizedSHA3256Watermark.SOURCE).into()
+            TextWatermark.UnsupportedTrendmarkError(SizedSHA3256Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -258,11 +258,11 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_CompressedSHA3256Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_CompressedSHA3256Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = CompressedSHA3256Watermark.new(textBytes)
+        val trendmark = CompressedSHA3256Trendmark.new(textBytes)
         val expectedStatus =
-            TextWatermark.UnsupportedTrendmarkError(CompressedSHA3256Watermark.SOURCE).into()
+            TextWatermark.UnsupportedTrendmarkError(CompressedSHA3256Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)
@@ -274,11 +274,11 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun fromTrendmark_CompressedSizedSHA3256Watermark_UnsupportedTrendmarkError() {
+    fun fromTrendmark_CompressedSizedSHA3256Trendmark_UnsupportedTrendmarkError() {
         // Arrange
-        val trendmark = CompressedSizedSHA3256Watermark.new(textBytes)
+        val trendmark = CompressedSizedSHA3256Trendmark.new(textBytes)
         val expectedStatus =
-            TextWatermark.UnsupportedTrendmarkError(CompressedSizedSHA3256Watermark.SOURCE).into()
+            TextWatermark.UnsupportedTrendmarkError(CompressedSizedSHA3256Trendmark.SOURCE).into()
 
         // Act
         val textWatermarkResult = TextWatermark.fromTrendmark(trendmark)

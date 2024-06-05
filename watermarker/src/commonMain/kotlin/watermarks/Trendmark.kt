@@ -117,19 +117,19 @@ sealed class Trendmark(
 
             val watermark =
                 when (val tag = extractTag(input)) {
-                    RawWatermark.TYPE_TAG -> RawWatermark(input)
-                    SizedWatermark.TYPE_TAG -> SizedWatermark(input)
-                    CRC32Watermark.TYPE_TAG -> CRC32Watermark(input)
-                    SizedCRC32Watermark.TYPE_TAG -> SizedCRC32Watermark(input)
-                    SHA3256Watermark.TYPE_TAG -> SHA3256Watermark(input)
-                    SizedSHA3256Watermark.TYPE_TAG -> SizedSHA3256Watermark(input)
-                    CompressedRawWatermark.TYPE_TAG -> CompressedRawWatermark(input)
-                    CompressedSizedWatermark.TYPE_TAG -> CompressedSizedWatermark(input)
-                    CompressedCRC32Watermark.TYPE_TAG -> CompressedCRC32Watermark(input)
-                    CompressedSizedCRC32Watermark.TYPE_TAG -> CompressedSizedCRC32Watermark(input)
-                    CompressedSHA3256Watermark.TYPE_TAG -> CompressedSHA3256Watermark(input)
-                    CompressedSizedSHA3256Watermark.TYPE_TAG ->
-                        CompressedSizedSHA3256Watermark(input)
+                    RawTrendmark.TYPE_TAG -> RawTrendmark(input)
+                    SizedTrendmark.TYPE_TAG -> SizedTrendmark(input)
+                    CRC32Trendmark.TYPE_TAG -> CRC32Trendmark(input)
+                    SizedCRC32Trendmark.TYPE_TAG -> SizedCRC32Trendmark(input)
+                    SHA3256Trendmark.TYPE_TAG -> SHA3256Trendmark(input)
+                    SizedSHA3256Trendmark.TYPE_TAG -> SizedSHA3256Trendmark(input)
+                    CompressedRawTrendmark.TYPE_TAG -> CompressedRawTrendmark(input)
+                    CompressedSizedTrendmark.TYPE_TAG -> CompressedSizedTrendmark(input)
+                    CompressedCRC32Trendmark.TYPE_TAG -> CompressedCRC32Trendmark(input)
+                    CompressedSizedCRC32Trendmark.TYPE_TAG -> CompressedSizedCRC32Trendmark(input)
+                    CompressedSHA3256Trendmark.TYPE_TAG -> CompressedSHA3256Trendmark(input)
+                    CompressedSizedSHA3256Trendmark.TYPE_TAG ->
+                        CompressedSizedSHA3256Trendmark(input)
                     else -> return UnknownTagError(tag).into<_>()
                 }
             val status = watermark.validate()
@@ -176,18 +176,18 @@ sealed class Trendmark(
     override fun equals(other: Any?): Boolean {
         val equalClass =
             when (this) {
-                is RawWatermark -> other is RawWatermark
-                is SizedWatermark -> other is SizedWatermark
-                is CRC32Watermark -> other is CRC32Watermark
-                is SizedCRC32Watermark -> other is SizedCRC32Watermark
-                is SHA3256Watermark -> other is SHA3256Watermark
-                is SizedSHA3256Watermark -> other is SizedSHA3256Watermark
-                is CompressedRawWatermark -> other is CompressedRawWatermark
-                is CompressedSizedWatermark -> other is CompressedSizedWatermark
-                is CompressedCRC32Watermark -> other is CompressedCRC32Watermark
-                is CompressedSizedCRC32Watermark -> other is CompressedSizedCRC32Watermark
-                is CompressedSHA3256Watermark -> other is CompressedSHA3256Watermark
-                is CompressedSizedSHA3256Watermark -> other is CompressedSizedSHA3256Watermark
+                is RawTrendmark -> other is RawTrendmark
+                is SizedTrendmark -> other is SizedTrendmark
+                is CRC32Trendmark -> other is CRC32Trendmark
+                is SizedCRC32Trendmark -> other is SizedCRC32Trendmark
+                is SHA3256Trendmark -> other is SHA3256Trendmark
+                is SizedSHA3256Trendmark -> other is SizedSHA3256Trendmark
+                is CompressedRawTrendmark -> other is CompressedRawTrendmark
+                is CompressedSizedTrendmark -> other is CompressedSizedTrendmark
+                is CompressedCRC32Trendmark -> other is CompressedCRC32Trendmark
+                is CompressedSizedCRC32Trendmark -> other is CompressedSizedCRC32Trendmark
+                is CompressedSHA3256Trendmark -> other is CompressedSHA3256Trendmark
+                is CompressedSizedSHA3256Trendmark -> other is CompressedSizedSHA3256Trendmark
             }
         if (!equalClass) return false
 
@@ -600,15 +600,15 @@ fun Result<List<Watermark>>.toTrendmarks(source: String = "Trendmark"): Result<L
 }
 
 @JsExport
-class RawWatermark(content: List<Byte>) : Trendmark(content) {
+class RawTrendmark(content: List<Byte>) : Trendmark(content) {
     companion object {
-        const val SOURCE = "Trendmark.RawWatermark"
+        const val SOURCE = "Trendmark.RawTrendmark"
         const val TYPE_TAG: UByte = 0u
 
-        /** Creates a new `RawWatermark` with containing [content] */
-        fun new(content: List<Byte>): RawWatermark = RawWatermark(createRaw(TYPE_TAG, content))
+        /** Creates a new `RawTrendmark` with containing [content] */
+        fun new(content: List<Byte>): RawTrendmark = RawTrendmark(createRaw(TYPE_TAG, content))
 
-        /** Creates a new `RawWatermark` with [text] as content */
+        /** Creates a new `RawTrendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -628,9 +628,9 @@ class RawWatermark(content: List<Byte>) : Trendmark(content) {
 }
 
 @JsExport
-class SizedWatermark(content: List<Byte>) : Trendmark(content), Trendmark.Sized {
+class SizedTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Sized {
     companion object {
-        const val SOURCE = "Trendmark.SizedWatermark"
+        const val SOURCE = "Trendmark.SizedTrendmark"
         const val TYPE_TAG: UByte = 1u
 
         /**
@@ -642,12 +642,12 @@ class SizedWatermark(content: List<Byte>) : Trendmark(content), Trendmark.Sized 
         const val SIZE_START_INDEX = TAG_SIZE
         const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
 
-        /** Creates a new `SizedWatermark` containing [content] */
-        fun new(content: List<Byte>): SizedWatermark {
-            return SizedWatermark(createRaw(TYPE_TAG, content))
+        /** Creates a new `SizedTrendmark` containing [content] */
+        fun new(content: List<Byte>): SizedTrendmark {
+            return SizedTrendmark(createRaw(TYPE_TAG, content))
         }
 
-        /** Creates a new `SizedWatermark` with [text] as content */
+        /** Creates a new `SizedTrendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -680,22 +680,22 @@ class SizedWatermark(content: List<Byte>) : Trendmark(content), Trendmark.Sized 
 }
 
 @JsExport
-class CRC32Watermark(content: List<Byte>) : Trendmark(content), Trendmark.Checksum {
+class CRC32Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Checksum {
     companion object {
-        const val SOURCE = "Trendmark.CRC32Watermark"
+        const val SOURCE = "Trendmark.CRC32Trendmark"
         const val TYPE_TAG: UByte = 2u
         const val CHECKSUM_SIZE = 4
         const val CHECKSUM_START_INDEX = TAG_SIZE
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
 
-        /** Creates a new `CRC32Watermark` containing [content] */
-        fun new(content: List<Byte>): CRC32Watermark {
-            val watermark = CRC32Watermark(createRaw(TYPE_TAG, content))
+        /** Creates a new `CRC32Trendmark` containing [content] */
+        fun new(content: List<Byte>): CRC32Trendmark {
+            val watermark = CRC32Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateChecksum()
             return watermark
         }
 
-        /** Creates a new `CRC32Watermark` with [text] as content */
+        /** Creates a new `CRC32Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -748,10 +748,10 @@ class CRC32Watermark(content: List<Byte>) : Trendmark(content), Trendmark.Checks
 }
 
 @JsExport
-class SizedCRC32Watermark(content: List<Byte>) :
+class SizedCRC32Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
-        const val SOURCE = "Trendmark.SizedCRC32Watermark"
+        const val SOURCE = "Trendmark.SizedCRC32Trendmark"
         const val TYPE_TAG: UByte = 3u
         const val SIZE_SIZE: Int = 4
         const val SIZE_START_INDEX = TAG_SIZE
@@ -760,14 +760,14 @@ class SizedCRC32Watermark(content: List<Byte>) :
         const val CHECKSUM_START_INDEX = SIZE_END_INDEX + 1
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
 
-        /** Creates a new `SizedCRC32Watermark` containing [content] */
-        fun new(content: List<Byte>): SizedCRC32Watermark {
-            val watermark = SizedCRC32Watermark(createRaw(TYPE_TAG, content))
+        /** Creates a new `SizedCRC32Trendmark` containing [content] */
+        fun new(content: List<Byte>): SizedCRC32Trendmark {
+            val watermark = SizedCRC32Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateChecksum()
             return watermark
         }
 
-        /** Creates a new `SizedCRC32Watermark` with [text] as content */
+        /** Creates a new `SizedCRC32Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -818,27 +818,27 @@ class SizedCRC32Watermark(content: List<Byte>) :
                 value!!
             }
 
-        return Result.success(CRC32Watermark.calculateChecksum(checksumContent))
+        return Result.success(CRC32Trendmark.calculateChecksum(checksumContent))
     }
 }
 
 @JsExport
-class SHA3256Watermark(content: List<Byte>) : Trendmark(content), Trendmark.Hash {
+class SHA3256Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Hash {
     companion object {
-        const val SOURCE = "Trendmark.SHA3256Watermark"
+        const val SOURCE = "Trendmark.SHA3256Trendmark"
         const val TYPE_TAG: UByte = 4u
         const val HASH_SIZE = 32
         const val HASH_START_INDEX = TAG_SIZE
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
 
-        /** Creates a new `SHA3256Watermark` containing [content] */
-        fun new(content: List<Byte>): SHA3256Watermark {
-            val watermark = SHA3256Watermark(createRaw(TYPE_TAG, content))
+        /** Creates a new `SHA3256Trendmark` containing [content] */
+        fun new(content: List<Byte>): SHA3256Trendmark {
+            val watermark = SHA3256Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateHash()
             return watermark
         }
 
-        /** Creates a new `SHA3256Watermark` with [text] as content */
+        /** Creates a new `SHA3256Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -894,10 +894,10 @@ class SHA3256Watermark(content: List<Byte>) : Trendmark(content), Trendmark.Hash
 }
 
 @JsExport
-class SizedSHA3256Watermark(content: List<Byte>) :
+class SizedSHA3256Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Hash {
     companion object {
-        const val SOURCE = "Trendmark.SizedSHA3256Watermark"
+        const val SOURCE = "Trendmark.SizedSHA3256Trendmark"
         const val TYPE_TAG: UByte = 5u
         const val SIZE_SIZE = 4
         const val SIZE_START_INDEX = TAG_SIZE
@@ -906,14 +906,14 @@ class SizedSHA3256Watermark(content: List<Byte>) :
         const val HASH_START_INDEX = SIZE_END_INDEX + 1
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
 
-        /** Creates a new `SizedSHA3256Watermark` containing [content] */
-        fun new(content: List<Byte>): SizedSHA3256Watermark {
-            val watermark = SizedSHA3256Watermark(createRaw(TYPE_TAG, content))
+        /** Creates a new `SizedSHA3256Trendmark` containing [content] */
+        fun new(content: List<Byte>): SizedSHA3256Trendmark {
+            val watermark = SizedSHA3256Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateHash()
             return watermark
         }
 
-        /** Creates a new `SizedSHA3256Watermark` with [text] as content */
+        /** Creates a new `SizedSHA3256Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -966,23 +966,23 @@ class SizedSHA3256Watermark(content: List<Byte>) :
                 value!!
             }
 
-        return Result.success(SHA3256Watermark.calculateHash(hashInput))
+        return Result.success(SHA3256Trendmark.calculateHash(hashInput))
     }
 }
 
 @JsExport
-class CompressedRawWatermark(content: List<Byte>) : Trendmark(content), Trendmark.Compressed {
+class CompressedRawTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Compressed {
     companion object {
-        const val SOURCE = "Trendmark.CompressedRawWatermark"
+        const val SOURCE = "Trendmark.CompressedRawTrendmark"
         const val TYPE_TAG: UByte = 254u
 
-        /** Creates a new `CompressedRawWatermark` containing [content] */
-        fun new(content: List<Byte>): CompressedRawWatermark {
+        /** Creates a new `CompressedRawTrendmark` containing [content] */
+        fun new(content: List<Byte>): CompressedRawTrendmark {
             val compressedContent = Compression.deflate(content)
-            return CompressedRawWatermark(RawWatermark.createRaw(TYPE_TAG, compressedContent))
+            return CompressedRawTrendmark(RawTrendmark.createRaw(TYPE_TAG, compressedContent))
         }
 
-        /** Creates a new `CompressedRawWatermark` with [text] as content */
+        /** Creates a new `CompressedRawTrendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1000,19 +1000,19 @@ class CompressedRawWatermark(content: List<Byte>) : Trendmark(content), Trendmar
 }
 
 @JsExport
-class CompressedSizedWatermark(content: List<Byte>) :
+class CompressedSizedTrendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Compressed {
     companion object {
-        const val SOURCE = "Trendmark.CompressedSizedWatermark"
+        const val SOURCE = "Trendmark.CompressedSizedTrendmark"
         const val TYPE_TAG: UByte = 253u
 
-        /** Creates a new `CompressedSizedWatermark` containing [content] */
-        fun new(content: List<Byte>): CompressedSizedWatermark {
+        /** Creates a new `CompressedSizedTrendmark` containing [content] */
+        fun new(content: List<Byte>): CompressedSizedTrendmark {
             val compressedContent = Compression.deflate(content)
-            return CompressedSizedWatermark(SizedWatermark.createRaw(TYPE_TAG, compressedContent))
+            return CompressedSizedTrendmark(SizedTrendmark.createRaw(TYPE_TAG, compressedContent))
         }
 
-        /** Creates a new `CompressedSizedWatermark` with [text] as content */
+        /** Creates a new `CompressedSizedTrendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1024,32 +1024,32 @@ class CompressedSizedWatermark(content: List<Byte>) :
 
     /** Returns the decoded information stored in the Trendmark */
     override fun getContent(): Result<List<Byte>> {
-        val compressedContent = watermarkContent.drop(TAG_SIZE + SizedWatermark.SIZE_SIZE)
+        val compressedContent = watermarkContent.drop(TAG_SIZE + SizedTrendmark.SIZE_SIZE)
         return Compression.inflate(compressedContent)
     }
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the size */
     override fun getSizeRange(): IntRange =
-        SizedWatermark.SIZE_START_INDEX..SizedWatermark.SIZE_END_INDEX
+        SizedTrendmark.SIZE_START_INDEX..SizedTrendmark.SIZE_END_INDEX
 }
 
 @JsExport
-class CompressedCRC32Watermark(content: List<Byte>) :
+class CompressedCRC32Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Compressed, Trendmark.Checksum {
     companion object {
-        const val SOURCE = "Trendmark.CompressedCRC32Watermark"
+        const val SOURCE = "Trendmark.CompressedCRC32Trendmark"
         const val TYPE_TAG: UByte = 252u
 
-        /** Creates a new `CompressedCRC32Watermark` containing [content] */
-        fun new(content: List<Byte>): CompressedCRC32Watermark {
+        /** Creates a new `CompressedCRC32Trendmark` containing [content] */
+        fun new(content: List<Byte>): CompressedCRC32Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
-                CompressedCRC32Watermark(CRC32Watermark.createRaw(TYPE_TAG, compressedContent))
+                CompressedCRC32Trendmark(CRC32Trendmark.createRaw(TYPE_TAG, compressedContent))
             watermark.updateChecksum()
             return watermark
         }
 
-        /** Creates a new `CompressedCRC32Watermark` with [text] as content */
+        /** Creates a new `CompressedCRC32Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1063,11 +1063,11 @@ class CompressedCRC32Watermark(content: List<Byte>) :
      * Returns the range of bytes (inclusive) within the watermark bytes that represent the checksum
      */
     override fun getChecksumRange(): IntRange =
-        CRC32Watermark.CHECKSUM_START_INDEX..CRC32Watermark.CHECKSUM_END_INDEX
+        CRC32Trendmark.CHECKSUM_START_INDEX..CRC32Trendmark.CHECKSUM_END_INDEX
 
     /** Returns the decoded information stored in the Trendmark */
     override fun getContent(): Result<List<Byte>> {
-        val compressedContent = watermarkContent.drop(TAG_SIZE + CRC32Watermark.CHECKSUM_SIZE)
+        val compressedContent = watermarkContent.drop(TAG_SIZE + CRC32Trendmark.CHECKSUM_SIZE)
         return Compression.inflate(compressedContent)
     }
 
@@ -1081,29 +1081,29 @@ class CompressedCRC32Watermark(content: List<Byte>) :
                 value!!
             }
 
-        return Result.success(CRC32Watermark.calculateChecksum(checksumContent))
+        return Result.success(CRC32Trendmark.calculateChecksum(checksumContent))
     }
 }
 
 @JsExport
-class CompressedSizedCRC32Watermark(content: List<Byte>) :
+class CompressedSizedCRC32Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
-        const val SOURCE = "Trendmark.CompressedSizedCRC32Watermark"
+        const val SOURCE = "Trendmark.CompressedSizedCRC32Trendmark"
         const val TYPE_TAG: UByte = 251u
 
-        /** Creates a new `CompressedSizedCRC32Watermark` containing [content] */
-        fun new(content: List<Byte>): CompressedSizedCRC32Watermark {
+        /** Creates a new `CompressedSizedCRC32Trendmark` containing [content] */
+        fun new(content: List<Byte>): CompressedSizedCRC32Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
-                CompressedSizedCRC32Watermark(
-                    SizedCRC32Watermark.createRaw(TYPE_TAG, compressedContent),
+                CompressedSizedCRC32Trendmark(
+                    SizedCRC32Trendmark.createRaw(TYPE_TAG, compressedContent),
                 )
             watermark.updateChecksum()
             return watermark
         }
 
-        /** Creates a new `CompressedSizedCRC32Watermark` with [text] as content */
+        /** Creates a new `CompressedSizedCRC32Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1115,18 +1115,18 @@ class CompressedSizedCRC32Watermark(content: List<Byte>) :
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the size */
     override fun getSizeRange(): IntRange =
-        SizedCRC32Watermark.SIZE_START_INDEX..SizedCRC32Watermark.SIZE_END_INDEX
+        SizedCRC32Trendmark.SIZE_START_INDEX..SizedCRC32Trendmark.SIZE_END_INDEX
 
     /**
      * Returns the range of bytes (inclusive) within the watermark bytes that represent the checksum
      */
     override fun getChecksumRange(): IntRange =
-        SizedCRC32Watermark.CHECKSUM_START_INDEX..SizedCRC32Watermark.CHECKSUM_END_INDEX
+        SizedCRC32Trendmark.CHECKSUM_START_INDEX..SizedCRC32Trendmark.CHECKSUM_END_INDEX
 
     /** Returns the decoded information stored in the Trendmark */
     override fun getContent(): Result<List<Byte>> {
         val contentOffset =
-            TAG_SIZE + SizedCRC32Watermark.SIZE_SIZE + SizedCRC32Watermark.CHECKSUM_SIZE
+            TAG_SIZE + SizedCRC32Trendmark.SIZE_SIZE + SizedCRC32Trendmark.CHECKSUM_SIZE
         val compressedContent = watermarkContent.drop(contentOffset)
         return Compression.inflate(compressedContent)
     }
@@ -1143,29 +1143,29 @@ class CompressedSizedCRC32Watermark(content: List<Byte>) :
                 value!!
             }
 
-        return Result.success(CRC32Watermark.calculateChecksum(checksumContent))
+        return Result.success(CRC32Trendmark.calculateChecksum(checksumContent))
     }
 }
 
 @JsExport
-class CompressedSHA3256Watermark(content: List<Byte>) :
+class CompressedSHA3256Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Compressed, Trendmark.Hash {
     companion object {
-        const val SOURCE = "Trendmark.CompressedSHA3256Watermark"
+        const val SOURCE = "Trendmark.CompressedSHA3256Trendmark"
         const val TYPE_TAG: UByte = 250u
 
-        /** Creates a new `CompressedSHA3256Watermark` containing [content] */
-        fun new(content: List<Byte>): CompressedSHA3256Watermark {
+        /** Creates a new `CompressedSHA3256Trendmark` containing [content] */
+        fun new(content: List<Byte>): CompressedSHA3256Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
-                CompressedSHA3256Watermark(
-                    SHA3256Watermark.createRaw(TYPE_TAG, compressedContent),
+                CompressedSHA3256Trendmark(
+                    SHA3256Trendmark.createRaw(TYPE_TAG, compressedContent),
                 )
             watermark.updateHash()
             return watermark
         }
 
-        /** Creates a new `CompressedSHA3256Watermark` with [text] as content */
+        /** Creates a new `CompressedSHA3256Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1177,7 +1177,7 @@ class CompressedSHA3256Watermark(content: List<Byte>) :
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the hash */
     override fun getHashRange(): IntRange =
-        SHA3256Watermark.HASH_START_INDEX..SHA3256Watermark.HASH_END_INDEX
+        SHA3256Trendmark.HASH_START_INDEX..SHA3256Trendmark.HASH_END_INDEX
 
     /**
      * Calculates the SHA3-256 hash of the watermark content.
@@ -1191,36 +1191,36 @@ class CompressedSHA3256Watermark(content: List<Byte>) :
                 if (!isSuccess) return status.into<_>()
                 value!!
             }
-        return Result.success(SHA3256Watermark.calculateHash(hashInput))
+        return Result.success(SHA3256Trendmark.calculateHash(hashInput))
     }
 
     /** Returns the decoded information stored in the Trendmark */
     override fun getContent(): Result<List<Byte>> {
-        val contentOffset = TAG_SIZE + SHA3256Watermark.HASH_SIZE
+        val contentOffset = TAG_SIZE + SHA3256Trendmark.HASH_SIZE
         val compressedContent = watermarkContent.drop(contentOffset)
         return Compression.inflate(compressedContent)
     }
 }
 
 @JsExport
-class CompressedSizedSHA3256Watermark(content: List<Byte>) :
+class CompressedSizedSHA3256Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Compressed, Trendmark.Sized, Trendmark.Hash {
     companion object {
-        const val SOURCE = "Trendmark.CompressedSizedSHA3256Watermark"
+        const val SOURCE = "Trendmark.CompressedSizedSHA3256Trendmark"
         const val TYPE_TAG: UByte = 249u
 
-        /** Creates a new `CompressedSizedSHA3256Watermark` containing [content] */
-        fun new(content: List<Byte>): CompressedSizedSHA3256Watermark {
+        /** Creates a new `CompressedSizedSHA3256Trendmark` containing [content] */
+        fun new(content: List<Byte>): CompressedSizedSHA3256Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
-                CompressedSizedSHA3256Watermark(
-                    SizedSHA3256Watermark.createRaw(TYPE_TAG, compressedContent),
+                CompressedSizedSHA3256Trendmark(
+                    SizedSHA3256Trendmark.createRaw(TYPE_TAG, compressedContent),
                 )
             watermark.updateHash()
             return watermark
         }
 
-        /** Creates a new `CompressedSizedSHA3256Watermark` with [text] as content */
+        /** Creates a new `CompressedSizedSHA3256Trendmark` with [text] as content */
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1232,11 +1232,11 @@ class CompressedSizedSHA3256Watermark(content: List<Byte>) :
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the size */
     override fun getSizeRange(): IntRange =
-        SizedSHA3256Watermark.SIZE_START_INDEX..SizedSHA3256Watermark.SIZE_END_INDEX
+        SizedSHA3256Trendmark.SIZE_START_INDEX..SizedSHA3256Trendmark.SIZE_END_INDEX
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the hash */
     override fun getHashRange(): IntRange =
-        SizedSHA3256Watermark.HASH_START_INDEX..SizedSHA3256Watermark.HASH_END_INDEX
+        SizedSHA3256Trendmark.HASH_START_INDEX..SizedSHA3256Trendmark.HASH_END_INDEX
 
     /**
      * Calculates the SHA3-256 hash of the watermark content.
@@ -1250,13 +1250,13 @@ class CompressedSizedSHA3256Watermark(content: List<Byte>) :
                 if (!isSuccess) return status.into<_>()
                 value!!
             }
-        return Result.success(SHA3256Watermark.calculateHash(hashInput))
+        return Result.success(SHA3256Trendmark.calculateHash(hashInput))
     }
 
     /** Returns the decoded information stored in the Trendmark */
     override fun getContent(): Result<List<Byte>> {
         val contentOffset =
-            TAG_SIZE + SizedSHA3256Watermark.SIZE_SIZE + SizedSHA3256Watermark.HASH_SIZE
+            TAG_SIZE + SizedSHA3256Trendmark.SIZE_SIZE + SizedSHA3256Trendmark.HASH_SIZE
         val compressedContent = watermarkContent.drop(contentOffset)
         return Compression.inflate(compressedContent)
     }

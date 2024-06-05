@@ -23,19 +23,19 @@ watermarks that change the content itself (e.g. compression).
 
 | Tag (in hex) | Class name | Meaning |
 | -- | -- | -- |
-| 00 | RawWatermark | raw bytes without special encoding |
-| 01 | SizedWatermark | size + raw bytes |
-| 02 | CRC32Watermark | CRC32 checksum + raw bytes |
-| 03 | SizedCRC32Watermark | size + CRC32 checksum + raw bytes |
-| 04 | SHA3256Watermark | SHA3-256 hash + raw bytes |
-| 05 | SizedSHA3256Watermark | size + SHA3-256 hash + raw bytes |
+| 00 | RawTrendmark | raw bytes without special encoding |
+| 01 | SizedTrendmark | size + raw bytes |
+| 02 | CRC32Trendmark | CRC32 checksum + raw bytes |
+| 03 | SizedCRC32Trendmark | size + CRC32 checksum + raw bytes |
+| 04 | SHA3256Trendmark | SHA3-256 hash + raw bytes |
+| 05 | SizedSHA3256Trendmark | size + SHA3-256 hash + raw bytes |
 | -- | -- | -- |
-| fe | CompressedRawWatermark | compressed bytes |
-| fd | CompressedSizedWatermark | size + compressed bytes |
-| fc | CompressedCRC32Watermark | CRC32 checksum + compressed bytes |
-| fb | CompressedSizedCRC32Watermark | size + CRC32 checksum + compressed bytes |
-| fa | CompressedSHA3256Watermark | SHA3-256 hash + compressed bytes |
-| f9 | CompressedSizedSHA3256Watermark | size + SHA3-256 hash + compressed bytes |
+| fe | CompressedRawTrendmark | compressed bytes |
+| fd | CompressedSizedTrendmark | size + compressed bytes |
+| fc | CompressedCRC32Trendmark | CRC32 checksum + compressed bytes |
+| fb | CompressedSizedCRC32Trendmark | size + CRC32 checksum + compressed bytes |
+| fa | CompressedSHA3256Trendmark | SHA3-256 hash + compressed bytes |
+| f9 | CompressedSizedSHA3256Trendmark | size + SHA3-256 hash + compressed bytes |
 | -- | -- | -- |
 | ff | Custom | Reserved for custom Trendmark implementations |
 
@@ -49,20 +49,20 @@ Compressing the example watermark content results in the bytes (f3 c9 2f 4a cd 5
 Only the content is compressed, potentially allowing to use the additional information to increase 
 the watermark robustness.
 
-### RawWatermark
+### RawTrendmark
 
 | tag | raw bytes |
 | -- | -- |
 | 00 | 4c 6f 72 65 6d 20 69 70 73 75 6d |
 
-### SizedWatermark
+### SizedTrendmark
 The size is calculated over the entire watermark.
 
 | tag | size in 32 bits little-endian | raw bytes |
 | -- | -- | -- |
 | 01 | 10 00 00 00 | 4c 6f 72 65 6d 20 69 70 73 75 6d |
 
-### CRC32Watermark
+### CRC32Trendmark
 The [CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum is calculated over the
 entire watermark, replacing the bytes containing the checksum with null bytes.
 
@@ -70,7 +70,7 @@ entire watermark, replacing the bytes containing the checksum with null bytes.
 | -- | -- | -- |
 | 02 | 87 0b 16 35 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
-### SizedCRC32Watermark
+### SizedCRC32Trendmark
 The size and CRC32 checksum are calculated over the entire watermark, replacing the bytes containing
 the checksum with null bytes.
 
@@ -78,7 +78,7 @@ the checksum with null bytes.
 | -- | -- | -- | -- |
 | 03 | 14 00 00 00 | 1e 85 5b 04 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
-### SHA3256Watermark
+### SHA3256Trendmark
 The [SHA3-256](https://en.wikipedia.org/wiki/SHA-3) hash is calculated over the entire watermark,
 replacing the bytes containing the hash with null bytes.
 
@@ -86,7 +86,7 @@ replacing the bytes containing the hash with null bytes.
 | -- | -- | -- |
 | 04 | de 02 65 dd 6b 16 a0 b4 ab 05 a4 39 36 c0 73 12 4f 66 a2 aa 55 b3 9c 2b 30 b6 19 de 1c 11 c9 50 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
-### SizedSHA3256Watermark
+### SizedSHA3256Trendmark
 The size and SHA3-256 hash are calculated over the entire watermark, replacing the bytes containing the
 hash are replaced with zero-bytes.
 
@@ -94,14 +94,14 @@ hash are replaced with zero-bytes.
 | -- | -- | -- | -- |
 | 05 | 30 00 00 00 | f2 17 a5 ae 43 c5 70 a2 33 2b b5 90 60 23 45 da 6d 35 d3 34 95 5c 17 83 ec ec 2e 49 66 45 c9 1a | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
-### CompressedRawWatermark
+### CompressedRawTrendmark
 Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 
 | tag | compressed content |
 | -- | -- |
 | fe | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
-### CompressedSizedWatermark
+### CompressedSizedTrendmark
 The size is calculated over the entire watermark.
 Only the content is compressed, potentially allowing to use the additional information to increase 
 the watermark robustness.
@@ -112,7 +112,7 @@ Trendmark uses [DEFLATE](https://en.wikipedia.org/wiki/Deflate) as compression a
 | -- | -- | -- |
 | fd | 12 00 00 00 | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
-### CompressedCRC32Watermark
+### CompressedCRC32Trendmark
 The CRC32 checksum is calculated over the entire watermark, replacing the bytes containing the
 checksum with null bytes.
 Only the content is compressed, potentially allowing to use the additional information to increase 
@@ -123,7 +123,7 @@ Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 | -- | -- | -- |
 | fc | 9d 54 46 ff | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
-### CompressedSizedCRC32Watermark
+### CompressedSizedCRC32Trendmark
 The size and CRC32 checksum are calculated over the entire watermark, replacing the bytes containing
 the checksum with null bytes.
 Only the content is compressed, potentially allowing to use the additional information to increase 
@@ -134,7 +134,7 @@ Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 | -- | -- | -- | -- |
 | fb | 16 00 00 00 | 13 07 a7 d2 | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
-### CompressedSHA3256Watermark
+### CompressedSHA3256Trendmark
 The SHA3-256 hash is calculated over the entire watermark, replacing the bytes containing the hash
 with null bytes.
 Only the content is compressed, potentially allowing to use the additional information to increase 
@@ -145,7 +145,7 @@ Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 | -- | -- | -- |
 | fa | df 60 19 45 c2 77 98 5d 0e 59 cc f8 9b 27 ed 9f 9c 98 85 a5 b3 3e c7 47 fa 88 68 74 a8 ef 77 5b | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
-### CompressedSizedSHA3256Watermark
+### CompressedSizedSHA3256Trendmark
 The size and SHA3-256 hash are calculated over the entire watermark, replacing the bytes containing the
 hash are replaced with zero-bytes.
 Only the content is compressed, potentially allowing to use the additional information to increase 

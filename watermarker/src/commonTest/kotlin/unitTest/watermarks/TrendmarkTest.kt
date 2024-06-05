@@ -8,18 +8,18 @@ package unitTest.watermarks
 
 import de.fraunhofer.isst.trend.watermarker.helper.toBytesLittleEndian
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.CRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedCRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedRawWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedCRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedSHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.RawWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedCRC32Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedSHA3256Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedCRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedRawTrendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedCRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedSHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.CompressedSizedTrendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.RawTrendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedCRC32Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedSHA3256Trendmark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedTrendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface
 import kotlin.test.Test
@@ -33,12 +33,12 @@ class TrendmarkTest {
         listOf<Byte>(-13, -55, 47, 74, -51, 85, -16, 44, 40, 46, -51, 5, 0)
 
     @Test
-    fun rawWatermark_creation_success() {
+    fun rawTrendmark_creation_success() {
         // Arrange
-        val expected = listOf(RawWatermark.TYPE_TAG.toByte()) + content
+        val expected = listOf(RawTrendmark.TYPE_TAG.toByte()) + content
 
         // Act
-        val watermark = RawWatermark.new(content)
+        val watermark = RawTrendmark.new(content)
         val extractedContent = watermark.getContent()
 
         // Assert
@@ -49,18 +49,18 @@ class TrendmarkTest {
     }
 
     @Test
-    fun rawWatermark_invalidTag_error() {
+    fun rawTrendmark_invalidTag_error() {
         // Arrange
         val watermarkContent = listOf((-1).toByte()) + content
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.RawWatermark",
+                "Trendmark.RawTrendmark",
                 0u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = RawWatermark(watermarkContent)
+        val watermark = RawTrendmark(watermarkContent)
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
@@ -75,12 +75,12 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedRawWatermark_creation_success() {
+    fun compressedRawTrendmark_creation_success() {
         // Arrange
-        val expected = listOf(CompressedRawWatermark.TYPE_TAG.toByte()) + compressedContent
+        val expected = listOf(CompressedRawTrendmark.TYPE_TAG.toByte()) + compressedContent
 
         // Act
-        val watermark = CompressedRawWatermark.new(content)
+        val watermark = CompressedRawTrendmark.new(content)
         val extractedContent = watermark.getContent()
 
         // Assert
@@ -91,18 +91,18 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedRawWatermark_invalidTag_error() {
+    fun compressedRawTrendmark_invalidTag_error() {
         // Arrange
         val watermarkContent = listOf((-1).toByte()) + compressedContent
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CompressedRawWatermark",
+                "Trendmark.CompressedRawTrendmark",
                 254u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedRawWatermark(watermarkContent)
+        val watermark = CompressedRawTrendmark(watermarkContent)
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
@@ -117,17 +117,17 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedWatermark_creation_success() {
+    fun sizedTrendmark_creation_success() {
         // Arrange
         val expectedSize =
-            (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size).toUInt()
+            (TrendmarkInterface.TAG_SIZE + SizedTrendmark.SIZE_SIZE + content.size).toUInt()
         val expected =
-            listOf(SizedWatermark.TYPE_TAG.toByte()) +
+            listOf(SizedTrendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 content
 
         // Act
-        val watermark = SizedWatermark.new(content)
+        val watermark = SizedTrendmark.new(content)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
 
@@ -141,23 +141,23 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedWatermark_invalidTag_error() {
+    fun sizedTrendmark_invalidTag_error() {
         // Arrange
         val expectedSize =
-            (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size).toUInt()
+            (TrendmarkInterface.TAG_SIZE + SizedTrendmark.SIZE_SIZE + content.size).toUInt()
         val watermarkContent =
             listOf((-1).toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.SizedWatermark",
+                "Trendmark.SizedTrendmark",
                 1u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = SizedWatermark(watermarkContent)
+        val watermark = SizedTrendmark(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -173,23 +173,23 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedWatermark_mismatchedSize_warning() {
+    fun sizedTrendmark_mismatchedSize_warning() {
         // Arrange
         val invalidSize =
-            (TrendmarkInterface.TAG_SIZE + SizedWatermark.SIZE_SIZE + content.size + 1).toUInt()
+            (TrendmarkInterface.TAG_SIZE + SizedTrendmark.SIZE_SIZE + content.size + 1).toUInt()
         val watermarkContent =
-            listOf(SizedWatermark.TYPE_TAG.toByte()) +
+            listOf(SizedTrendmark.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
             Trendmark.MismatchedSizeWarning(
-                "Trendmark.SizedWatermark",
+                "Trendmark.SizedTrendmark",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ).into().toString()
 
         // Act
-        val watermark = SizedWatermark(watermarkContent)
+        val watermark = SizedTrendmark(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -205,21 +205,21 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedWatermark_creation_success() {
+    fun compressedSizedTrendmark_creation_success() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedWatermark.SIZE_SIZE +
+                    SizedTrendmark.SIZE_SIZE +
                     compressedContent.size
             ).toUInt()
         val expected =
-            listOf(CompressedSizedWatermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedTrendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedWatermark.new(content)
+        val watermark = CompressedSizedTrendmark.new(content)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
 
@@ -233,12 +233,12 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedWatermark_invalidTag_error() {
+    fun compressedSizedTrendmark_invalidTag_error() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedWatermark.SIZE_SIZE +
+                    SizedTrendmark.SIZE_SIZE +
                     compressedContent.size
             ).toUInt()
         val watermarkContent =
@@ -247,13 +247,13 @@ class TrendmarkTest {
                 compressedContent
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CompressedSizedWatermark",
+                "Trendmark.CompressedSizedTrendmark",
                 253u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedSizedWatermark(watermarkContent)
+        val watermark = CompressedSizedTrendmark(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -269,28 +269,28 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedWatermark_mismatchedSize_warning() {
+    fun compressedSizedTrendmark_mismatchedSize_warning() {
         // Arrange
         val invalidSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedWatermark.SIZE_SIZE +
+                    SizedTrendmark.SIZE_SIZE +
                     compressedContent.size +
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(CompressedSizedWatermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedTrendmark.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
             Trendmark.MismatchedSizeWarning(
-                "Trendmark.CompressedSizedWatermark",
+                "Trendmark.CompressedSizedTrendmark",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ).into().toString()
 
         // Act
-        val watermark = CompressedSizedWatermark(watermarkContent)
+        val watermark = CompressedSizedTrendmark(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -306,14 +306,14 @@ class TrendmarkTest {
     }
 
     @Test
-    fun crc32Watermark_creation_success() {
+    fun crc32Trendmark_creation_success() {
         // Arrange
         val expectedCrc32 = 0x35160B87u
         val expected =
-            listOf(CRC32Watermark.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() + content
+            listOf(CRC32Trendmark.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() + content
 
         // Act
-        val watermark = CRC32Watermark.new(content)
+        val watermark = CRC32Trendmark.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
 
@@ -327,20 +327,20 @@ class TrendmarkTest {
     }
 
     @Test
-    fun crc32Watermark_invalidTag_error() {
+    fun crc32Trendmark_invalidTag_error() {
         // Arrange
         val expectedCrc32 = 0xBFC71733u
         val watermarkContent =
             listOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + content
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CRC32Watermark",
+                "Trendmark.CRC32Trendmark",
                 2u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CRC32Watermark(watermarkContent)
+        val watermark = CRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -356,23 +356,23 @@ class TrendmarkTest {
     }
 
     @Test
-    fun crc32Watermark_invalidChecksum_warning() {
+    fun crc32Trendmark_invalidChecksum_warning() {
         // Arrange
         val expectedCrc32 = 0x35160B87u
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(CRC32Trendmark.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus =
             Trendmark.InvalidChecksumWarning(
-                "Trendmark.CRC32Watermark",
+                "Trendmark.CRC32Trendmark",
                 invalidCrc32,
                 expectedCrc32,
             ).into()
 
         // Act
-        val watermark = CRC32Watermark(watermarkContent)
+        val watermark = CRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -388,16 +388,16 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedCRC32Watermark_creation_success() {
+    fun compressedCRC32Trendmark_creation_success() {
         // Arrange
         val expectedCrc32 = 0xFF46549Du
         val expected =
-            listOf(CompressedCRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedCRC32Trendmark.TYPE_TAG.toByte()) +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
 
         // Act
-        val watermark = CompressedCRC32Watermark.new(content)
+        val watermark = CompressedCRC32Trendmark.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
 
@@ -411,20 +411,20 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedCRC32Watermark_invalidTag_error() {
+    fun compressedCRC32Trendmark_invalidTag_error() {
         // Arrange
         val expectedCrc32 = 0x15C089FFu
         val watermarkContent =
             listOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + compressedContent
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CompressedCRC32Watermark",
+                "Trendmark.CompressedCRC32Trendmark",
                 252u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedCRC32Watermark(watermarkContent)
+        val watermark = CompressedCRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -440,23 +440,23 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedCRC32Watermark_invalidChecksum_warning() {
+    fun compressedCRC32Trendmark_invalidChecksum_warning() {
         // Arrange
         val expectedCrc32 = 0xFF46549Du
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CompressedCRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedCRC32Trendmark.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
             Trendmark.InvalidChecksumWarning(
-                "Trendmark.CompressedCRC32Watermark",
+                "Trendmark.CompressedCRC32Trendmark",
                 invalidCrc32,
                 expectedCrc32,
             ).into()
 
         // Act
-        val watermark = CompressedCRC32Watermark(watermarkContent)
+        val watermark = CompressedCRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -472,24 +472,24 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedCRC32Watermark_creation_success() {
+    fun sizedCRC32Trendmark_creation_success() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedCRC32Watermark.SIZE_SIZE +
-                    SizedCRC32Watermark.CHECKSUM_SIZE +
+                    SizedCRC32Trendmark.SIZE_SIZE +
+                    SizedCRC32Trendmark.CHECKSUM_SIZE +
                     content.size
             ).toUInt()
         val expectedCrc32 = 0x045B851Eu
         val expected =
-            listOf(SizedCRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(SizedCRC32Trendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 content
 
         // Act
-        val watermark = SizedCRC32Watermark.new(content)
+        val watermark = SizedCRC32Trendmark.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
@@ -506,14 +506,14 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedCRC32Watermark_invalidTag_error() {
+    fun sizedCRC32Trendmark_invalidTag_error() {
         // Arrange
         val expectedCrc32 = 0x735EA3E1u
         val size =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedCRC32Watermark.SIZE_SIZE +
-                    SizedCRC32Watermark.CHECKSUM_SIZE +
+                    SizedCRC32Trendmark.SIZE_SIZE +
+                    SizedCRC32Trendmark.CHECKSUM_SIZE +
                     content.size
             ).toUInt()
         val watermarkContent =
@@ -523,13 +523,13 @@ class TrendmarkTest {
                 content
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.SizedCRC32Watermark",
+                "Trendmark.SizedCRC32Trendmark",
                 3u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = SizedCRC32Watermark(watermarkContent)
+        val watermark = SizedCRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -545,41 +545,41 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedCRC32Watermark_mismatchedSizeInvalidChecksum_warning() {
+    fun sizedCRC32Trendmark_mismatchedSizeInvalidChecksum_warning() {
         // Arrange
         val expectedCrc32 = 0xD3B90546u
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedCRC32Watermark.SIZE_SIZE +
-                    SizedCRC32Watermark.CHECKSUM_SIZE +
+                    SizedCRC32Trendmark.SIZE_SIZE +
+                    SizedCRC32Trendmark.CHECKSUM_SIZE +
                     content.size +
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(SizedCRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(SizedCRC32Trendmark.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
             Trendmark.MismatchedSizeWarning(
-                "Trendmark.SizedCRC32Watermark",
+                "Trendmark.SizedCRC32Trendmark",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
             Trendmark.InvalidChecksumWarning(
-                "Trendmark.SizedCRC32Watermark",
+                "Trendmark.SizedCRC32Trendmark",
                 invalidCrc32,
                 expectedCrc32,
             ),
         )
 
         // Act
-        val watermark = SizedCRC32Watermark(watermarkContent)
+        val watermark = SizedCRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -595,24 +595,24 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedCRC32Watermark_creation_success() {
+    fun compressedSizedCRC32Trendmark_creation_success() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedCRC32Watermark.SIZE_SIZE +
-                    SizedCRC32Watermark.CHECKSUM_SIZE +
+                    SizedCRC32Trendmark.SIZE_SIZE +
+                    SizedCRC32Trendmark.CHECKSUM_SIZE +
                     compressedContent.size
             ).toUInt()
         val expectedCrc32 = 0xD2A70713u
         val expected =
-            listOf(CompressedSizedCRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedCRC32Trendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedCRC32Watermark.new(content)
+        val watermark = CompressedSizedCRC32Trendmark.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
@@ -629,14 +629,14 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedCRC32Watermark_invalidTag_error() {
+    fun compressedSizedCRC32Trendmark_invalidTag_error() {
         // Arrange
         val expectedCrc32 = 0x8E069413u
         val size =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedCRC32Watermark.SIZE_SIZE +
-                    SizedCRC32Watermark.CHECKSUM_SIZE +
+                    SizedCRC32Trendmark.SIZE_SIZE +
+                    SizedCRC32Trendmark.CHECKSUM_SIZE +
                     compressedContent.size
             ).toUInt()
         val watermarkContent =
@@ -646,13 +646,13 @@ class TrendmarkTest {
                 compressedContent
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CompressedSizedCRC32Watermark",
+                "Trendmark.CompressedSizedCRC32Trendmark",
                 251u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedSizedCRC32Watermark(watermarkContent)
+        val watermark = CompressedSizedCRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -668,41 +668,41 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedCRC32Watermark_mismatchedSizeInvalidChecksum_warning() {
+    fun compressedSizedCRC32Trendmark_mismatchedSizeInvalidChecksum_warning() {
         // Arrange
         val expectedCrc32 = 0x4D7D848Du
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedCRC32Watermark.SIZE_SIZE +
-                    SizedCRC32Watermark.CHECKSUM_SIZE +
+                    SizedCRC32Trendmark.SIZE_SIZE +
+                    SizedCRC32Trendmark.CHECKSUM_SIZE +
                     compressedContent.size +
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(CompressedSizedCRC32Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedCRC32Trendmark.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
             Trendmark.MismatchedSizeWarning(
-                "Trendmark.CompressedSizedCRC32Watermark",
+                "Trendmark.CompressedSizedCRC32Trendmark",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
             Trendmark.InvalidChecksumWarning(
-                "Trendmark.CompressedSizedCRC32Watermark",
+                "Trendmark.CompressedSizedCRC32Trendmark",
                 invalidCrc32,
                 expectedCrc32,
             ),
         )
 
         // Act
-        val watermark = CompressedSizedCRC32Watermark(watermarkContent)
+        val watermark = CompressedSizedCRC32Trendmark(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -718,7 +718,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sha3256Watermark_creation_success() {
+    fun sha3256Trendmark_creation_success() {
         // Arrange
         val expectedHash =
             listOf<Byte>(
@@ -726,10 +726,10 @@ class TrendmarkTest {
                 -94, -86, 85, -77, -100, 43, 48, -74, 25, -34, 28, 17, -55, 80,
             )
         val expectedContent =
-            listOf(SHA3256Watermark.TYPE_TAG.toByte()) + expectedHash + content
+            listOf(SHA3256Trendmark.TYPE_TAG.toByte()) + expectedHash + content
 
         // Act
-        val watermark = SHA3256Watermark.new(content)
+        val watermark = SHA3256Trendmark.new(content)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
 
@@ -743,7 +743,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sha3256Watermark_invalidTag_error() {
+    fun sha3256Trendmark_invalidTag_error() {
         // Arrange
         val expectedHash =
             listOf<Byte>(
@@ -752,7 +752,7 @@ class TrendmarkTest {
             )
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.SHA3256Watermark",
+                "Trendmark.SHA3256Trendmark",
                 4u,
                 255u,
             ).into().toString()
@@ -761,7 +761,7 @@ class TrendmarkTest {
             listOf((-1).toByte()) + expectedHash + content
 
         // Act
-        val watermark = SHA3256Watermark(watermarkContent)
+        val watermark = SHA3256Trendmark(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -777,7 +777,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sha3256Watermark_invalidHash_warning() {
+    fun sha3256Trendmark_invalidHash_warning() {
         // Arrange
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
@@ -787,14 +787,14 @@ class TrendmarkTest {
             )
         val expectedStatus =
             Trendmark.InvalidHashWarning(
-                "Trendmark.SHA3256Watermark",
+                "Trendmark.SHA3256Trendmark",
                 invalidHash,
                 expectedHash,
             ).into()
-        val watermarkContent = listOf(SHA3256Watermark.TYPE_TAG.toByte()) + invalidHash + content
+        val watermarkContent = listOf(SHA3256Trendmark.TYPE_TAG.toByte()) + invalidHash + content
 
         // Act
-        val watermark = SHA3256Watermark(watermarkContent)
+        val watermark = SHA3256Trendmark(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -810,7 +810,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSHA3256Watermark_creation_success() {
+    fun compressedSHA3256Trendmark_creation_success() {
         // Arrange
         val expectedHash =
             listOf<Byte>(
@@ -818,10 +818,10 @@ class TrendmarkTest {
                 -104, -123, -91, -77, 62, -57, 71, -6, -120, 104, 116, -88, -17, 119, 91,
             )
         val expectedContent =
-            listOf(CompressedSHA3256Watermark.TYPE_TAG.toByte()) + expectedHash + compressedContent
+            listOf(CompressedSHA3256Trendmark.TYPE_TAG.toByte()) + expectedHash + compressedContent
 
         // Act
-        val watermark = CompressedSHA3256Watermark.new(content)
+        val watermark = CompressedSHA3256Trendmark.new(content)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
 
@@ -835,7 +835,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSHA3256Watermark_invalidTag_error() {
+    fun compressedSHA3256Trendmark_invalidTag_error() {
         // Arrange
         val expectedHash =
             listOf<Byte>(
@@ -844,7 +844,7 @@ class TrendmarkTest {
             )
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CompressedSHA3256Watermark",
+                "Trendmark.CompressedSHA3256Trendmark",
                 250u,
                 255u,
             ).into().toString()
@@ -853,7 +853,7 @@ class TrendmarkTest {
             listOf((-1).toByte()) + expectedHash + compressedContent
 
         // Act
-        val watermark = CompressedSHA3256Watermark(watermarkContent)
+        val watermark = CompressedSHA3256Trendmark(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -869,7 +869,7 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSHA3256Watermark_invalidHash_warning() {
+    fun compressedSHA3256Trendmark_invalidHash_warning() {
         // Arrange
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
@@ -879,17 +879,17 @@ class TrendmarkTest {
             )
         val expectedStatus =
             Trendmark.InvalidHashWarning(
-                "Trendmark.CompressedSHA3256Watermark",
+                "Trendmark.CompressedSHA3256Trendmark",
                 invalidHash,
                 expectedHash,
             ).into()
         val watermarkContent =
-            listOf(CompressedSHA3256Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSHA3256Trendmark.TYPE_TAG.toByte()) +
                 invalidHash +
                 compressedContent
 
         // Act
-        val watermark = CompressedSHA3256Watermark(watermarkContent)
+        val watermark = CompressedSHA3256Trendmark(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -905,13 +905,13 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedSha3256Watermark_creation_success() {
+    fun sizedSHA3256Trendmark_creation_success() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedSHA3256Watermark.SIZE_SIZE +
-                    SizedSHA3256Watermark.HASH_SIZE +
+                    SizedSHA3256Trendmark.SIZE_SIZE +
+                    SizedSHA3256Trendmark.HASH_SIZE +
                     content.size
             ).toUInt()
         val expectedHash =
@@ -920,13 +920,13 @@ class TrendmarkTest {
                 53, -45, 52, -107, 92, 23, -125, -20, -20, 46, 73, 102, 69, -55, 26,
             )
         val expectedContent =
-            listOf(SizedSHA3256Watermark.TYPE_TAG.toByte()) +
+            listOf(SizedSHA3256Trendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 content
 
         // Act
-        val watermark = SizedSHA3256Watermark.new(content)
+        val watermark = SizedSHA3256Trendmark.new(content)
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
@@ -943,13 +943,13 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedSha3256Watermark_invalidTag_error() {
+    fun sizedSHA3256Trendmark_invalidTag_error() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedSHA3256Watermark.SIZE_SIZE +
-                    SizedSHA3256Watermark.HASH_SIZE +
+                    SizedSHA3256Trendmark.SIZE_SIZE +
+                    SizedSHA3256Trendmark.HASH_SIZE +
                     content.size
             ).toUInt()
         val expectedHash =
@@ -959,7 +959,7 @@ class TrendmarkTest {
             )
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.SizedSHA3256Watermark",
+                "Trendmark.SizedSHA3256Trendmark",
                 5u,
                 255u,
             ).into().toString()
@@ -971,7 +971,7 @@ class TrendmarkTest {
                 content
 
         // Act
-        val watermark = SizedSHA3256Watermark(watermarkContent)
+        val watermark = SizedSHA3256Trendmark(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -990,13 +990,13 @@ class TrendmarkTest {
     }
 
     @Test
-    fun sizedSha3256Watermark_mismatchedSizeInvalidHash_warning() {
+    fun sizedSHA3256Trendmark_mismatchedSizeInvalidHash_warning() {
         // Arrange
         val invalidSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedSHA3256Watermark.SIZE_SIZE +
-                    SizedSHA3256Watermark.HASH_SIZE +
+                    SizedSHA3256Trendmark.SIZE_SIZE +
+                    SizedSHA3256Trendmark.HASH_SIZE +
                     content.size +
                     1
             ).toUInt()
@@ -1009,27 +1009,27 @@ class TrendmarkTest {
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
             Trendmark.MismatchedSizeWarning(
-                "Trendmark.SizedSHA3256Watermark",
+                "Trendmark.SizedSHA3256Trendmark",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
             Trendmark.InvalidHashWarning(
-                "Trendmark.SizedSHA3256Watermark",
+                "Trendmark.SizedSHA3256Trendmark",
                 invalidHash,
                 expectedHash,
             ),
         )
 
         val watermarkContent =
-            listOf(SizedSHA3256Watermark.TYPE_TAG.toByte()) +
+            listOf(SizedSHA3256Trendmark.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidHash +
                 content
 
         // Act
-        val watermark = SizedSHA3256Watermark(watermarkContent)
+        val watermark = SizedSHA3256Trendmark(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -1048,13 +1048,13 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedSHA3256Watermark_creation_success() {
+    fun compressedSizedSHA3256Trendmark_creation_success() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedSHA3256Watermark.SIZE_SIZE +
-                    SizedSHA3256Watermark.HASH_SIZE +
+                    SizedSHA3256Trendmark.SIZE_SIZE +
+                    SizedSHA3256Trendmark.HASH_SIZE +
                     compressedContent.size
             ).toUInt()
         val expectedHash =
@@ -1063,13 +1063,13 @@ class TrendmarkTest {
                 -28, 68, -118, 65, -44, -115, 94, -63, -103, -120, -78, -17, -125, -56, 110,
             )
         val expectedContent =
-            listOf(CompressedSizedSHA3256Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedSHA3256Trendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedSHA3256Watermark.new(content)
+        val watermark = CompressedSizedSHA3256Trendmark.new(content)
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
@@ -1086,13 +1086,13 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedSHA3256Watermark_invalidTag_error() {
+    fun compressedSizedSHA3256Trendmark_invalidTag_error() {
         // Arrange
         val expectedSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedSHA3256Watermark.SIZE_SIZE +
-                    SizedSHA3256Watermark.HASH_SIZE +
+                    SizedSHA3256Trendmark.SIZE_SIZE +
+                    SizedSHA3256Trendmark.HASH_SIZE +
                     compressedContent.size
             ).toUInt()
         val expectedHash =
@@ -1102,7 +1102,7 @@ class TrendmarkTest {
             )
         val expectedStatus =
             Trendmark.InvalidTagError(
-                "Trendmark.CompressedSizedSHA3256Watermark",
+                "Trendmark.CompressedSizedSHA3256Trendmark",
                 249u,
                 255u,
             ).into().toString()
@@ -1114,7 +1114,7 @@ class TrendmarkTest {
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedSHA3256Watermark(watermarkContent)
+        val watermark = CompressedSizedSHA3256Trendmark(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -1133,13 +1133,13 @@ class TrendmarkTest {
     }
 
     @Test
-    fun compressedSizedSHA3256Watermark_mismatchedSizeInvalidHash_warning() {
+    fun compressedSizedSHA3256Trendmark_mismatchedSizeInvalidHash_warning() {
         // Arrange
         val invalidSize =
             (
                 TrendmarkInterface.TAG_SIZE +
-                    SizedSHA3256Watermark.SIZE_SIZE +
-                    SizedSHA3256Watermark.HASH_SIZE +
+                    SizedSHA3256Trendmark.SIZE_SIZE +
+                    SizedSHA3256Trendmark.HASH_SIZE +
                     compressedContent.size +
                     1
             ).toUInt()
@@ -1152,27 +1152,27 @@ class TrendmarkTest {
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
             Trendmark.MismatchedSizeWarning(
-                "Trendmark.CompressedSizedSHA3256Watermark",
+                "Trendmark.CompressedSizedSHA3256Trendmark",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
             Trendmark.InvalidHashWarning(
-                "Trendmark.CompressedSizedSHA3256Watermark",
+                "Trendmark.CompressedSizedSHA3256Trendmark",
                 invalidHash,
                 expectedHash,
             ),
         )
 
         val watermarkContent =
-            listOf(CompressedSizedSHA3256Watermark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedSHA3256Trendmark.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidHash +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedSHA3256Watermark(watermarkContent)
+        val watermark = CompressedSizedSHA3256Trendmark(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -1193,186 +1193,186 @@ class TrendmarkTest {
     @Test
     fun parse_valid_success() {
         // Arrange
-        val rawWatermark = RawWatermark.new(content)
-        val sizedWatermark = SizedWatermark.new(content)
-        val crc32Watermark = CRC32Watermark.new(content)
-        val sizedCRC32Watermark = SizedCRC32Watermark.new(content)
-        val sha3256Watermark = SHA3256Watermark.new(content)
-        val sizedSHA3256Watermark = SizedSHA3256Watermark.new(content)
-        val compressedRawWatermark = CompressedRawWatermark.new(content)
-        val compressedSizedWatermark = CompressedSizedWatermark.new(content)
-        val compressedCRC32Watermark = CompressedCRC32Watermark.new(content)
-        val compressedSizedCRC32Watermark = CompressedSizedCRC32Watermark.new(content)
-        val compressedSHA3256Watermark = CompressedSHA3256Watermark.new(content)
-        val compressedSizedSHA3256Watermark = CompressedSizedSHA3256Watermark.new(content)
+        val rawTrendmark = RawTrendmark.new(content)
+        val sizedTrendmark = SizedTrendmark.new(content)
+        val crc32Trendmark = CRC32Trendmark.new(content)
+        val sizedCRC32Trendmark = SizedCRC32Trendmark.new(content)
+        val sha3256Trendmark = SHA3256Trendmark.new(content)
+        val sizedSHA3256Trendmark = SizedSHA3256Trendmark.new(content)
+        val compressedRawTrendmark = CompressedRawTrendmark.new(content)
+        val compressedSizedTrendmark = CompressedSizedTrendmark.new(content)
+        val compressedCRC32Trendmark = CompressedCRC32Trendmark.new(content)
+        val compressedSizedCRC32Trendmark = CompressedSizedCRC32Trendmark.new(content)
+        val compressedSHA3256Trendmark = CompressedSHA3256Trendmark.new(content)
+        val compressedSizedSHA3256Trendmark = CompressedSizedSHA3256Trendmark.new(content)
 
         // Act
-        val parsedPlainWatermark = Trendmark.parse(rawWatermark.watermarkContent)
-        val parsedSizedWatermark = Trendmark.parse(sizedWatermark.watermarkContent)
-        val parsedCRC32Watermark = Trendmark.parse(crc32Watermark.watermarkContent)
-        val parsedSizedCRC32Watermark = Trendmark.parse(sizedCRC32Watermark.watermarkContent)
-        val parsedSHA3256Watermark = Trendmark.parse(sha3256Watermark.watermarkContent)
-        val parsedSizedSHA3256Watermark = Trendmark.parse(sizedSHA3256Watermark.watermarkContent)
-        val parsedCompressedRawWatermark = Trendmark.parse(compressedRawWatermark.watermarkContent)
-        val parsedCompressedSizedWatermark =
-            Trendmark.parse(compressedSizedWatermark.watermarkContent)
-        val parsedCompressedCRC32Watermark =
-            Trendmark.parse(compressedCRC32Watermark.watermarkContent)
-        val parsedCompressedSizedCRC32Watermark =
-            Trendmark.parse(compressedSizedCRC32Watermark.watermarkContent)
-        val parsedCompressedSHA3256Watermark =
-            Trendmark.parse(compressedSHA3256Watermark.watermarkContent)
-        val parsedCompressedSizedSHA3256Watermark =
-            Trendmark.parse(compressedSizedSHA3256Watermark.watermarkContent)
+        val parsedPlainWatermark = Trendmark.parse(rawTrendmark.watermarkContent)
+        val parsedSizedTrendmark = Trendmark.parse(sizedTrendmark.watermarkContent)
+        val parsedCRC32Trendmark = Trendmark.parse(crc32Trendmark.watermarkContent)
+        val parsedSizedCRC32Trendmark = Trendmark.parse(sizedCRC32Trendmark.watermarkContent)
+        val parsedSHA3256Trendmark = Trendmark.parse(sha3256Trendmark.watermarkContent)
+        val parsedSizedSHA3256Trendmark = Trendmark.parse(sizedSHA3256Trendmark.watermarkContent)
+        val parsedCompressedRawTrendmark = Trendmark.parse(compressedRawTrendmark.watermarkContent)
+        val parsedCompressedSizedTrendmark =
+            Trendmark.parse(compressedSizedTrendmark.watermarkContent)
+        val parsedCompressedCRC32Trendmark =
+            Trendmark.parse(compressedCRC32Trendmark.watermarkContent)
+        val parsedCompressedSizedCRC32Trendmark =
+            Trendmark.parse(compressedSizedCRC32Trendmark.watermarkContent)
+        val parsedCompressedSHA3256Trendmark =
+            Trendmark.parse(compressedSHA3256Trendmark.watermarkContent)
+        val parsedCompressedSizedSHA3256Trendmark =
+            Trendmark.parse(compressedSizedSHA3256Trendmark.watermarkContent)
 
         // Assert
         assertTrue(parsedPlainWatermark.isSuccess)
         var parsedWatermark = parsedPlainWatermark.value!!
-        assertTrue(parsedWatermark is RawWatermark)
+        assertTrue(parsedWatermark is RawTrendmark)
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(rawWatermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(rawTrendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedSizedWatermark.isSuccess)
-        parsedWatermark = parsedSizedWatermark.value!!
-        assertTrue(parsedWatermark is SizedWatermark)
-        assertEquals(sizedWatermark.extractSize().value!!, parsedWatermark.extractSize().value!!)
+        assertTrue(parsedSizedTrendmark.isSuccess)
+        parsedWatermark = parsedSizedTrendmark.value!!
+        assertTrue(parsedWatermark is SizedTrendmark)
+        assertEquals(sizedTrendmark.extractSize().value!!, parsedWatermark.extractSize().value!!)
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedWatermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sizedTrendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCRC32Watermark.isSuccess)
-        parsedWatermark = parsedCRC32Watermark.value!!
-        assertTrue(parsedWatermark is CRC32Watermark)
+        assertTrue(parsedCRC32Trendmark.isSuccess)
+        parsedWatermark = parsedCRC32Trendmark.value!!
+        assertTrue(parsedWatermark is CRC32Trendmark)
         assertEquals(
-            crc32Watermark.extractChecksum().value!!,
+            crc32Trendmark.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(crc32Watermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(crc32Trendmark.watermarkContent, parsedWatermark.watermarkContent)
 
-        assertTrue(parsedSizedCRC32Watermark.isSuccess)
-        parsedWatermark = parsedSizedCRC32Watermark.value!!
-        assertTrue(parsedWatermark is SizedCRC32Watermark)
+        assertTrue(parsedSizedCRC32Trendmark.isSuccess)
+        parsedWatermark = parsedSizedCRC32Trendmark.value!!
+        assertTrue(parsedWatermark is SizedCRC32Trendmark)
         assertEquals(
-            sizedCRC32Watermark.extractSize().value!!,
+            sizedCRC32Trendmark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            sizedCRC32Watermark.extractChecksum().value!!,
+            sizedCRC32Trendmark.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedCRC32Watermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sizedCRC32Trendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedSHA3256Watermark.isSuccess)
-        parsedWatermark = parsedSHA3256Watermark.value!!
-        assertTrue(parsedWatermark is SHA3256Watermark)
-        assertEquals(sha3256Watermark.extractHash().value!!, parsedWatermark.extractHash().value!!)
+        assertTrue(parsedSHA3256Trendmark.isSuccess)
+        parsedWatermark = parsedSHA3256Trendmark.value!!
+        assertTrue(parsedWatermark is SHA3256Trendmark)
+        assertEquals(sha3256Trendmark.extractHash().value!!, parsedWatermark.extractHash().value!!)
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sha3256Watermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sha3256Trendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedSizedSHA3256Watermark.isSuccess)
-        parsedWatermark = parsedSizedSHA3256Watermark.value!!
-        assertTrue(parsedWatermark is SizedSHA3256Watermark)
+        assertTrue(parsedSizedSHA3256Trendmark.isSuccess)
+        parsedWatermark = parsedSizedSHA3256Trendmark.value!!
+        assertTrue(parsedWatermark is SizedSHA3256Trendmark)
         assertEquals(
-            sizedSHA3256Watermark.extractSize().value!!,
+            sizedSHA3256Trendmark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            sizedSHA3256Watermark.extractHash().value!!,
+            sizedSHA3256Trendmark.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedSHA3256Watermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sizedSHA3256Trendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedRawWatermark.isSuccess)
-        parsedWatermark = parsedCompressedRawWatermark.value!!
-        assertTrue(parsedWatermark is CompressedRawWatermark)
+        assertTrue(parsedCompressedRawTrendmark.isSuccess)
+        parsedWatermark = parsedCompressedRawTrendmark.value!!
+        assertTrue(parsedWatermark is CompressedRawTrendmark)
         var decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
-        assertEquals(compressedRawWatermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedRawTrendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSizedWatermark.isSuccess)
-        parsedWatermark = parsedCompressedSizedWatermark.value!!
-        assertTrue(parsedWatermark is CompressedSizedWatermark)
+        assertTrue(parsedCompressedSizedTrendmark.isSuccess)
+        parsedWatermark = parsedCompressedSizedTrendmark.value!!
+        assertTrue(parsedWatermark is CompressedSizedTrendmark)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSizedWatermark.extractSize().value!!,
+            compressedSizedTrendmark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
-        assertEquals(compressedSizedWatermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedSizedTrendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedCRC32Watermark.isSuccess)
-        parsedWatermark = parsedCompressedCRC32Watermark.value!!
-        assertTrue(parsedWatermark is CompressedCRC32Watermark)
+        assertTrue(parsedCompressedCRC32Trendmark.isSuccess)
+        parsedWatermark = parsedCompressedCRC32Trendmark.value!!
+        assertTrue(parsedWatermark is CompressedCRC32Trendmark)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedCRC32Watermark.extractChecksum().value!!,
+            compressedCRC32Trendmark.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
-        assertEquals(compressedCRC32Watermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedCRC32Trendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSizedCRC32Watermark.isSuccess)
-        parsedWatermark = parsedCompressedSizedCRC32Watermark.value!!
-        assertTrue(parsedWatermark is CompressedSizedCRC32Watermark)
+        assertTrue(parsedCompressedSizedCRC32Trendmark.isSuccess)
+        parsedWatermark = parsedCompressedSizedCRC32Trendmark.value!!
+        assertTrue(parsedWatermark is CompressedSizedCRC32Trendmark)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSizedCRC32Watermark.extractSize().value!!,
+            compressedSizedCRC32Trendmark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            compressedSizedCRC32Watermark.extractChecksum().value!!,
+            compressedSizedCRC32Trendmark.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
         assertEquals(
-            compressedSizedCRC32Watermark.watermarkContent,
+            compressedSizedCRC32Trendmark.watermarkContent,
             parsedWatermark.watermarkContent,
         )
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSHA3256Watermark.isSuccess)
-        parsedWatermark = parsedCompressedSHA3256Watermark.value!!
-        assertTrue(parsedWatermark is CompressedSHA3256Watermark)
+        assertTrue(parsedCompressedSHA3256Trendmark.isSuccess)
+        parsedWatermark = parsedCompressedSHA3256Trendmark.value!!
+        assertTrue(parsedWatermark is CompressedSHA3256Trendmark)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSHA3256Watermark.extractHash().value!!,
+            compressedSHA3256Trendmark.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
-        assertEquals(compressedSHA3256Watermark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedSHA3256Trendmark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSizedSHA3256Watermark.isSuccess)
-        parsedWatermark = parsedCompressedSizedSHA3256Watermark.value!!
-        assertTrue(parsedWatermark is CompressedSizedSHA3256Watermark)
+        assertTrue(parsedCompressedSizedSHA3256Trendmark.isSuccess)
+        parsedWatermark = parsedCompressedSizedSHA3256Trendmark.value!!
+        assertTrue(parsedWatermark is CompressedSizedSHA3256Trendmark)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSizedSHA3256Watermark.extractSize().value!!,
+            compressedSizedSHA3256Trendmark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            compressedSizedSHA3256Watermark.extractHash().value!!,
+            compressedSizedSHA3256Trendmark.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
         assertEquals(
-            compressedSizedSHA3256Watermark.watermarkContent,
+            compressedSizedSHA3256Trendmark.watermarkContent,
             parsedWatermark.watermarkContent,
         )
         assertTrue(parsedWatermark.validate().isSuccess)

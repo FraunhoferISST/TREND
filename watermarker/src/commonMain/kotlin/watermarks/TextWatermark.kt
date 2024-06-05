@@ -85,20 +85,20 @@ class TextWatermark private constructor(
 
             val textWatermark =
                 when (trendmark) {
-                    is RawWatermark -> TextWatermark(text)
-                    is SizedWatermark -> TextWatermark(text, sized = true)
-                    is CompressedRawWatermark -> TextWatermark(text, compressed = true)
-                    is CompressedSizedWatermark ->
+                    is RawTrendmark -> TextWatermark(text)
+                    is SizedTrendmark -> TextWatermark(text, sized = true)
+                    is CompressedRawTrendmark -> TextWatermark(text, compressed = true)
+                    is CompressedSizedTrendmark ->
                         TextWatermark(text, compressed = true, sized = true)
 
-                    is CRC32Watermark,
-                    is SizedCRC32Watermark,
-                    is CompressedCRC32Watermark,
-                    is CompressedSizedCRC32Watermark,
-                    is SHA3256Watermark,
-                    is SizedSHA3256Watermark,
-                    is CompressedSHA3256Watermark,
-                    is CompressedSizedSHA3256Watermark,
+                    is CRC32Trendmark,
+                    is SizedCRC32Trendmark,
+                    is CompressedCRC32Trendmark,
+                    is CompressedSizedCRC32Trendmark,
+                    is SHA3256Trendmark,
+                    is SizedSHA3256Trendmark,
+                    is CompressedSHA3256Trendmark,
+                    is CompressedSizedSHA3256Trendmark,
                     -> {
                         status.addEvent(UnsupportedTrendmarkError(trendmark.getSource()))
                         return status.into<_>()
@@ -136,13 +136,13 @@ class TextWatermark private constructor(
         val content = text.encodeToByteArray().asList()
 
         return if (sized && compressed) {
-            CompressedSizedWatermark.new(content)
+            CompressedSizedTrendmark.new(content)
         } else if (sized) {
-            SizedWatermark.new(content)
+            SizedTrendmark.new(content)
         } else if (compressed) {
-            CompressedRawWatermark.new(content)
+            CompressedRawTrendmark.new(content)
         } else {
-            RawWatermark.new(content)
+            RawTrendmark.new(content)
         }
     }
 
