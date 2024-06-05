@@ -8,6 +8,7 @@ package de.fraunhofer.isst.trend.watermarker.helper
 
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import kotlin.js.JsExport
 
 const val COMPRESSION_LEVEL: Int = 9
 
@@ -19,6 +20,7 @@ expect object Compression {
     fun inflate(data: List<Byte>): Result<List<Byte>>
 }
 
+@JsExport
 class InflationError(val reason: String) : Event.Error("Compression.inflate") {
     /** Returns a String explaining the event */
     override fun getMessage() = "Error inflating bytes: $reason."
