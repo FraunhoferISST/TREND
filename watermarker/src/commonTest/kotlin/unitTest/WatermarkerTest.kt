@@ -10,7 +10,7 @@ import de.fraunhofer.isst.trend.watermarker.SupportedFileType
 import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedWatermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.SizedTrendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
@@ -309,7 +309,7 @@ class WatermarkerTest {
     @Test
     fun textGetTrendmarks_trendmarkedString_success() {
         // Arrange
-        val expectedTrendmarks = listOf(SizedWatermark.fromString(watermarkString))
+        val expectedTrendmarks = listOf(SizedTrendmark.fromString(watermarkString))
 
         // Act
         val trendmarks = watermarker.textGetTrendmarks(textWithTrendmarks)
@@ -340,7 +340,7 @@ class WatermarkerTest {
         val expectedStatus = unkownTagError.into()
         expectedStatus.addEvent(unkownTagError)
         expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTrendmarks"))
-        val expectedTrendmarks = listOf(SizedWatermark.fromString(watermarkString))
+        val expectedTrendmarks = listOf(SizedTrendmark.fromString(watermarkString))
 
         // Act
         val trendmarks = watermarker.textGetTrendmarks(textWithWatermarksAndTrendmarks)
