@@ -6,6 +6,8 @@
  */
 package de.fraunhofer.isst.trend.watermarker.watermarks
 
+import kotlin.js.JsExport
+
 /**
  * The TrendmarkBuilder interface is designed to create classes for generating a Trendmark from
  * various types of data. Implementing classes will provide the specific logic to convert different
@@ -13,6 +15,7 @@ package de.fraunhofer.isst.trend.watermarker.watermarks
  * Trendmark's content. This interface ensures that all types of Trendmarks maintain a consistent
  * structure and can be processed in a standardized way by the watermarking library.
  */
+@JsExport
 interface TrendmarkBuilder {
     /** Generates a Trendmark with the specific content */
     fun finish(): Trendmark
