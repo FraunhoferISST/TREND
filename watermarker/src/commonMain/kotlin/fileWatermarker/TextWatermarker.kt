@@ -12,6 +12,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -330,6 +331,14 @@ class TextWatermarker(
     /** Counts the minimum number of insert positions needed in a text to insert the [watermark] */
     fun getMinimumInsertPositions(watermark: Watermark): Int =
         getMinimumInsertPositions(watermark.watermarkContent)
+
+    /**
+     * Counts the minimum number of insert positions needed in a text to insert the
+     * [trendmarkBuilder]
+     */
+    @JsName("getMimimumInsertPositionsTrendmarkBuilder")
+    fun getMinimumInsertPositions(trendmarkBuilder: TrendmarkBuilder): Int =
+        getMinimumInsertPositions(trendmarkBuilder.finish())
 
     /** Transforms a [watermark] into a separated watermark */
     private fun getSeparatedWatermark(watermark: List<Byte>): Sequence<Char> {
