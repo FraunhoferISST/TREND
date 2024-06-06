@@ -1,5 +1,6 @@
 ---
-title: Watermarker
+title: CLI
+description: Command Line Interface build with Kotlin on Java build target.
 ---
 
 <!--
@@ -9,4 +10,6 @@ title: Watermarker
  that can be found in the LICENSE file.
 -->
 
-# Watermarker
+# CLI
+
+_Follows soon._

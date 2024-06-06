@@ -1,5 +1,6 @@
 ---
 title: Contributing
+description: Contributing in the GitHub project (guidelines, processes, rules, code of conduct, etc.)
 ---
 
 <!--

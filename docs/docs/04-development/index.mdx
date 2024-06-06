@@ -10,6 +10,10 @@ slug: /development
  that can be found in the LICENSE file.
 -->
 
+import PatentHint from './../patent-hint.mdx'
+
+<PatentHint components={props.components} />
+
 # Development Overview
 
 ## Target Group
@@ -22,10 +26,13 @@ If you are a **developer** and want to / are interested in ...
 the following pages provide you with the necessary information.
 
 If you are a **developer** interested in just *using* the TREND watermarking library inside your 
-own implementation without changing the core, please refer to the [Usage](/usage/overview/) section.
+own implementation without changing the core, please refer to the [Usage](/docs/usage/) section.
 
 ## Structure
-They are structured by the provided components:
-- The watermarker library
-- The Command Line Interface (CLI)
-- The webinterface
+They structure is based on the provided components.
+
+```mdx-code-block
+import DocCardList from '@theme/DocCardList';
+
+<DocCardList />
+```

@@ -1,0 +1,40 @@
+---
+title: Getting Started
+---
+
+<!--
+ Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+
+ This work is licensed under the Fraunhofer License (on the basis of the MIT license)
+ that can be found in the LICENSE file.
+-->
+
+
+import PatentHint from './patent-hint.mdx'
+
+<PatentHint components={props.components} />
+
+# Getting Started
+
+Detailed getting started guides are described for every component in their dedicated `README`
+file, located in the corresponding subfolders of the TREND repository. In the following, an easy
+start of the webinterface with the watermarker library is described.
+
+## System Prerequisites
+
+The following things are needed to run this application:
+
+- docker & docker-compose
+
+## Quick Start
+
+To run the webinterface, just clone the repo locally and run the `docker-compose.yml` file in the
+root directory of the project:
+
+```shell
+$ git clone https://github.com/FraunhoferISST/TREND.git
+$ cd TREND
+$ docker-compose up
+```
+
+After the startup finished, try to visit the webinterface at http://localhost:8080

@@ -11,6 +11,8 @@ title: Installation
 
 # Installation
 
+_Follows soon._
+
 ## System Requirements
 
 ## Building from Source

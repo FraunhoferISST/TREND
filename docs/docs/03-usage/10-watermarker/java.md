@@ -13,3 +13,5 @@ title: Java
 
 If you want to use watermarking inside your Java project, this page gives you the necessary
 information.
+
+_Follows soon._

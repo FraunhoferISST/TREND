@@ -13,3 +13,5 @@ title: JavaScript
 
 If you want to use watermarking inside your JavaScript project, this page gives you the necessary
 information.
+
+_Follows soon._

@@ -1,5 +1,6 @@
 ---
-title: Watermarker
+title: Webinterface
+description: KVision frontend
 ---
 
 <!--
@@ -9,4 +10,6 @@ title: Watermarker
  that can be found in the LICENSE file.
 -->
 
-# Watermarker
+# Webinterface
+
+_Follows soon._
