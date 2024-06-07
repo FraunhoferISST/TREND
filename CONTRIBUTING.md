@@ -11,6 +11,7 @@ Thank you for your interest in contributing to the TREND project!
     * [Pull Requests](#pull-requests)
     * [Commits](#commits)
     * [License Header](#license-header)
+* [Documentation](#documentation)
 * [IntelliJ](#intellij)
 * [Style Guide](#style-guide)
     * [IntelliJ IDEA configuration](#intellij-idea-configuration)
@@ -67,6 +68,9 @@ that every proposed contribution is related to a previously discussed issue. Pul
 shouldn't be too big to allow a fast integration of changes. We recommend keeping the content
 below 1000 lines of code (LOC).
 
+To keep to whole project up-to-date, please check and adjust the documentation accordingly. See 
+the [documentation](#documentation) section for more information.
+
 To ensure code quality, every pull request needs at least one approved review from one of the
 Committer team. Further check that all pipelines succeed before a review can be started.
 
@@ -94,6 +98,21 @@ Every source code file in this project must contain a license header. Example:
  * that can be found in the LICENSE file.
  */
 ```
+
+## Documentation
+
+Documentation is important for us since it is the starting point for newcomers and a reference for
+experts. We are using the [Docusaurus](https://github.com/facebook/docusaurus/) framework, 
+located in the `docs` folder.
+
+Please always adjust and update the documentation! Extend the existing markdown files in the 
+`docs/docs` folder or create a new file according to the existing structure. Use numbers in 
+front of the file- and folder-names for sorting. Please use kebab case in the file names for a 
+consistent URL-slug.
+
+In case you add a new file (like an image), remember to declare its license according to
+[REUSE](https://reuse.software/) by adding an additional `.license` file (like
+`my-figure.jpg.license` for the `my-figure.jpg` image).
 
 ## IntelliJ
 

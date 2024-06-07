@@ -40,7 +40,7 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           editUrl:
-            'https://github.com/FraunhoferISST/TREND/tree/main/',
+            'https://github.com/FraunhoferISST/TREND/tree/main/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',

@@ -6,6 +6,7 @@
 ## Table of Contents
 
 - [About](#about)
+- [Documentation](#documentation)
 - [Structure](#structure)
 - [Getting Started](#getting-started)
     - [System Prerequisites](#system-prerequisites)
@@ -28,6 +29,11 @@ sacrifices.
 > order to use the TREND watermarker Software in the form published here, a patent license is
 > required in addition to the license for the Software. See `LICENSE` for more information. In
 > case of any questions or uncertainties, please contact us at trend@isst.fraunhofer.de.
+
+## Documentation
+
+All information from usage until development are collected and provided in our
+[documentation](https://fraunhoferisst.github.io/TREND/).
 
 ## Structure
 
@@ -62,7 +68,7 @@ The following things are needed to run this application:
 To run the webinterface, just clone the repo locally and run the `docker-compose.yml` file in the
 root directory of the project:
 
-```
+```shell
 $ git clone https://github.com/FraunhoferISST/TREND.git
 $ cd TREND
 $ docker-compose up
