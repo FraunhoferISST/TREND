@@ -288,7 +288,7 @@ fun Status.print() {
  *  - nop
  */
 fun Status.handle() {
-    if (this.isSuccess) {
+    if (isSuccess && !hasCustomMessage) {
         return
     }
 

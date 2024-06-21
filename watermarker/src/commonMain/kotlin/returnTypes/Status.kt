@@ -11,13 +11,13 @@ import kotlin.js.JsName
 
 /**
  * An Event represents different kinds of events that can occur during the execution of a function.
- * There are 3 base Variants:
+ * There are 3 base variants:
  *  - Success
  *  - Warning
  *  - Error.
  *
- * The variants Warning and Error are abstract: For each event that can occur a unique class must be
- * created that overwrites fun getMessage(): String to explain the event.
+ * The variants Warning and Error are abstract: For each event that can occur, a unique class must
+ * be created that overrides fun getMessage(): String to explain the event.
  */
 @JsExport
 sealed class Event(
@@ -119,6 +119,9 @@ class Status(event: Event? = null) {
 
     /** Checks if type is ERROR */
     val isError: Boolean get() = type == Type.ERROR
+
+    /** Check if any event contains a custom message */
+    val hasCustomMessage: Boolean get() = eventList.any { it.hasCustomMessage }
 
     /**
      * Adds [event] to [eventList] (if it contains a custom message) and updates [type] if the

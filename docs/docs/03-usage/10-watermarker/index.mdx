@@ -15,4 +15,44 @@ import PatentHint from './../../patent-hint.mdx'
 
 # Watermarker
 
-_Follows soon._
+## Differentiation: Watermarking vs. Watermarks
+ - Watermark: the content that gets insert into a file/data
+ - Watermarking: the algorithm/strategy to insert a watermark into a file/data
+
+Our library can insert arbitrary bytes into all supported file types/data. If your watermark does
+not align with bytes, you must integrate your own padding scheme.
+
+We also developed a strategy to support creating and parsing watermarks. This is completely
+optional, you can choose to use our strategy or create your own. Below you can find an example for
+our strategy to create and parse watermarks that contain text as content.
+
+## General Information
+The library is designed to allow watermarking bytes into any support file type or data. However,
+the current development focus is on watermarking plain text and is currently the only fully
+supported file type. If you want to integrate your own watermarking schema you can easily integrate
+it into our library, see [Development](../../development/watermarker) for details.
+
+### TextWatermarker customizations
+The TextWatermarker is designed to allow customizing its behavior in many ways:
+- changing how watermarks are separated
+   - empty insert position
+   - one char between watermarks
+   - one char at the beginning of a water and another at the end
+- changing the transcoding
+   - the transcoding converts the watermark bytes into characters and back
+
+However, we do not provide preconfigured configuration options for these adjustments, you have to
+read the code and then create your own implementaitons.
+
+## Kotlin Library: Special Characteristics
+Kotlin uses so-called
+[companion objects](https://kotlinlang.org/docs/object-declarations.html#companion-objects) to
+provide static function. Most of our classes are providing static functions to create an instance
+instead of a constructor. To create an instance of such class in Java or JavaScript you must not use 
+the `new` operated. Instead you have to use `ClassName.Companion.someInstantiationFunction(..)`.
+See
+[Java Example](./java/#example-watermarking-text-with-text)
+line 28 of `Main.java` for an example.
+
+---
+_More follows soon._

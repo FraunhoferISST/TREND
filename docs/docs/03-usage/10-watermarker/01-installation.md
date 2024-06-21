@@ -9,6 +9,10 @@ title: Installation
  that can be found in the LICENSE file.
 -->
 
+import PatentHint from './../../patent-hint.mdx'
+
+<PatentHint components={props.components} />
+
 # Installation
 
 _Follows soon._
@@ -16,3 +20,7 @@ _Follows soon._
 ## System Requirements
 
 ## Building from Source
+1. Clone the TREND repository
+2. `cd TREND/watermarker` (if not already there)
+3. `./gradlew build`
+4. `./gradlew publishToMavenLocal`

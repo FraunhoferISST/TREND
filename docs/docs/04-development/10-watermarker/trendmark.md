@@ -12,9 +12,9 @@ title: Trendmark
 # Trendmark
 The watermarker library uses bytes as the watermark content. This approach is very flexible and
 allows almost any content to be inserted as a watermark. However, when extracting a watermark, it is
-necessary to know how to interpret the bytes. The information needed correctly interpret the bytes
-can be included in the watermark at the cost of increasing the size of the watermark. This makes it
-possible to extract and interpret watermarks from unknown sources, as long as they follow a
+necessary to know how to interpret the bytes. The information needed to correctly interpret the
+bytes can be included in the watermark at the cost of increasing the size of the watermark. This
+makes it possible to extract and interpret watermarks from unknown sources, as long as they follow a
 predefined specification. The Trendmark class creates and implements such a specification. The
 specification is documented below.
 
