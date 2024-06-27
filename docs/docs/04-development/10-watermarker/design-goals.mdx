@@ -9,7 +9,6 @@ title: Design Goals
  that can be found in the LICENSE file.
 -->
 
-
 import PatentHint from './../../patent-hint.mdx'
 
 <PatentHint components={props.components} />
@@ -23,14 +22,14 @@ This documentation is in a pretty early stage and updated continuously. Watch it
  core library as well as users of the library (but it has not been tested to see if this works as
 intended yet). Most functions only require *interfaces* instead of specialized classes to allow
 creating your own classes with different behavior.
-   - *example*: Interface
+   - *Example*: Interface
    [`FileWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/FileWatermarker.kt)
    which allows adding support for other file types.
 
 - **Flexibility**: for most of the functionalities we created an interface and then
-implemented our *default* implementation. If this implementation does not meet the requirements it
+implemented our *default* implementation. If this implementation does not meet the requirements, it
 can be exchanged with another class implementing the interface. 
-   - *example*: class
+   - *Example*: class
    [`TextWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L37)
    allows specifying your own transcoding.
 
@@ -39,7 +38,7 @@ hard to understand how the library can and should be used. To make the usage eas
 convenient classes and functions which reduce the flexibility but should make it easy to use the 
 library for general use-cases. Only users with special requirements have to look into the more
 flexible and complex API's.
-   - *example*: the classes
+   - *Example*: the classes
    [`Watermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/Watermarker.kt)
    and
    [`JvmWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/jvmMain/kotlin/JvmWatermarker.kt)
@@ -51,10 +50,10 @@ between performance and usability we chose the option for **better usability**.
 
 - **Code quality**: The code quality is very important for us. We want to ensure that every dev is
 able to work on the code base by providing documentation and enforcing a good code style by
-using linters. For more information see
-[`CONTRIBUTING.md`](https://github.com/FraunhoferISST/TREND/blob/main/CONTRIBUTING.md).
+using linters. More information are collected in the [Contributing](../../contributing)
+section.
 
-- **Testing**: For every new code added to the library tests should be added to validate the
+- **Testing**: For every new code added to the library, tests have to be added to validate the
 functionality. This includes *unit tests* as well as *integration tests*. Furthermore, extensive
 tests also provide a good point of reference for new devs on how the code should be used.
 
@@ -65,5 +64,5 @@ or a
 [`Result`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Result.kt)
 if they return a value. See [Concepts](../concepts/#error-handling-1) for details.
 
-**Devs working on the project should try to follow these goals!**
-
+**Devs working on the project need to understand these goals and implement them in their daily
+practice!**

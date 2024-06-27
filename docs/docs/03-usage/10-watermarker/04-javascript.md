@@ -14,35 +14,33 @@ import PatentHint from './../../patent-hint.mdx'
 <PatentHint components={props.components} />
 
 # JavaScript
-
 If you want to use watermarking inside your JavaScript project, this page gives you the necessary
 information.
 
-## Compile the library
+## Compile the Library
 See [Installation](../installation).
 
 
 ## Plain JavaScript
-
 In order to use this library in plain JavaScript, follow these steps:
 
 1. Build the library ([see above](#compile-the-library))
 2. Import the generated JS library:
-   ```Html
+   ```html
    <script src='[relative-path-to]/TREND/watermarker/build/dist/js/productionExecutable/watermarker.js'></script>
    ```
-3. This generates a variable watermarker that provides access to the library functionalities.
+3. This generates a variable `watermarker`s that provides access to the library functionalities.
    However, the actual watermarker object is behind the package path and you might want to reassign
    the watermarker variable to get rid of the long path like this:
-   ```Javascript
+   ```js
    watermarker = watermarker.de.fraunhofer.isst.trend.watermarker;
    ```
 4. Now you are ready to use the watermarker in plain JS. An example HTML file can be found
-[here](https://github.com/FraunhoferISST/TREND/blob/main/samples/plain_js/plain_js_minimal_example.html).
+[in the repositories' examples](https://github.com/FraunhoferISST/TREND/blob/main/samples/plain_js/plain_js_minimal_example.html).
+
 You can open the file in the browser, no web server required.
 
-## JavaScript modules
-
+## JavaScript Modules
 In order to use this library in JavaScript modules, follow these steps:
 
 1. Build the library ([see above](#compile-the-library))
@@ -60,15 +58,14 @@ In order to use this library in JavaScript modules, follow these steps:
    import watermarker from '[relative-path-to]/TREND/watermarker/build/js/packages/watermarker/kotlin/watermarker.js'; // built as module
    ```
 
-3. This generates a variable watermarker that provides access to the library functionalities.
+3. This generates a variable `watermarker` that provides access to the library functionalities.
    However, the actual watermarker object is behind the package path and you might want to reassign
    the watermarker variable to get rid of the long path like this:
    ```Javascript
-   watermarker = watermarker.de.fraunhofer.isst.trend.watermarker; // note that imports in ESM are implicitly constant
+   watermarker = watermarker.de.fraunhofer.isst.trend.watermarker;
    ```
+   *Note that imports in ESM are implicitly constant.*
 4. Now you are ready to use the watermarker in your module. An example node script can be found
-[here](https://github.com/FraunhoferISST/TREND/blob/main/samples/js_modules/js_modules_minimal_example.js).
-Run it using `node npm_minimal_example.js`
+[in the repositories' examples](https://github.com/FraunhoferISST/TREND/blob/main/samples/js_modules/js_modules_minimal_example.js).
 
----
-_More follows soon._
+Run it using `node npm_minimal_example.js`.

@@ -9,7 +9,6 @@ title: Concepts
  that can be found in the LICENSE file.
 -->
 
-
 import PatentHint from './../../patent-hint.mdx'
 
 <PatentHint components={props.components} />
@@ -26,15 +25,15 @@ Our library is developed as
 Kotlin, Java, and JavaScript. This allows the library to be used in any JVM compatible language (
 e.g., Java, Kotlin), Node.js, and in plain JavaScript (e.g., browsers).
 
-In some cases different code is required for different platforms. In such cases the [`expect` and
+In some cases, different code is required for different platforms. In such cases the [`expect` and
 `actual`](https://kotlinlang.org/docs/multiplatform-expect-actual.html)
 feature of Kotlin is used, or some features (like operating on files) are only available on some
 platforms. Because of this, code in the same package can be in different paths, depending on the
 compilation target. For this reason the following refers to packages instead of paths.
-- *example*: when compiling for JVM, the package `de.fraunhofer.isst.trend.watermarker.files`
+- *Example*: when compiling for JVM, the package `de.fraunhofer.isst.trend.watermarker.files`
 contains `*.kt` files from `src/commonMain/kotlin/files` and `src/jvmMain/kotlin/files`.
 
-### Code base
+### Code Base
 The watermarker library offers two main functionalities:
  1. [Insert and extract watermarks](#insert-and-extract-watermarks):
  insert and extract additional information into/from files/data.
@@ -53,7 +52,7 @@ are designed to offer an easy entry point for users to insert and extract waterm
 supported file types without requiring any additional configuration. Only users with special
 requirements should have to familiarize themselves with the individual classes.
 
-### Error handling
+### Error Handling
 We handle errors (and warnings) as values, not as exceptions. Our library
 should not throw any exceptions, instead functions which can fail should return a `Status` or a
 `Result` if they return a value. See [Error Handling](#error-handling-1) for details.
@@ -66,12 +65,12 @@ generate supported file types in memory:
  - all classes adding support for a file type must implement the interface
  [`WatermarkableFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/WatermarkableFile.kt)
  - the classes should offer functions to modify the contents of the file when possible
-    - *example*:
+    - *Example*:
     [`ZipFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/ZipFile.kt#L246)
     offers functions to add/remove extra fields into the header section of zip files
  - if the class allows customizing its behavior, a builder class should be implemented which allows
  generating an instance with default settings as well as specifying all its customization options.
-    - *example*:
+    - *Example*:
     [`TextWatermarkerBuilder`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L425)
     (from a different package but the concept is the same)
 
@@ -79,7 +78,7 @@ The code in the package `de.fraunhofer.isst.trend.watermarker.fileWatermarker` i
 insert and extract watermarks into
 [`WatermarkableFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/WatermarkableFile.kt)s:
  - for each instance of
- [`WatermarkableFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/WatermarkableFile.kt)
+ [`WatermarkableFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/WatermarkableFile.kt),
  a class implementing
  [`FileWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/FileWatermarker.kt)
  for that specific
@@ -93,7 +92,7 @@ insert and extract watermarks into
  while maintaining a valid file.
  - if the class allows customizing its behavior, a builder class should be implemented which allows
  generating an instance with default settings as well as specifying all its customization options.
-    - *example*:
+    - *Example*:
     [`TextWatermarkerBuilder`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L425)
 
 ## Generate and Parse Watermarks
@@ -111,16 +110,17 @@ generating watermarks and parsing extracted watermarks:
  watermark (e.g., size, checksums, or hashes) are included in the watermark. The format of the
  content itself is not defined in detail (e.g., text, certificate, image, ...), but general
  information about the content are defined (currently only whether the content is compressed).
- For more details see [`Trendmark`](../trendmark). This implies that a user extracting a `Trendmark`
- must know the type of content but not the format used to store the content.
- - To offer convenient functions to generate, modify, and parse
+ For more details see the [Trendmark](../trendmark) documentation section.
+This implies that a user extracting a `Trendmark`  must know the type of content but not the format
+used to store the content.
+    - To offer convenient functions to generate, modify, and parse
  [`Trendmark`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/watermarks/Trendmark.kt)s
  with specific content (e.g., text, certificate, ...) the interface
  [`TrendmarkBuilder`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/watermarks/TrendmarkBuilder.kt)
  can be used to implement a class with a builder-like pattern (e.g.,
  [`TextWatermark`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/watermarks/TextWatermark.kt)).
 
-## Error handling
+## Error Handling
 We handle errors (and warnings) as values, not as exceptions. Our library
 should not throw any exceptions, instead functions which can fail should return a
 [`Status`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Status.kt)
@@ -144,7 +144,7 @@ A
 [`Status`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Status.kt)
 represents the outcome of a function, **without** a return value, that is **not guaranteed to
 succeed**. To be able to report any issues (or just additional information) that occurred during the
-execution of a function the class
+execution of a function, the class
 [`Status`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Status.kt)
 contains a list of `Event`s that occurred during the execution. A
 [`Status`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Status.kt)
