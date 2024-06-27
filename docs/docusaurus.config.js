@@ -15,7 +15,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'TREND',
   tagline: 'Traceability Enforcement of Datatransfers',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/branding/favicon.ico',
 
   url: 'https://fraunhoferisst.github.io/',
   baseUrl: '/TREND/',
@@ -57,8 +57,8 @@ const config = {
         title: '',
         logo: {
           alt: 'TREND Logo',
-          src: 'img/logo-black.svg',
-          srcDark: 'img/logo-white.svg',
+          src: 'img/branding/logo/black/trend_logo_b.svg',
+          srcDark: 'img/branding/logo/white/trend_logo_w.svg',
         },
         items: [
           {
