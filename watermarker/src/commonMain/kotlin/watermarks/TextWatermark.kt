@@ -41,6 +41,7 @@ class TextWatermark private constructor(
          *
          * The default configuration is: no compression, no size information.
          */
+        @JvmName("create")
         fun new(text: String): TextWatermark = TextWatermark(text)
 
         /** Creates a TextWatermark from [text] without compression and without size information */
