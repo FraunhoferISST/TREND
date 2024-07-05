@@ -24,7 +24,7 @@ data class WatermarkerExtractTextForm(
     val text: String,
 )
 
-class WatermarkExtractTab : SimplePanel() {
+class WatermarkTextExtractTab : SimplePanel() {
     init {
         marginTop = 1.em
         span("Extract a watermark from a text.")

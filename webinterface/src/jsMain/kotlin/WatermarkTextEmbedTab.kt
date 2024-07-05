@@ -16,9 +16,11 @@ import io.kvision.form.text.TextArea
 import io.kvision.html.Button
 import io.kvision.html.ButtonStyle
 import io.kvision.html.button
+import io.kvision.html.div
+import io.kvision.html.p
 import io.kvision.html.span
-import io.kvision.modal.Alert
 import io.kvision.modal.Confirm
+import io.kvision.modal.Modal
 import io.kvision.panel.HPanel
 import io.kvision.panel.SimplePanel
 import io.kvision.progress.Progress
@@ -36,7 +38,7 @@ data class WatermarkerTextForm(
     val text: String,
 )
 
-class WatermarkTextTab : SimplePanel() {
+class WatermarkTextEmbedTab : SimplePanel() {
     private val textWatermarker = TextWatermarker.default()
 
     // Input fields
@@ -72,7 +74,9 @@ class WatermarkTextTab : SimplePanel() {
 
     init {
         marginTop = 1.em
-        span("Embed a custom watermark into a text.")
+        span("Embed a watermark into a cover text. Keep in mind that the cover text needs a " +
+            "specific length (number of whitespaces), depending on the length of your watermark. " +
+            "The progress bar will indicate if the watermark fits into the cover text.")
 
         // Form to watermark a text/string
         val textFormPanel =
@@ -113,12 +117,26 @@ class WatermarkTextTab : SimplePanel() {
                 submitButton.onClick {
                     if (textFormPanel.validate()) {
                         println("Starting text watermark process ...")
+
+                        // Modal
                         val watermarkedText =
-                            addWatermarkToText(
-                                textFormPanel.getData().watermark,
-                                textFormPanel.getData().text,
+                            div(
+                                addWatermarkToText(
+                                    textFormPanel.getData().watermark,
+                                    textFormPanel.getData().text,
+                                )
                             )
-                        Alert.show("Successful", watermarkedText)
+                        watermarkedText.addCssClass("selectable")
+                        val modal = Modal("Successful")
+                        modal.add(p("The following text includes your watermark: <br /><br />",
+                            rich = true))
+                        modal.add(watermarkedText)
+                        modal.addButton(Button("Close") {
+                            onClick {
+                                modal.hide()
+                            }
+                        })
+                        modal.show()
                     }
                 }
 

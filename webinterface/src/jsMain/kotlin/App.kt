@@ -25,6 +25,10 @@ import io.kvision.utils.em
 import io.kvision.utils.perc
 
 class App : Application() {
+    init {
+        io.kvision.require("css/custom.css")
+    }
+
     /** Initial method to load the default watermarker form */
     override fun start() {
         root("trend") {
@@ -38,19 +42,19 @@ class App : Application() {
                 // Intro text
                 h1("TREND")
                 span(
-                    "This tools allows you to hide or reveal a text-based watermark (word, name, " +
-                        "sentence, etc.) in a text of your choice.",
+                    "This tools allows you to hide or reveal a text-based watermark  " +
+                        "(word, name, sentence, etc.) in a text of your choice.",
                 ) {
                     marginBottom = 1.em
                 }
 
                 tabPanel {
                     // border = Border(2.px, BorderStyle.SOLID)
-                    tab(tr("Text"), "fas fa-tarp", route = "/watermarkText") {
-                        add(WatermarkTextTab())
+                    tab(tr("Embed"), "fas fa-file-import", route = "/watermarkEmbed") {
+                        add(WatermarkTextEmbedTab())
                     }
-                    tab(tr("Extract"), "fas fa-arrow-down", route = "/watermarkExtract") {
-                        add(WatermarkExtractTab())
+                    tab(tr("Extract"), "fas fa-file-export", route = "/watermarkExtract") {
+                        add(WatermarkTextExtractTab())
                     }
                 }
             }
