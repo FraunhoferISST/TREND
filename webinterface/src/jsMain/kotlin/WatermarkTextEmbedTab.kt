@@ -114,7 +114,7 @@ class WatermarkTextEmbedTab : SimplePanel() {
             "specific length (number of whitespaces), depending on the length of your watermark. " +
             "The progress bar will indicate if the watermark fits into the cover text.")
 
-        // Form to watermark a text/string
+                // Form to watermark a text/string
         val textFormPanel =
             formPanel<WatermarkerTextForm> {
                 marginTop = 1.em

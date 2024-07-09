@@ -11,7 +11,7 @@ import io.kvision.BootstrapModule
 import io.kvision.BootstrapUploadModule
 import io.kvision.CoreModule
 import io.kvision.FontAwesomeModule
-import io.kvision.html.h1
+import io.kvision.html.image
 import io.kvision.html.span
 import io.kvision.i18n.I18n.tr
 import io.kvision.module
@@ -19,6 +19,7 @@ import io.kvision.panel.root
 import io.kvision.panel.tab
 import io.kvision.panel.tabPanel
 import io.kvision.panel.vPanel
+import io.kvision.require
 import io.kvision.startApplication
 import io.kvision.utils.auto
 import io.kvision.utils.em
@@ -26,7 +27,7 @@ import io.kvision.utils.perc
 
 class App : Application() {
     init {
-        io.kvision.require("css/custom.css")
+        require("css/custom.css")
     }
 
     /** Initial method to load the default watermarker form */
@@ -39,8 +40,11 @@ class App : Application() {
                 marginRight = auto
                 paddingTop = 1.em
 
-                // Intro text
-                h1("TREND")
+                // Logo + intro text
+                image(require("img/trend_logo_b.svg"), alt = "TREND logo", responsive = true) {
+                    width = 10.em
+                    marginBottom = 1.em
+                }
                 span(
                     "This tools allows you to hide or reveal a text-based watermark  " +
                         "(word, name, sentence, etc.) in a text of your choice.",
@@ -49,7 +53,6 @@ class App : Application() {
                 }
 
                 tabPanel {
-                    // border = Border(2.px, BorderStyle.SOLID)
                     tab(tr("Embed"), "fas fa-file-import", route = "/watermarkEmbed") {
                         add(WatermarkTextEmbedTab())
                     }
