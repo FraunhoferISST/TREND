@@ -6,4 +6,9 @@
     -moz-user-select: all; /* Firefox */
     -ms-user-select: all; /* Internet Explorer/Edge */
     user-select: all; /* Chrome and Opera */
+
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+    padding: 1em;
+    margin-top: 0.5em;
 }

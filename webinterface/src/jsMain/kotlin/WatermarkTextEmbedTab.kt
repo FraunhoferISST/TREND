@@ -21,7 +21,6 @@ import io.kvision.html.Button
 import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.div
-import io.kvision.html.p
 import io.kvision.html.span
 import io.kvision.modal.Confirm
 import io.kvision.modal.Modal
@@ -31,6 +30,7 @@ import io.kvision.progress.Progress
 import io.kvision.progress.progressNumeric
 import io.kvision.state.ObservableValue
 import io.kvision.state.bind
+import io.kvision.toast.Toast
 import io.kvision.utils.em
 import io.kvision.utils.px
 import kotlinx.serialization.Serializable
@@ -151,21 +151,21 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 add(submitButton)
                 submitButton.onClick {
                     if (textFormPanel.validate()) {
-                        println("Starting text watermark process ...")
-
                         // Modal
-                        val watermarkedText =
-                            div(
-                                addWatermarkToText(
-                                    textFormPanel.getData().watermark,
-                                    textFormPanel.getData().text,
-                                )
-                            )
-                        watermarkedText.addCssClass("selectable")
+                        val watermarkedText = addWatermarkToText(
+                            textFormPanel.getData().watermark,
+                            textFormPanel.getData().text,
+                        )
+
                         val modal = Modal("Successful")
-                        modal.add(p("The following text includes your watermark: <br /><br />",
-                            rich = true))
-                        modal.add(watermarkedText)
+                        modal.add(span("The following text includes your watermark:"))
+                        modal.add(div(watermarkedText, className = "selectable card-text"))
+                        modal.addButton(Button("Copy to Clipboard") {
+                            onClick {
+                                kotlinx.browser.window.navigator.clipboard.writeText(watermarkedText)
+                                Toast.success("Successful copied to clipboard!")
+                            }
+                        })
                         modal.addButton(Button("Close") {
                             onClick {
                                 modal.hide()
