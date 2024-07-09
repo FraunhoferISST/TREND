@@ -8,6 +8,10 @@
 import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import io.kvision.core.Placement
+import io.kvision.core.TooltipOptions
+import io.kvision.core.Trigger
+import io.kvision.core.enableTooltip
 import io.kvision.core.onInput
 import io.kvision.form.FormMethod
 import io.kvision.form.formPanel
@@ -43,12 +47,22 @@ class WatermarkTextEmbedTab : SimplePanel() {
 
     // Input fields
     private val watermarkerInput =
-        Text(label = "Watermark") {
+        Text(label = "Watermark &#9432;", rich = true) {
             placeholder = "Enter words that should be hidden in the text"
+            enableTooltip(TooltipOptions(
+                title = "The watermark is a text that will be hidden in the cover text",
+                placement = Placement.BOTTOM,
+                triggers = listOf(Trigger.HOVER)
+            ))
         }
     private val coverTextInput =
-        TextArea(label = "Cover Text") {
+        TextArea(label = "Cover Text &#9432;", rich = true) {
             placeholder = "Text that should be watermarked"
+            enableTooltip(TooltipOptions(
+                title = "The cover text will be enriched by the watermark above in a hidden way",
+                placement = Placement.BOTTOM,
+                triggers = listOf(Trigger.HOVER)
+            ))
         }
 
     // Progress bar
@@ -61,6 +75,15 @@ class WatermarkTextEmbedTab : SimplePanel() {
             progressNumeric(this.bounds.value.min) {
                 striped = true
             }
+            enableTooltip(TooltipOptions(
+                title = "The Percentage gives an overview if the watermark will fit in the cover " +
+                    "text: <br />- >=100 %: The watermark fits at least one time in the cover " +
+                    "text <br />- <100%: The watermark doesn't fit into the cover text. Try to " +
+                    "increase the length of the cover text or reduce the length of the watermark",
+                rich = true,
+                placement = Placement.BOTTOM,
+                triggers = listOf(Trigger.HOVER)
+            ))
         }
 
     // Submit button
@@ -90,7 +113,6 @@ class WatermarkTextEmbedTab : SimplePanel() {
                     watermarkerInput,
                     required = true,
                 )
-
                 add(
                     WatermarkerTextForm::text,
                     coverTextInput,
