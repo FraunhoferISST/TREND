@@ -79,12 +79,25 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 title = "The Percentage gives an overview if the watermark will fit in the cover " +
                     "text: <br />- >=100 %: The watermark fits at least one time in the cover " +
                     "text <br />- <100%: The watermark doesn't fit into the cover text. Try to " +
-                    "increase the length of the cover text or reduce the length of the watermark",
+                    "increase the length of the cover text or decrease the length of the watermark",
                 rich = true,
                 placement = Placement.BOTTOM,
                 triggers = listOf(Trigger.HOVER)
             ))
         }
+    private val watermarkCapacityLowHint = div("The watermark is too long for your cover text. " +
+        "Try to increase the cover text length (with more whitespaces) or decrease the length of the " +
+        "watermark so that it fits in.",
+        className = "alert alert-primary") {
+        marginTop = 1.em
+        hide()
+    }
+    private val watermarkCapacitySuccessHint = div("Great, your watermark fits into the cover " +
+        "text! Click the \"Add Watermark\" button, copy the result and use the watermarked text.",
+        className = "alert alert-success") {
+        marginTop = 1.em
+        hide()
+    }
 
     // Submit button
     private val submitButton =
@@ -178,8 +191,11 @@ class WatermarkTextEmbedTab : SimplePanel() {
                         progressBar.setBounds(-1, 0)
                     }
                 }
-            },
+            }
         )
+
+        textFormPanel.add(watermarkCapacityLowHint)
+        textFormPanel.add(watermarkCapacitySuccessHint)
     }
 
     /**
@@ -192,8 +208,16 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 coverTextInput.value.toString(),
             )
 
-        // Enable or disable submit form button
-        submitButton.disabled = capacityObservable.value < 0
+        // Enable or disable the submit form button and user hint
+        if(capacityObservable.value < 0) {
+            submitButton.disabled = true
+            watermarkCapacityLowHint.show()
+            watermarkCapacitySuccessHint.hide()
+        }else {
+            submitButton.disabled = false
+            watermarkCapacityLowHint.hide()
+            watermarkCapacitySuccessHint.show()
+        }
 
         // Update progress bar
         min = if (capacityObservable.value < min) capacityObservable.value else min
