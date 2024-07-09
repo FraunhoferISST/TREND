@@ -50,6 +50,20 @@ class TextWatermark private constructor(
         /** Creates a TextWatermark from [text] with compression but without size information */
         fun compressed(text: String): TextWatermark = TextWatermark(text, compressed = true)
 
+        /** Creates a TextWatermark from [text] with compression only if compression decreases the size */
+        fun small(text: String): TextWatermark {
+            val raw = TextWatermark(text)
+            val rawSize = raw.finish().watermarkContent.size
+            val compressed = TextWatermark(text, compressed = true)
+            val compressedSize = compressed.finish().watermarkContent.size
+
+            return if (rawSize < compressedSize) {
+                raw
+            } else {
+                compressed
+            }
+        }
+
         /** Creates a TextWatermark from [text] with size information but without compression */
         fun sized(text: String): TextWatermark = TextWatermark(text, sized = true)
 
