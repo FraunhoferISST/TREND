@@ -44,11 +44,13 @@ class WatermarkTextExtractTab : SimplePanel() {
                     WatermarkerExtractTextForm::text,
                     TextArea(label = "Watermarked Text &#9432;", rich = true) {
                         placeholder = "Text that includes a watermark"
-                        enableTooltip(TooltipOptions(
-                            title = "A text that contain a watermark that needs to be extracted",
-                            placement = Placement.BOTTOM,
-                            triggers = listOf(Trigger.HOVER)
-                        ))
+                        enableTooltip(
+                            TooltipOptions(
+                                "A text that contain a watermark that needs to be extracted",
+                                placement = Placement.BOTTOM,
+                                triggers = listOf(Trigger.HOVER),
+                            ),
+                        )
                     },
                     required = true,
                 )

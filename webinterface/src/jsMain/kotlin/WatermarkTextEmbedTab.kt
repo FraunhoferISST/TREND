@@ -33,6 +33,7 @@ import io.kvision.state.bind
 import io.kvision.toast.Toast
 import io.kvision.utils.em
 import io.kvision.utils.px
+import kotlinx.browser.window
 import kotlinx.serialization.Serializable
 import kotlin.math.round
 
@@ -49,20 +50,24 @@ class WatermarkTextEmbedTab : SimplePanel() {
     private val watermarkerInput =
         Text(label = "Watermark &#9432;", rich = true) {
             placeholder = "Enter words that should be hidden in the text"
-            enableTooltip(TooltipOptions(
-                title = "The watermark is a text that will be hidden in the cover text",
-                placement = Placement.BOTTOM,
-                triggers = listOf(Trigger.HOVER)
-            ))
+            enableTooltip(
+                TooltipOptions(
+                    title = "The watermark is a text that will be hidden in the cover text",
+                    placement = Placement.BOTTOM,
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
         }
     private val coverTextInput =
         TextArea(label = "Cover Text &#9432;", rich = true) {
             placeholder = "Text that should be watermarked"
-            enableTooltip(TooltipOptions(
-                title = "The cover text will be enriched by the watermark above in a hidden way",
-                placement = Placement.BOTTOM,
-                triggers = listOf(Trigger.HOVER)
-            ))
+            enableTooltip(
+                TooltipOptions(
+                    "The cover text will be enriched by the watermark above in a hidden way",
+                    placement = Placement.BOTTOM,
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
         }
 
     // Progress bar
@@ -75,29 +80,39 @@ class WatermarkTextEmbedTab : SimplePanel() {
             progressNumeric(this.bounds.value.min) {
                 striped = true
             }
-            enableTooltip(TooltipOptions(
-                title = "The Percentage gives an overview if the watermark will fit in the cover " +
-                    "text: <br />- >=100 %: The watermark fits at least one time in the cover " +
-                    "text <br />- <100%: The watermark doesn't fit into the cover text. Try to " +
-                    "increase the length of the cover text or decrease the length of the watermark",
-                rich = true,
-                placement = Placement.BOTTOM,
-                triggers = listOf(Trigger.HOVER)
-            ))
+            enableTooltip(
+                TooltipOptions(
+                    "The Percentage gives an overview if the watermark will fit in the " +
+                        "cover text: <br />- >=100 %: The watermark fits at least one time in " +
+                        "the cover text <br />- <100%: The watermark doesn't fit into the cover " +
+                        "text. Try to increase the length of the cover text or decrease the " +
+                        "length of the watermark",
+                    rich = true,
+                    placement = Placement.BOTTOM,
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
         }
-    private val watermarkCapacityLowHint = div("The watermark is too long for your cover text. " +
-        "Try to increase the cover text length (with more whitespaces) or decrease the length of the " +
-        "watermark so that it fits in.",
-        className = "alert alert-primary") {
-        marginTop = 1.em
-        hide()
-    }
-    private val watermarkCapacitySuccessHint = div("Great, your watermark fits into the cover " +
-        "text! Click the \"Add Watermark\" button, copy the result and use the watermarked text.",
-        className = "alert alert-success") {
-        marginTop = 1.em
-        hide()
-    }
+    private val watermarkCapacityLowHint =
+        div(
+            "The watermark is too long for your cover text. " +
+                "Try to increase the cover text length (with more whitespaces) or decrease the " +
+                "length of the watermark so that it fits in.",
+            className = "alert alert-primary",
+        ) {
+            marginTop = 1.em
+            hide()
+        }
+    private val watermarkCapacitySuccessHint =
+        div(
+            "Great, your watermark fits into the cover " +
+                "text! Click the \"Add Watermark\" button, copy the result and use the " +
+                "watermarked text.",
+            className = "alert alert-success",
+        ) {
+            marginTop = 1.em
+            hide()
+        }
 
     // Submit button
     private val submitButton =
@@ -110,11 +125,14 @@ class WatermarkTextEmbedTab : SimplePanel() {
 
     init {
         marginTop = 1.em
-        span("Embed a watermark into a cover text. Keep in mind that the cover text needs a " +
-            "specific length (number of whitespaces), depending on the length of your watermark. " +
-            "The progress bar will indicate if the watermark fits into the cover text.")
+        span(
+            "Embed a watermark into a cover text. Keep in mind that the cover text " +
+                "needs a specific length (number of whitespaces), depending on the length of " +
+                "your watermark. The progress bar will indicate if the watermark fits into the " +
+                "cover text.",
+        )
 
-                // Form to watermark a text/string
+        // Form to watermark a text/string
         val textFormPanel =
             formPanel<WatermarkerTextForm> {
                 marginTop = 1.em
@@ -152,25 +170,30 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 submitButton.onClick {
                     if (textFormPanel.validate()) {
                         // Modal
-                        val watermarkedText = addWatermarkToText(
-                            textFormPanel.getData().watermark,
-                            textFormPanel.getData().text,
-                        )
+                        val watermarkedText =
+                            addWatermarkToText(
+                                textFormPanel.getData().watermark,
+                                textFormPanel.getData().text,
+                            )
 
                         val modal = Modal("Successful")
                         modal.add(span("The following text includes your watermark:"))
                         modal.add(div(watermarkedText, className = "selectable card-text"))
-                        modal.addButton(Button("Copy to Clipboard") {
-                            onClick {
-                                kotlinx.browser.window.navigator.clipboard.writeText(watermarkedText)
-                                Toast.success("Successful copied to clipboard!")
-                            }
-                        })
-                        modal.addButton(Button("Close") {
-                            onClick {
-                                modal.hide()
-                            }
-                        })
+                        modal.addButton(
+                            Button("Copy to Clipboard") {
+                                onClick {
+                                    window.navigator.clipboard.writeText(watermarkedText)
+                                    Toast.success("Successful copied to clipboard!")
+                                }
+                            },
+                        )
+                        modal.addButton(
+                            Button("Close") {
+                                onClick {
+                                    modal.hide()
+                                }
+                            },
+                        )
                         modal.show()
                     }
                 }
@@ -191,7 +214,7 @@ class WatermarkTextEmbedTab : SimplePanel() {
                         progressBar.setBounds(-1, 0)
                     }
                 }
-            }
+            },
         )
 
         textFormPanel.add(watermarkCapacityLowHint)
@@ -209,11 +232,11 @@ class WatermarkTextEmbedTab : SimplePanel() {
             )
 
         // Enable or disable the submit form button and user hint
-        if(capacityObservable.value < 0) {
+        if (capacityObservable.value < 0) {
             submitButton.disabled = true
             watermarkCapacityLowHint.show()
             watermarkCapacitySuccessHint.hide()
-        }else {
+        } else {
             submitButton.disabled = false
             watermarkCapacityLowHint.hide()
             watermarkCapacitySuccessHint.show()
