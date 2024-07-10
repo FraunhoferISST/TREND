@@ -6,6 +6,10 @@
  */
 
 import de.fraunhofer.isst.trend.watermarker.Watermarker
+import io.kvision.core.Placement
+import io.kvision.core.TooltipOptions
+import io.kvision.core.Trigger
+import io.kvision.core.enableTooltip
 import io.kvision.form.FormMethod
 import io.kvision.form.formPanel
 import io.kvision.form.text.TextArea
@@ -24,7 +28,7 @@ data class WatermarkerExtractTextForm(
     val text: String,
 )
 
-class WatermarkExtractTab : SimplePanel() {
+class WatermarkTextExtractTab : SimplePanel() {
     init {
         marginTop = 1.em
         span("Extract a watermark from a text.")
@@ -38,8 +42,15 @@ class WatermarkExtractTab : SimplePanel() {
 
                 add(
                     WatermarkerExtractTextForm::text,
-                    TextArea(label = "Text") {
+                    TextArea(label = "Watermarked Text &#9432;", rich = true) {
                         placeholder = "Text that includes a watermark"
+                        enableTooltip(
+                            TooltipOptions(
+                                "A text that contain a watermark that needs to be extracted",
+                                placement = Placement.BOTTOM,
+                                triggers = listOf(Trigger.HOVER),
+                            ),
+                        )
                     },
                     required = true,
                 )

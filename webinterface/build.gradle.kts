@@ -79,6 +79,7 @@ kotlin {
         implementation("io.kvision:kvision-fontawesome:$kvisionVersion")
         implementation("io.kvision:kvision-state:$kvisionVersion")
         implementation("io.kvision:kvision-state-flow:$kvisionVersion")
+        implementation("io.kvision:kvision-toastify:$kvisionVersion")
         implementation("de.fraunhofer.isst.trend:watermarker:0.1.0-SNAPSHOT")
     }
     sourceSets["jsTest"].dependencies {
