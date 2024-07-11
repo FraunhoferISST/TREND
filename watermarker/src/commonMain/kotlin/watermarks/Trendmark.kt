@@ -196,7 +196,7 @@ sealed class Trendmark(
 
     /** Represents the Trendmark in a human-readable form */
     override fun toString(): String {
-        return "${getSource()}(${super.toString()})"
+        return "${getSource()}(${super.getContentAsText()})"
     }
 
     sealed interface Sized : TrendmarkInterface {

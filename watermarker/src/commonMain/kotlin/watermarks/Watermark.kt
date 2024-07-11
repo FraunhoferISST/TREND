@@ -19,8 +19,13 @@ open class Watermark(var watermarkContent: List<Byte>) {
         }
     }
 
-    /** Represents the bytes of the watermark in hex */
-    override fun toString(): String = watermarkContent.toHexString()
+    /** Represents the bytes of the Watermark in hex */
+    fun getContentAsText(): String = watermarkContent.toHexString()
+
+    /** Represents the Watermark in a human-readable form */
+    override fun toString(): String {
+        return "Watermark(${this.getContentAsText()})"
+    }
 
     /** Returns true if other is a watermark and contains the same bytes */
     override fun equals(other: Any?): Boolean {
