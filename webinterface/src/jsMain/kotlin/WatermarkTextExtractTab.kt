@@ -9,6 +9,7 @@ import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
 import io.kvision.collapse.collapse
@@ -26,6 +27,7 @@ import io.kvision.html.br
 import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.li
+import io.kvision.html.p
 import io.kvision.html.span
 import io.kvision.html.strong
 import io.kvision.html.ul
@@ -105,16 +107,12 @@ class WatermarkTextExtractTab : SimplePanel() {
                                         ),
                                     )
 
-                                    val watermarkMap =
-                                        watermarkedResult.value!!.map { watermark ->
-                                            watermark.text
-                                        }
-
                                     val countedWatermarkList =
-                                        watermarkMap
+                                        getWatermarkStringList(watermarkedResult)
                                             .groupingBy { it }
                                             .eachCount()
 
+                                    // Most frequent watermark
                                     modal.add(
                                         span(
                                             "<strong>Most frequent " +
@@ -126,6 +124,7 @@ class WatermarkTextExtractTab : SimplePanel() {
                                         ),
                                     )
 
+                                    // Details section
                                     val watermarkDetailsPanel =
                                         simplePanel {
                                             button(
@@ -143,6 +142,13 @@ class WatermarkTextExtractTab : SimplePanel() {
                                                 }
                                                 br()
 
+                                                // Show watermarking type
+                                                strong("Watermarking type(s): ")
+                                                p(watermarkedResult.value!!.map { watermark ->
+                                                    watermark.finish().getSource()
+                                                }.toSet().toString())
+
+                                                // Show input text with hidden chars
                                                 strong(
                                                     "Raw data with hidden alphabet chars:",
                                                 )
@@ -162,16 +168,18 @@ class WatermarkTextExtractTab : SimplePanel() {
                             } else if (watermarkedResult.status.isWarning) {
                                 modal.add(
                                     div(
-                                        "Some problems occur during the extraction:" +
+                                        "Some problems occur during the extraction: " +
                                             watermarkedResult.status.getMessage(),
                                         className = "alert alert-warning",
                                     ),
                                 )
+                                modal.add(strong("Extracted Data: "))
+                                modal.add(p(getWatermarkStringList(watermarkedResult).toString()))
                                 // Error
                             } else if (watermarkedResult.status.isError) {
                                 modal.add(
                                     div(
-                                        "An error occurs during the extraction:" +
+                                        "An error occurs during the extraction: " +
                                             watermarkedResult.status.getMessage(),
                                         className = "alert alert-danger",
                                     ),
@@ -211,7 +219,8 @@ class WatermarkTextExtractTab : SimplePanel() {
         return watermarker.textGetWatermarks(text, squash = false)
     }
 
-    /** Replaces all whitespaces of the transcoding alphabet of the watermarking library in
+    /**
+     * Replaces all whitespaces of the transcoding alphabet of the watermarking library in
      * [watermarkedText] with its Unicode representation. [html] defines if the result is a
      * styled HTML string (true) or a plain text without formatting (false).
      */
@@ -244,4 +253,10 @@ class WatermarkTextExtractTab : SimplePanel() {
         }
         return resultText
     }
+
+    /** Creates a list of Strings based on a [watermarkedResult] */
+    private fun getWatermarkStringList(watermarkedResult: Result<List<TextWatermark>>) =
+        watermarkedResult.value!!.map { watermark ->
+            watermark.text
+        }
 }
