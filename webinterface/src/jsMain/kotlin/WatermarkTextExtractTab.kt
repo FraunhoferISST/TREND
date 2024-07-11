@@ -6,6 +6,9 @@
  */
 
 import de.fraunhofer.isst.trend.watermarker.Watermarker
+import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions
 import io.kvision.core.Trigger
@@ -66,11 +69,67 @@ class WatermarkTextExtractTab : SimplePanel() {
                     onClick {
                         if (extractTextFormPanel.validate()) {
                             println("Starting watermark extraction process ...")
-                            val watermarkedText =
+                            val watermarkedResult =
                                 extractWatermark(
                                     extractTextFormPanel.getData().text,
-                                )
-                            Alert.show("Successful", watermarkedText)
+                                ).toTextWatermarks()
+
+                            var watermarkedStatusHtml = ""
+                            var mostFrequentWatermarkHtml = ""
+                            var allWatermarksListHtml = ""
+
+                            // Success
+                            if (watermarkedResult.status.isSuccess) {
+                                if (watermarkedResult.value.isNullOrEmpty()) {
+                                    watermarkedStatusHtml += "<div" +
+                                        " class=\"alert alert-secondary\" role=\"alert\">Could " +
+                                        "not find any valid watermark in the text.</div>"
+                                } else {
+                                    watermarkedStatusHtml += "<div class=\"alert alert-success\" " +
+                                        "role=\"alert\">Successfully extracted the watermark(s)" +
+                                        "!</div>"
+
+                                    val watermarkMap =
+                                        watermarkedResult.value!!.map { watermark ->
+                                            watermark.text
+                                        }
+
+                                    val countedWatermarkList =
+                                        watermarkMap
+                                            .groupingBy { it }
+                                            .eachCount()
+                                    mostFrequentWatermarkHtml += "<strong>Most frequent " +
+                                        "Watermark: </strong>" +
+                                        countedWatermarkList.maxByOrNull {
+                                            it.value
+                                        }?.key + "<br /><br />"
+
+                                    allWatermarksListHtml += "<strong>Detailed " +
+                                        "Watermark List:</strong><br />"
+                                    for ((key, value) in countedWatermarkList) {
+                                        allWatermarksListHtml += "- $key ($value times)<br />"
+                                    }
+                                }
+                                // Warning
+                            } else if (watermarkedResult.status.isWarning) {
+                                watermarkedStatusHtml += "<div class=\"alert alert-warning\" " +
+                                    "role=\"alert\">Some problems occur during the " +
+                                    "extraction: " + watermarkedResult.status.getMessage() +
+                                    "</div>"
+                                // Error
+                            } else if (watermarkedResult.status.isError) {
+                                watermarkedStatusHtml += "<div class=\"alert alert-danger\" " +
+                                    "role=\"alert\">Fatal errors occur during the " +
+                                    "extraction: " + watermarkedResult.status.getMessage() +
+                                    "</div>"
+                            }
+
+                            Alert.show(
+                                "Result",
+                                watermarkedStatusHtml + mostFrequentWatermarkHtml +
+                                    allWatermarksListHtml,
+                                rich = true,
+                            )
                         }
                     }
                 }
@@ -91,9 +150,11 @@ class WatermarkTextExtractTab : SimplePanel() {
     }
 
     /** Extracts a watermark from a [text] and returns it */
-    private fun extractWatermark(text: String): String {
+    private fun extractWatermark(text: String): Result<List<Watermark>> {
         val watermarker = Watermarker()
-        val result = watermarker.textGetWatermarks(text)
+        return watermarker.textGetWatermarks(text, squash = false)
+        /*val result = watermarker.textGetWatermarks(text)
+
 
         return if (result.isSuccess) {
             result.value!!.map { watermark ->
@@ -102,6 +163,6 @@ class WatermarkTextExtractTab : SimplePanel() {
         } else {
             // TODO: Proper error handling
             result.toString()
-        }
+        }*/
     }
 }

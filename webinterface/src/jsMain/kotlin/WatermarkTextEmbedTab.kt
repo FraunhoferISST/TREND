@@ -7,6 +7,7 @@
 
 import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions
@@ -249,13 +250,14 @@ class WatermarkTextEmbedTab : SimplePanel() {
             (if (watermarkerInput.value == null) min else capacityObservable.value)
     }
 
-    /** Adds a [watermark] string to [text] and returns the watermarked text */
+    /** Adds a [watermarkString] string to [text] and returns the watermarked text */
     private fun addWatermarkToText(
-        watermark: String,
+        watermarkString: String,
         text: String,
     ): String {
         val watermarker = Watermarker()
-        val result = watermarker.textAddWatermark(text, watermark.encodeToByteArray().asList())
+        val watermark = TextWatermark.new(watermarkString)
+        val result = watermarker.textAddWatermark(text, watermark)
 
         return if (result.isSuccess) {
             result.value ?: ""
