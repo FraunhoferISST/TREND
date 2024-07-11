@@ -400,9 +400,10 @@ class TextWatermarker(
                     "'${char.toUnicodeRepresentation()}'"
                 }
 
-            return "The file contains characters of the watermark " +
-                "transcoding alphabet. Adding a Watermarking would potentially make the " +
-                "file unusable! Maybe the file already contains a watermark?\n\n" +
+            return "The input contains characters of the watermark " +
+                "transcoding alphabet. It is only possible to add a watermark to and input " +
+                "that doesn't contain any watermark. Adding another watermark would potentially " +
+                "make the input unusable! Maybe the input already contains a watermark?\n\n" +
                 "Contained Chars:\n" +
                 "$containedChars."
         }
