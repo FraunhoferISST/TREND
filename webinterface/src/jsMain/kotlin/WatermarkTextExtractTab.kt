@@ -6,9 +6,13 @@
  */
 
 import de.fraunhofer.isst.trend.watermarker.Watermarker
+import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
+import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
+import io.kvision.collapse.collapse
+import io.kvision.collapse.forCollapse
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions
 import io.kvision.core.Trigger
@@ -16,13 +20,20 @@ import io.kvision.core.enableTooltip
 import io.kvision.form.FormMethod
 import io.kvision.form.formPanel
 import io.kvision.form.text.TextArea
+import io.kvision.html.Button
 import io.kvision.html.ButtonStyle
+import io.kvision.html.br
 import io.kvision.html.button
+import io.kvision.html.div
+import io.kvision.html.li
 import io.kvision.html.span
-import io.kvision.modal.Alert
+import io.kvision.html.strong
+import io.kvision.html.ul
 import io.kvision.modal.Confirm
+import io.kvision.modal.Modal
 import io.kvision.panel.HPanel
 import io.kvision.panel.SimplePanel
+import io.kvision.panel.simplePanel
 import io.kvision.utils.em
 import kotlinx.serialization.Serializable
 
@@ -74,20 +85,25 @@ class WatermarkTextExtractTab : SimplePanel() {
                                     extractTextFormPanel.getData().text,
                                 ).toTextWatermarks()
 
-                            var watermarkedStatusHtml = ""
-                            var mostFrequentWatermarkHtml = ""
-                            var allWatermarksListHtml = ""
+                            val modal = Modal("Result")
 
                             // Success
                             if (watermarkedResult.status.isSuccess) {
                                 if (watermarkedResult.value.isNullOrEmpty()) {
-                                    watermarkedStatusHtml += "<div" +
-                                        " class=\"alert alert-secondary\" role=\"alert\">Could " +
-                                        "not find any valid watermark in the text.</div>"
+                                    modal.add(
+                                        div(
+                                            "Could not find any valid watermark in the" +
+                                                "text.",
+                                            className = "alert alert-secondary",
+                                        ),
+                                    )
                                 } else {
-                                    watermarkedStatusHtml += "<div class=\"alert alert-success\" " +
-                                        "role=\"alert\">Successfully extracted the watermark(s)" +
-                                        "!</div>"
+                                    modal.add(
+                                        div(
+                                            "Successfully extracted the watermark(s)!",
+                                            className = "alert alert-success",
+                                        ),
+                                    )
 
                                     val watermarkMap =
                                         watermarkedResult.value!!.map { watermark ->
@@ -98,38 +114,78 @@ class WatermarkTextExtractTab : SimplePanel() {
                                         watermarkMap
                                             .groupingBy { it }
                                             .eachCount()
-                                    mostFrequentWatermarkHtml += "<strong>Most frequent " +
-                                        "Watermark: </strong>" +
-                                        countedWatermarkList.maxByOrNull {
-                                            it.value
-                                        }?.key + "<br /><br />"
 
-                                    allWatermarksListHtml += "<strong>Detailed " +
-                                        "Watermark List:</strong><br />"
-                                    for ((key, value) in countedWatermarkList) {
-                                        allWatermarksListHtml += "- $key ($value times)<br />"
-                                    }
+                                    modal.add(
+                                        span(
+                                            "<strong>Most frequent " +
+                                                "watermark: </strong>" +
+                                                countedWatermarkList.maxByOrNull {
+                                                    it.value
+                                                }?.key + "<br /><br />",
+                                            rich = true,
+                                        ),
+                                    )
+
+                                    val watermarkDetailsPanel =
+                                        simplePanel {
+                                            button(
+                                                "More details",
+                                                style = ButtonStyle.SECONDARY,
+                                            ).forCollapse("watermark-details")
+
+                                            collapse("watermark-details") {
+                                                // Print all watermarks
+                                                strong("Detailed watermark list:")
+                                                ul {
+                                                    for ((key, value) in countedWatermarkList) {
+                                                        li("$key ($value times)")
+                                                    }
+                                                }
+                                                br()
+
+                                                strong(
+                                                    "Raw data with hidden alphabet chars:",
+                                                )
+                                                br()
+                                                span(
+                                                    showWatermarkChars(
+                                                        extractTextFormPanel.getData().text,
+                                                    ),
+                                                    rich = true,
+                                                    className = "break-all",
+                                                )
+                                            }
+                                        }
+                                    modal.add(watermarkDetailsPanel)
                                 }
                                 // Warning
                             } else if (watermarkedResult.status.isWarning) {
-                                watermarkedStatusHtml += "<div class=\"alert alert-warning\" " +
-                                    "role=\"alert\">Some problems occur during the " +
-                                    "extraction: " + watermarkedResult.status.getMessage() +
-                                    "</div>"
+                                modal.add(
+                                    div(
+                                        "Some problems occur during the extraction:" +
+                                            watermarkedResult.status.getMessage(),
+                                        className = "alert alert-warning",
+                                    ),
+                                )
                                 // Error
                             } else if (watermarkedResult.status.isError) {
-                                watermarkedStatusHtml += "<div class=\"alert alert-danger\" " +
-                                    "role=\"alert\">Fatal errors occur during the " +
-                                    "extraction: " + watermarkedResult.status.getMessage() +
-                                    "</div>"
+                                modal.add(
+                                    div(
+                                        "An error occurs during the extraction:" +
+                                            watermarkedResult.status.getMessage(),
+                                        className = "alert alert-danger",
+                                    ),
+                                )
                             }
 
-                            Alert.show(
-                                "Result",
-                                watermarkedStatusHtml + mostFrequentWatermarkHtml +
-                                    allWatermarksListHtml,
-                                rich = true,
+                            modal.addButton(
+                                Button("Close") {
+                                    onClick {
+                                        modal.hide()
+                                    }
+                                },
                             )
+                            modal.show()
                         }
                     }
                 }
@@ -153,16 +209,39 @@ class WatermarkTextExtractTab : SimplePanel() {
     private fun extractWatermark(text: String): Result<List<Watermark>> {
         val watermarker = Watermarker()
         return watermarker.textGetWatermarks(text, squash = false)
-        /*val result = watermarker.textGetWatermarks(text)
+    }
 
+    /** Replaces all whitespaces of the transcoding alphabet of the watermarking library in
+     * [watermarkedText] with its Unicode representation. [html] defines if the result is a
+     * styled HTML string (true) or a plain text without formatting (false).
+     */
+    private fun showWatermarkChars(
+        watermarkedText: String,
+        html: Boolean = true,
+    ): String {
+        val alphabet = DefaultTranscoding.alphabet + DefaultTranscoding.SEPARATOR_CHAR
+        var resultText = watermarkedText
+        var className: String
 
-        return if (result.isSuccess) {
-            result.value!!.map { watermark ->
-                watermark.watermarkContent.toByteArray().decodeToString()
-            }.toString()
-        } else {
-            // TODO: Proper error handling
-            result.toString()
-        }*/
+        for (char in alphabet) {
+            if (html) {
+                className =
+                    if (char == DefaultTranscoding.SEPARATOR_CHAR) {
+                        "separator-highlight"
+                    } else {
+                        "whitespace-highlight"
+                    }
+
+                resultText =
+                    resultText.replace(
+                        char.toString(),
+                        "<span class=\"$className\">" +
+                            "${char.toUnicodeRepresentation()}</span>",
+                    )
+            } else {
+                resultText = resultText.replace(char.toString(), char.toUnicodeRepresentation())
+            }
+        }
+        return resultText
     }
 }
