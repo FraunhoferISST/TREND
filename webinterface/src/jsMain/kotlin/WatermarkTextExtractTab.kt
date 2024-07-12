@@ -144,9 +144,11 @@ class WatermarkTextExtractTab : SimplePanel() {
 
                                                 // Show watermarking type
                                                 strong("Watermarking type(s): ")
-                                                p(watermarkedResult.value!!.map { watermark ->
-                                                    watermark.finish().getSource()
-                                                }.toSet().toString())
+                                                p(
+                                                    watermarkedResult.value!!.map { watermark ->
+                                                        watermark.finish().getSource()
+                                                    }.toSet().toString(),
+                                                )
 
                                                 // Show input text with hidden chars
                                                 strong(
