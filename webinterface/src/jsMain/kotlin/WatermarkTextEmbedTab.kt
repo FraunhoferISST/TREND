@@ -7,6 +7,8 @@
 
 import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions
@@ -170,23 +172,45 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 submitButton.onClick {
                     if (textFormPanel.validate()) {
                         // Modal
-                        val watermarkedText =
+                        val modal = Modal("Result")
+
+                        val watermarkedResult =
                             addWatermarkToText(
                                 textFormPanel.getData().watermark,
                                 textFormPanel.getData().text,
                             )
 
-                        val modal = Modal("Successful")
-                        modal.add(span("The following text includes your watermark:"))
-                        modal.add(div(watermarkedText, className = "selectable card-text"))
-                        modal.addButton(
-                            Button("Copy to Clipboard") {
-                                onClick {
-                                    window.navigator.clipboard.writeText(watermarkedText)
-                                    Toast.success("Successful copied to clipboard!")
-                                }
-                            },
-                        )
+                        if (watermarkedResult.isSuccess) {
+                            val watermarkedText = watermarkedResult.value ?: ""
+
+                            modal.add(
+                                div(
+                                    "Successfully embedded your watermark in the " +
+                                        "cover text",
+                                    className = "alert alert-success",
+                                ),
+                            )
+                            modal.add(span("The following text includes your watermark:"))
+                            modal.add(div(watermarkedText, className = "selectable card-text"))
+                            modal.addButton(
+                                Button("Copy to Clipboard") {
+                                    onClick {
+                                        window.navigator.clipboard.writeText(watermarkedText)
+                                        Toast.success("Successful copied to clipboard!")
+                                    }
+                                },
+                            )
+                        } else {
+                            modal.add(
+                                div(
+                                    "An error occurs during the watermarking " +
+                                        "process: <br />" + watermarkedResult.getMessage(),
+                                    rich = true,
+                                    className = "alert alert-danger",
+                                ),
+                            )
+                        }
+
                         modal.addButton(
                             Button("Close") {
                                 onClick {
@@ -249,20 +273,14 @@ class WatermarkTextEmbedTab : SimplePanel() {
             (if (watermarkerInput.value == null) min else capacityObservable.value)
     }
 
-    /** Adds a [watermark] string to [text] and returns the watermarked text */
+    /** Adds a [watermarkString] string to [text] and returns the watermarked text result */
     private fun addWatermarkToText(
-        watermark: String,
+        watermarkString: String,
         text: String,
-    ): String {
+    ): Result<String> {
         val watermarker = Watermarker()
-        val result = watermarker.textAddWatermark(text, watermark.encodeToByteArray().asList())
-
-        return if (result.isSuccess) {
-            result.value ?: ""
-        } else {
-            // TODO: Proper error handling
-            result.toString()
-        }
+        val watermark = TextWatermark.new(watermarkString)
+        return watermarker.textAddWatermark(text, watermark)
     }
 
     /**

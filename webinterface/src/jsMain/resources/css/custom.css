@@ -12,3 +12,18 @@
     padding: 1em;
     margin-top: 0.5em;
 }
+
+.break-all {
+    word-break: break-all;
+}
+
+.whitespace-highlight {
+    background-color: lightblue;
+    padding: 1px;
+}
+
+.separator-highlight {
+    background-color: black;
+    color: white;
+    padding: 1px;
+}

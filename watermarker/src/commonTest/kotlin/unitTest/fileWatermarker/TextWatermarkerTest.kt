@@ -141,9 +141,10 @@ class TextWatermarkerTest {
         // Arrange
         val error = TextWatermarker.ContainsAlphabetCharsError(sequenceOf('a', 'b'))
         val expected =
-            "Error (TextWatermarker.addWatermark): The file contains characters of the watermark " +
-                "transcoding alphabet. Adding a Watermarking would potentially make the file " +
-                "unusable! Maybe the file already contains a watermark?\n" +
+            "Error (TextWatermarker.addWatermark): The input contains characters of the watermark" +
+                " transcoding alphabet. It is only possible to add a watermark to and input that" +
+                " doesn't contain any watermark. Adding another watermark would potentially make " +
+                "the input unusable! Maybe the input already contains a watermark?\n" +
                 "\n" +
                 "Contained Chars:\n" +
                 "['\\u0061','\\u0062']."
