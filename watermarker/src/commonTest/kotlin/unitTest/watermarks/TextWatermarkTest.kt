@@ -69,6 +69,50 @@ class TextWatermarkTest {
     }
 
     @Test
+    fun small_loremIpsum_compression() {
+        val customText = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+        val customTextBytes = customText.encodeToByteArray().asList()
+
+        // Arrange
+        val expectedTrendmark = CompressedRawTrendmark.new(customTextBytes)
+
+        // Act
+        val textWatermark = TextWatermark.small(customText)
+        val trendmark = textWatermark.finish()
+        val content = trendmark.getContent()
+
+        // Assert
+        assertEquals(customText, textWatermark.text)
+        assertFalse(textWatermark.isSized())
+        assertTrue(textWatermark.isCompressed())
+        assertEquals(expectedTrendmark, trendmark)
+        assertTrue(content.isSuccess)
+        assertEquals(customTextBytes, content.value)
+    }
+
+    @Test
+    fun small_loremIpsum_noCompression() {
+        val customText = "Lorem"
+        val customTextBytes = customText.encodeToByteArray().asList()
+
+        // Arrange
+        val expectedTrendmark = RawTrendmark.new(customTextBytes)
+
+        // Act
+        val textWatermark = TextWatermark.small(customText)
+        val trendmark = textWatermark.finish()
+        val content = trendmark.getContent()
+
+        // Assert
+        assertEquals(customText, textWatermark.text)
+        assertFalse(textWatermark.isSized())
+        assertFalse(textWatermark.isCompressed())
+        assertEquals(expectedTrendmark, trendmark)
+        assertTrue(content.isSuccess)
+        assertEquals(customTextBytes, content.value)
+    }
+
+    @Test
     fun sized_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = SizedTrendmark.new(textBytes)
