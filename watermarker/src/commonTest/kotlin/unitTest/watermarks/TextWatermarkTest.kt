@@ -70,10 +70,9 @@ class TextWatermarkTest {
 
     @Test
     fun small_loremIpsum_compression() {
+        // Arrange
         val customText = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
         val customTextBytes = customText.encodeToByteArray().asList()
-
-        // Arrange
         val expectedTrendmark = CompressedRawTrendmark.new(customTextBytes)
 
         // Act
@@ -92,10 +91,9 @@ class TextWatermarkTest {
 
     @Test
     fun small_loremIpsum_noCompression() {
+        // Arrange
         val customText = "Lorem"
         val customTextBytes = customText.encodeToByteArray().asList()
-
-        // Arrange
         val expectedTrendmark = RawTrendmark.new(customTextBytes)
 
         // Act
