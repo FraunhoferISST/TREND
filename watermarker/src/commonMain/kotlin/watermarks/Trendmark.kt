@@ -49,16 +49,6 @@ sealed interface TrendmarkInterface {
     /** Returns the raw bytes of the watermark */
     fun getRawContent(): List<Byte>
 
-    /** Returns the decoded information stored in the Trendmark as a string*/
-    fun getContentAsString(): Result<String> {
-        val content =
-            with(getContent()) {
-                if (!isSuccess) return status.into<_>()
-                value!!
-            }
-        return Result.success(content.toByteArray().decodeToString())
-    }
-
     /** Updates the raw bytes of the watermark */
     fun setRawContent(content: List<Byte>)
 
@@ -176,6 +166,16 @@ sealed class Trendmark(
 
     /** Returns the all bytes of the watermark */
     override fun getRawContent(): List<Byte> = watermarkContent
+
+    /** Returns the decoded information stored in the Trendmark as a string*/
+    fun getContentAsString(): Result<String> {
+        val content =
+            with(getContent()) {
+                if (!isSuccess) return status.into<_>()
+                value!!
+            }
+        return Result.success(content.toByteArray().decodeToString())
+    }
 
     /** Sets all bytes of the watermark to [content] */
     override fun setRawContent(content: List<Byte>) {
