@@ -11,4 +11,9 @@ title: Webinterface
 
 # Webinterface
 
-_Follows soon._
+The following example shows how the webinterface includes the watermark "Fraunhofer ISST"
+inside a _Lorem ipsum_ dummy cover text. Afterward, the watermarked text is copied into a public
+contact form and then copied back into the webinterface. As can be seen, the webinterface is able
+to extract the hidden watermark from the cover text:
+
+![Animated example of the webinterface](../../../static/img/webinterface-demo.gif)
