@@ -196,7 +196,7 @@ class WatermarkTextEmbedTab : SimplePanel() {
                                 Button("Copy to Clipboard") {
                                     onClick {
                                         window.navigator.clipboard.writeText(watermarkedText)
-                                        Toast.success("Successful copied to clipboard!")
+                                        Toast.success("Successfully copied to clipboard!")
                                     }
                                 },
                             )
