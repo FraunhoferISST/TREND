@@ -1503,5 +1503,46 @@ class TrendmarkTest {
 
         // Assert
         assertEquals(expected, result)
+        assertTrue(false)
+    }
+
+    @Test
+    fun trendmark_parseableBytes_contentAsString() {
+        // Arrange
+        val expected = "Lorem Ipsum"
+        val watermark = RawTrendmark.new(content)
+
+        // Act
+        val extractedContent = watermark.getContentAsString()
+
+        // Assert
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(expected, extractedContent.value)
+    }
+
+    @Test
+    fun trendmark_unparseableBytes_contentAsString_gracefull() {
+        // Arrange
+        val expected = "\uFFFD"
+        val watermark = RawTrendmark.new(listOf<Byte>(195.toByte()))
+
+        // Act
+        val extractedContent = watermark.getContentAsString(errorOnInvalidUTF8 = false)
+
+        // Assert
+        assertTrue(extractedContent.isSuccess)
+        assertEquals(expected, extractedContent.value)
+    }
+
+    @Test
+    fun trendmark_unparseableBytes_contentAsString_throwError() {
+        // Arrange
+        val watermark = RawTrendmark.new(listOf<Byte>(195.toByte()))
+
+        // Act
+        val extractedContent = watermark.getContentAsString(errorOnInvalidUTF8 = true)
+
+        // Assert
+        assertTrue(extractedContent.isError)
     }
 }

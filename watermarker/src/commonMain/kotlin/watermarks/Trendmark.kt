@@ -14,6 +14,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.DecodeToStringError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.FailedTrendmarkExtractionsWarning
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.IncompleteTagError
 import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.InvalidTagError
@@ -48,6 +49,13 @@ sealed interface TrendmarkInterface {
 
     /** Returns the raw bytes of the watermark */
     fun getRawContent(): List<Byte>
+
+    /**
+     * Returns the decoded information stored in the Trendmark as a String.
+     * If [errorOnInvalidUTF8] is true, it results in an DecodeToStringError.
+     * Otherwise, malformed byte sequences are replaced by \uFFFD.
+     */
+    fun getContentAsString(errorOnInvalidUTF8: Boolean = false): Result<String>
 
     /** Updates the raw bytes of the watermark */
     fun setRawContent(content: List<Byte>)
@@ -167,14 +175,27 @@ sealed class Trendmark(
     /** Returns the all bytes of the watermark */
     override fun getRawContent(): List<Byte> = watermarkContent
 
-    /** Returns the decoded information stored in the Trendmark as a string*/
-    fun getContentAsString(): Result<String> {
-        val content =
+    /**
+     * Returns the decoded information stored in the Trendmark as a String.
+     * If [errorOnInvalidUTF8] is true, it results in an DecodeToStringError.
+     * Otherwise, malformed byte sequences are replaced by \uFFFD.
+     */
+    override fun getContentAsString(errorOnInvalidUTF8: Boolean): Result<String> {
+        val (content, status) =
             with(getContent()) {
-                if (!isSuccess) return status.into<_>()
-                value!!
+                if (!hasValue) return status.into<_>()
+                value!! to status
             }
-        return Result.success(content.toByteArray().decodeToString())
+        val text =
+            try {
+                content
+                    .toByteArray()
+                    .decodeToString(throwOnInvalidSequence = errorOnInvalidUTF8)
+            } catch (e: Exception) {
+                status.addEvent(DecodeToStringError(e.message ?: e.stackTraceToString()))
+                return status.into()
+            }
+        return Result.success(text)
     }
 
     /** Sets all bytes of the watermark to [content] */
