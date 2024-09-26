@@ -31,7 +31,7 @@ Use Gradle to build the CLI tool:
 *Note:* You must replace `<version>` in the following commands (e.g. `0.1.0-SNAPSHOT`)
 
 1. `cd cli` (if not already there)
-2. `./gradlew shadowJar"`
+2. `./gradlew shadowJar`
     - This will create a standalone jar file: `./build/libs/cli-<version>-all.jar`
 3. `java -jar build/libs/cli-<version>-all.jar --help`
     - This will print all possible commands of the CLI tool.
