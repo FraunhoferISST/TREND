@@ -206,6 +206,64 @@ class TextWatermarkerBuilderTest {
         assertNull(result.value)
     }
 
+    /**
+     * tests if the validate() function of the builder will correctly return an error when
+     * either Separator in the StartEnd Strategy is an illegal Char, as well as when both the
+     * Start and End Char are illegal
+     */
+    @Test
+    fun buildSecondStrategy_alphabetContainsSeparatorChar_error() {
+        // Arrange
+        val alphabetChar1 = DefaultTranscoding.alphabet[0]
+        val alphabetChar2 = DefaultTranscoding.alphabet[1]
+        val validChar = '\u3164' // hangul filler, chosen at random
+        val errorEither =
+            TextWatermarkerBuilder.AlphabetContainsSeparatorError(listOf(alphabetChar1))
+        val errorBoth =
+            TextWatermarkerBuilder.AlphabetContainsSeparatorError(
+                listOf(alphabetChar1, alphabetChar2),
+            )
+        val expectedEither = errorEither.getMessage()
+        val expectedBoth = errorBoth.getMessage()
+
+        // Act
+        val resultStart =
+            TextWatermarker
+                .builder()
+                .setSeparatorStrategy(
+                    SeparatorStrategy.StartEndSeparatorChars(alphabetChar1, validChar),
+                )
+                .build()
+        val resultEnd =
+            TextWatermarker
+                .builder()
+                .setSeparatorStrategy(
+                    SeparatorStrategy.StartEndSeparatorChars(validChar, alphabetChar1),
+                )
+                .build()
+        val resultBoth =
+            TextWatermarker
+                .builder()
+                .setSeparatorStrategy(
+                    SeparatorStrategy.StartEndSeparatorChars(alphabetChar1, alphabetChar2),
+                )
+                .build()
+
+        // Assert
+        // Start char assertions
+        assertTrue(resultStart.isError)
+        assertEquals(expectedEither, resultStart.getMessage())
+        assertNull(resultStart.value)
+        // End char assertions
+        assertTrue(resultEnd.isError)
+        assertEquals(expectedEither, resultEnd.getMessage())
+        assertNull(resultEnd.value)
+        // Both char assertions
+        assertTrue(resultBoth.isError)
+        assertEquals(expectedBoth, resultBoth.getMessage())
+        assertNull(resultBoth.value)
+    }
+
     @Test
     fun alphabetContainsSeparatorCharError_string_success() {
         // Arrange
