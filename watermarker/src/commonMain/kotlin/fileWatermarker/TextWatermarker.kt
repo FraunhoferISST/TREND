@@ -192,7 +192,7 @@ class TextWatermarker(
         return Success(startPositions).into()
     }
 
-    /** Checks if [file] contains a watermark */
+    /** Checks if [file] contains any [Char] from full watermarking alphabet */
     override fun containsWatermark(file: TextFile): Boolean =
         file.content.any { char ->
             char in fullAlphabet
@@ -472,8 +472,8 @@ class TextWatermarkerBuilder {
                 if (separatorStrategy.start in transcoding.alphabet) {
                     list.add(separatorStrategy.start)
                 }
-                if (separatorStrategy.start in transcoding.alphabet) {
-                    list.add(separatorStrategy.start)
+                if (separatorStrategy.end in transcoding.alphabet) {
+                    list.add(separatorStrategy.end)
                 }
                 if (!list.isEmpty()) {
                     status.addEvent(AlphabetContainsSeparatorError(list))
