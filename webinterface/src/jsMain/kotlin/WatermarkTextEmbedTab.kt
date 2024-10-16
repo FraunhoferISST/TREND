@@ -246,7 +246,11 @@ class WatermarkTextEmbedTab : SimplePanel() {
                         val watermarkedResult =
                             addWatermarkToText(
                                 textFormPanel.getData().watermark,
-                                textFormPanel.getData().text
+                                textFormPanel.getData().text,
+                                textFormPanel.getData().trendmarkCompressed,
+                                textFormPanel.getData().trendmarkSized,
+                                textFormPanel.getData().trendmarkCRC32,
+                                textFormPanel.getData().trendmarkSHA3256
                             )
 
                         if (watermarkedResult.isSuccess) {
@@ -352,8 +356,11 @@ class WatermarkTextEmbedTab : SimplePanel() {
         trendmarkSHA3256: Boolean = false
     ): Result<String> {
         val watermarker = Watermarker()
-        val watermark = TextWatermark.new(watermarkString)
-        // TODO: Implement Trendmark support
+        val watermark = TextWatermark.raw(watermarkString).apply {
+            if(trendmarkCompressed) compressed()
+            if(trendmarkSized) sized()
+            //TODO: Add missing input fields
+        }
         return watermarker.textAddWatermark(text, watermark)
     }
 
