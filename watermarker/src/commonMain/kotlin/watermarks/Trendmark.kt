@@ -1087,7 +1087,7 @@ class CompressedCRC32Trendmark(content: List<Byte>) :
 
 @JsExport
 class CompressedSizedCRC32Trendmark(content: List<Byte>) :
-    Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
+    Trendmark(content), Trendmark.Sized, Trendmark.Checksum, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedCRC32Trendmark"
         const val TYPE_TAG: UByte = 251u
