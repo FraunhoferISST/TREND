@@ -666,10 +666,10 @@ class SizedTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Sized 
         }
     }
 
-    /** Constant function that returns the tag used to encode this Trendmark class */
+    /** Constant function that returns the name of the specific Trendmark */
     override fun getSource(): String = SOURCE
 
-    /** Constant function that returns the name of the specific Trendmark */
+    /** Constant function that returns the tag used to encode this Trendmark class */
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the Trendmark */
