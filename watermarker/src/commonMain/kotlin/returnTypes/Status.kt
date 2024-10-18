@@ -8,6 +8,7 @@ package de.fraunhofer.isst.trend.watermarker.returnTypes
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.jvm.JvmName
 
 /**
  * An Event represents different kinds of events that can occur during the execution of a function.
@@ -28,6 +29,7 @@ sealed class Event(
     /** Returns a String explaining the event */
     abstract fun getMessage(): String?
 
+    @get:JvmName("hasCustomMessage")
     val hasCustomMessage: Boolean get() = getMessage() != null
 
     /** Returns a String explaining the event: "Type (source): message" */
@@ -121,6 +123,7 @@ class Status(event: Event? = null) {
     val isError: Boolean get() = type == Type.ERROR
 
     /** Check if any event contains a custom message */
+    @get:JvmName("hasCustomMessage")
     val hasCustomMessage: Boolean get() = eventList.any { it.hasCustomMessage }
 
     /**
@@ -185,7 +188,7 @@ class Status(event: Event? = null) {
 
     /**
      * Returns the message representing the Status containing the messages of all events.
-     * It omits the type of each event and only add the message. Use toString if the event type
+     * It omits the type of each event and only adds the message. Use toString if the event type
      * should be added as well.
      */
     fun getMessage(): String {

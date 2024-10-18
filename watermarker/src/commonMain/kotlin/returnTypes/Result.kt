@@ -9,6 +9,7 @@ package de.fraunhofer.isst.trend.watermarker.returnTypes
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.jvm.JvmName
 
 /**
  * This class represents the result of a function that returns a value but also can fail or produce
@@ -22,6 +23,7 @@ class Result<T> constructor(
     val value: T? = null,
 ) {
     /** Checks if the result contains a value */
+    @get:JvmName("hasValue")
     val hasValue get() = value != null
 
     /** Creates a new Result<T> from [status] and [value] */
@@ -52,7 +54,7 @@ class Result<T> constructor(
 
     /**
      * Returns the message representing the Result containing the messages of all events.
-     * It omits the type of each event and only add the message. Use toString if the event type
+     * It omits the type of each event and only adds the message. Use toString if the event type
      * should be added as well.
      */
     fun getMessage() = status.getMessage()
