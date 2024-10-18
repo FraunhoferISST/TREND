@@ -206,11 +206,6 @@ class TextWatermarkerBuilderTest {
         assertNull(result.value)
     }
 
-    /**
-     * tests if the validate() function of the builder will correctly return an error when
-     * either Separator in the StartEnd Strategy is an illegal Char, as well as when both the
-     * Start and End Char are illegal
-     */
     @Test
     fun buildSecondStrategy_alphabetContainsSeparatorChar_error() {
         // Arrange
