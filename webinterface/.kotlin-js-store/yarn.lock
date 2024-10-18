@@ -52,7 +52,7 @@
   resolved "https://registry.yarnpkg.com/@eonasdan/tempus-dominus/-/tempus-dominus-6.9.7.tgz#1ae82e1010279abae9e1c463b4336c7370f7c9cc"
   integrity sha512-HL425O4BrhCUyr+LLRCHzLKx1N4J1nzlO5wrLbjsymX4lhPdNYDq9EED/1ColAyJg+f/KPji4StMNgEYvql/fQ==
 
-"@fortawesome/fontawesome-free@6.5.2":
+"@fortawesome/fontawesome-free@6.5.2", "@fortawesome/fontawesome-free@6.6.0":
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.5.2.tgz#310fe90cb5a8dee9698833171b98e7835404293d"
   integrity sha512-hRILoInAx8GNT5IMkrtIt9blOdrqHOnPBH+k70aWUAqPZPgopb9G5EQJFpaBx/S8zp2fC+mPW349Bziuk1o28Q==
@@ -1706,7 +1706,7 @@ gettext-to-messageformat@0.3.1:
   dependencies:
     gettext-parser "^1.4.0"
 
-gettext.js@2.0.2:
+gettext.js@2.0.2, gettext.js@2.0.3:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/gettext.js/-/gettext.js-2.0.2.tgz#2e3d7a0220b822dddcb61c6d905edb87da84cd9f"
   integrity sha512-V5S0HCgOzHmTaaHUNMQr3xVPu6qLpv3j6K9Ygi41Pu6SRNNmWwvXCf/wQYXArznm4uZyZ1v8yrDZngxy6+kCyw==
@@ -2261,7 +2261,7 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-kvision-assets@8.0.9:
+kvision-assets@8.0.13, kvision-assets@8.0.9:
   version "8.0.9"
   resolved "https://registry.yarnpkg.com/kvision-assets/-/kvision-assets-8.0.9.tgz#3f4b4a5b637d0011b6f784b9d47fd95afe783392"
   integrity sha512-JkuBQhmXa4x96QxeVXpor8u/go7mzHx7xaRvcg/3xbryJi9OenPze11Jn4SXPtk+7XGEMGXTodceNxLnOoK0ZQ==

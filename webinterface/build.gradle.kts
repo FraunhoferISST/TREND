@@ -8,7 +8,7 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 // Versions
-val kvisionVersion = "7.5.1"
+val kvisionVersion = "8.0.1"
 
 val webDir = file("src/jsMain/web")
 
