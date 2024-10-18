@@ -43,8 +43,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
@@ -64,8 +64,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
@@ -85,8 +85,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
@@ -108,8 +108,8 @@ class TextWatermarkTest {
         assertEquals(customText, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(customTextBytes, content.value)
@@ -131,8 +131,8 @@ class TextWatermarkTest {
         assertEquals(customText, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(customTextBytes, content.value)
@@ -152,20 +152,21 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun checked_loremIpsum_success() {
+    @Suppress("ktlint:standard:function-naming")
+    fun CRC32_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = CRC32Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.checked(text)
+        val textWatermark = TextWatermark.CRC32(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -173,20 +174,21 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun hashed_loremIpsum_success() {
+    @Suppress("ktlint:standard:function-naming")
+    fun SHA3256_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = SHA3256Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.hashed(text)
+        val textWatermark = TextWatermark.SHA3256(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -194,20 +196,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun compressedAndSized_loremIpsum_success() {
+    fun compressedSized_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = CompressedSizedTrendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.compressedAndSized(text)
+        val textWatermark = TextWatermark.compressedSized(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -215,20 +217,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun compressedAndChecked_loremIpsum_success() {
+    fun compressedCRC32_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = CompressedCRC32Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.compressedAndChecked(text)
+        val textWatermark = TextWatermark.compressedCRC32(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -236,20 +238,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun compressedAndHashed_loremIpsum_success() {
+    fun compressedSHA3256_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = CompressedSHA3256Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.compressedAndHashed(text)
+        val textWatermark = TextWatermark.compressedSHA3256(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -257,20 +259,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun sizedAndChecked_loremIpsum_success() {
+    fun sizedCRC32_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = SizedCRC32Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.sizedAndChecked(text)
+        val textWatermark = TextWatermark.sizedCRC32(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -278,20 +280,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun sizedAndHashed_loremIpsum_success() {
+    fun sizedSHA3256_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = SizedSHA3256Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.sizedAndHashed(text)
+        val textWatermark = TextWatermark.sizedSHA3256(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -299,20 +301,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun compressedSizedChecked_loremIpsum_success() {
+    fun compressedSizedCRC32_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = CompressedSizedCRC32Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.compressedSizedChecked(text)
+        val textWatermark = TextWatermark.compressedSizedCRC32(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -320,20 +322,20 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
     }
 
     @Test
-    fun compressedSizedHashed_loremIpsum_success() {
+    fun compressedSizedSHA3256_loremIpsum_success() {
         // Arrange
         val expectedTrendmark = CompressedSizedSHA3256Trendmark.new(textBytes)
 
         // Act
-        val textWatermark = TextWatermark.compressedSizedHashed(text)
+        val textWatermark = TextWatermark.compressedSizedSHA3256(text)
         val trendmark = textWatermark.finish()
         val content = trendmark.getContent()
 
@@ -341,8 +343,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
         assertEquals(textBytes, content.value)
@@ -363,8 +365,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -384,8 +386,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -405,8 +407,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -426,8 +428,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -447,8 +449,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -468,8 +470,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -489,8 +491,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertTrue(textWatermark.isChecked())
-        assertFalse(textWatermark.isHashed())
+        assertTrue(textWatermark.isCRC32())
+        assertFalse(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -510,8 +512,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -531,8 +533,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertFalse(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -552,8 +554,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertFalse(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -573,8 +575,8 @@ class TextWatermarkTest {
         assertEquals(text, textWatermark.text)
         assertTrue(textWatermark.isSized())
         assertTrue(textWatermark.isCompressed())
-        assertFalse(textWatermark.isChecked())
-        assertTrue(textWatermark.isHashed())
+        assertFalse(textWatermark.isCRC32())
+        assertTrue(textWatermark.isSHA3256())
         assertNotNull(trendmark)
         assertEquals(initialTrendmark, trendmark)
     }
@@ -604,26 +606,28 @@ class TextWatermarkTest {
     }
 
     @Test
-    fun checked_true_true() {
+    @Suppress("ktlint:standard:function-naming")
+    fun CRC32_true_true() {
         // Arrange
-        val textWatermark = TextWatermark.checked(text)
+        val textWatermark = TextWatermark.CRC32(text)
 
         // Act
-        textWatermark.checked()
+        textWatermark.CRC32()
 
         // Assert
-        assertTrue(textWatermark.isChecked())
+        assertTrue(textWatermark.isCRC32())
     }
 
     @Test
-    fun hashed_true_true() {
+    @Suppress("ktlint:standard:function-naming")
+    fun SHA3256_true_true() {
         // Arrange
-        val textWatermark = TextWatermark.hashed(text)
+        val textWatermark = TextWatermark.SHA3256(text)
 
         // Act
-        textWatermark.hashed()
+        textWatermark.SHA3256()
 
         // Assert
-        assertTrue(textWatermark.isHashed())
+        assertTrue(textWatermark.isSHA3256())
     }
 }
