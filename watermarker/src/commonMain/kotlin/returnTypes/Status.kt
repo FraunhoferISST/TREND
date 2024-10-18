@@ -188,7 +188,7 @@ class Status(event: Event? = null) {
 
     /**
      * Returns the message representing the Status containing the messages of all events.
-     * It omits the type of each event and only add the message. Use toString if the event type
+     * It omits the type of each event and only adds the message. Use toString if the event type
      * should be added as well.
      */
     fun getMessage(): String {
