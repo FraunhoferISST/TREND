@@ -617,10 +617,10 @@ class RawTrendmark(content: List<Byte>) : Trendmark(content) {
         ): List<Byte> = listOf(tag.toByte()) + content
     }
 
-    /** Constant function that returns the tag used to encode this Trendmark class */
+    /** Constant function that returns the name of the specific Trendmark */
     override fun getSource(): String = SOURCE
 
-    /** Constant function that returns the name of the specific Trendmark */
+    /** Constant function that returns the tag used to encode this Trendmark class */
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the Trendmark */
@@ -666,10 +666,10 @@ class SizedTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Sized 
         }
     }
 
-    /** Constant function that returns the tag used to encode this Trendmark class */
+    /** Constant function that returns the name of the specific Trendmark */
     override fun getSource(): String = SOURCE
 
-    /** Constant function that returns the name of the specific Trendmark */
+    /** Constant function that returns the tag used to encode this Trendmark class */
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the Trendmark */
@@ -1087,7 +1087,7 @@ class CompressedCRC32Trendmark(content: List<Byte>) :
 
 @JsExport
 class CompressedSizedCRC32Trendmark(content: List<Byte>) :
-    Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
+    Trendmark(content), Trendmark.Sized, Trendmark.Checksum, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedCRC32Trendmark"
         const val TYPE_TAG: UByte = 251u
