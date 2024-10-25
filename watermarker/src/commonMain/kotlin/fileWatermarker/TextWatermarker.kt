@@ -168,18 +168,19 @@ class TextWatermarker(
             }
         val startPositions = ArrayList<Int>()
 
-        var result = ""
+        val result = StringBuilder()
         var lastPosition = 0
         for (positions in positionChunks) {
             startPositions.add(positions.first())
             for ((position, char) in positions.asSequence().zip(separatedWatermark)) {
-                result += file.content.substring(lastPosition, position) + char
+                result.append(file.content.substring(lastPosition, position))
+                result.append(char)
                 lastPosition = position + 1
             }
         }
-        result += file.content.substring(lastPosition, file.content.length)
+        result.append(file.content.substring(lastPosition, file.content.length))
 
-        file.content = result
+        file.content = result.toString()
 
         // Check if watermark fits at least one time into the text file with given positioning
         if (insertPositions.count() < separatedWatermark.count()) {
@@ -264,14 +265,14 @@ class TextWatermarker(
         val watermarks = ArrayList<Watermark>()
         for ((start, end) in sanitizedWatermarkRanges) {
             val content =
-                file.content.asSequence()
+                StringBuilder(file.content)
                     .drop(start)
                     .take(end - start + 1)
                     .filter { char -> char in transcoding.alphabet }
 
             if (content.count() > 0) {
                 val decoded =
-                    with(transcoding.decode(content)) {
+                    with(transcoding.decode(content.asSequence())) {
                         if (!hasValue) {
                             return this.status.into()
                         }
