@@ -51,7 +51,7 @@ data class WatermarkerTextForm(
     val trendmarkCompressed: Boolean,
     val trendmarkSized: Boolean,
     val trendmarkCRC32: Boolean,
-    val trendmarkSHA3256: Boolean
+    val trendmarkSHA3256: Boolean,
 )
 
 class WatermarkTextEmbedTab : SimplePanel() {
@@ -167,8 +167,9 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             fontWeight = FontWeight.BOLD
                             enableTooltip(
                                 TooltipOptions(
-                                    title = "A special type of watermarks using additional " +
-                                        "features.",
+                                    title =
+                                        "A special type of watermarks using additional " +
+                                            "features.",
                                     triggers = listOf(Trigger.HOVER),
                                 ),
                             )
@@ -178,8 +179,9 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             paddingRight = 20.px
                             enableTooltip(
                                 TooltipOptions(
-                                    title = "Compress the watermark content before embedding into" +
-                                        " the text. Good for longer watermarks.",
+                                    title =
+                                        "Compress the watermark content before embedding into" +
+                                            " the text. Good for longer watermarks.",
                                     triggers = listOf(Trigger.HOVER),
                                 ),
                             )
@@ -189,8 +191,9 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             paddingRight = 20.px
                             enableTooltip(
                                 TooltipOptions(
-                                    title = "Include the size of the watermark for additional " +
-                                        "verification. Needs a longer cover text content.",
+                                    title =
+                                        "Include the size of the watermark for additional " +
+                                            "verification. Needs a longer cover text content.",
                                     triggers = listOf(Trigger.HOVER),
                                 ),
                             )
@@ -200,9 +203,10 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             paddingRight = 20.px
                             enableTooltip(
                                 TooltipOptions(
-                                    title = "Uses the Cyclic Redundancy Check (CRC) " +
-                                        "error-detecting code for additional robustness. Needs a " +
-                                        "longer cover text content.",
+                                    title =
+                                        "Uses the Cyclic Redundancy Check (CRC) " +
+                                            "error-detecting code for additional robustness. " +
+                                            "Needs a longer cover text content.",
                                     triggers = listOf(Trigger.HOVER),
                                 ),
                             )
@@ -212,9 +216,10 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             paddingRight = 20.px
                             enableTooltip(
                                 TooltipOptions(
-                                    title = "Include a SHA3-256 hash of the watermark for " +
-                                        "additional verification. Needs a longer cover text " +
-                                        "content.",
+                                    title =
+                                        "Include a SHA3-256 hash of the watermark for " +
+                                            "additional verification. Needs a longer cover text " +
+                                            "content.",
                                     triggers = listOf(Trigger.HOVER),
                                 ),
                             )
@@ -250,7 +255,7 @@ class WatermarkTextEmbedTab : SimplePanel() {
                                 textFormPanel.getData().trendmarkCompressed,
                                 textFormPanel.getData().trendmarkSized,
                                 textFormPanel.getData().trendmarkCRC32,
-                                textFormPanel.getData().trendmarkSHA3256
+                                textFormPanel.getData().trendmarkSHA3256,
                             )
 
                         if (watermarkedResult.isSuccess) {
@@ -353,15 +358,16 @@ class WatermarkTextEmbedTab : SimplePanel() {
         trendmarkCompressed: Boolean = false,
         trendmarkSized: Boolean = false,
         trendmarkCRC32: Boolean = false,
-        trendmarkSHA3256: Boolean = false
+        trendmarkSHA3256: Boolean = false,
     ): Result<String> {
         val watermarker = Watermarker()
-        val watermark = TextWatermark.raw(watermarkString).apply {
-            if(trendmarkCompressed) compressed()
-            if(trendmarkSized) sized()
-            if(trendmarkCRC32) CRC32()
-            if(trendmarkSHA3256) SHA3256()
-        }
+        val watermark =
+            TextWatermark.raw(watermarkString).apply {
+                if (trendmarkCompressed) compressed()
+                if (trendmarkSized) sized()
+                if (trendmarkCRC32) CRC32()
+                if (trendmarkSHA3256) SHA3256()
+            }
         return watermarker.textAddWatermark(text, watermark)
     }
 
