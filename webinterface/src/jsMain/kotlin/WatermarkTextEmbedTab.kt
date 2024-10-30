@@ -359,7 +359,8 @@ class WatermarkTextEmbedTab : SimplePanel() {
         val watermark = TextWatermark.raw(watermarkString).apply {
             if(trendmarkCompressed) compressed()
             if(trendmarkSized) sized()
-            //TODO: Add missing input fields
+            if(trendmarkCRC32) CRC32()
+            if(trendmarkSHA3256) SHA3256()
         }
         return watermarker.textAddWatermark(text, watermark)
     }
