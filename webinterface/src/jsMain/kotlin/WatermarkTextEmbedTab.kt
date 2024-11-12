@@ -254,6 +254,7 @@ class WatermarkTextEmbedTab : SimplePanel() {
         compressedCheckBox.onInput { updateCapacity() }
         sizedCheckBox.onInput { updateCapacity() }
         CRC32CheckBox.onInput { updateCapacity() }
+        SHA3256CheckBox.onInput { updateCapacity() }
 
         textFormPanel.add(
             HPanel {
