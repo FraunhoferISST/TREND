@@ -6,6 +6,7 @@
  */
 package unitTest
 
+import Platform
 import de.fraunhofer.isst.trend.watermarker.SupportedFileType
 import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
@@ -161,6 +162,22 @@ class WatermarkerTest {
 
         // Act
         val result = watermarker.textGetWatermarks(textWithWatermark)
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetWatermarks_exactlyOneWatermark_successAndWatermark() {
+        // Arrange
+        val expected =
+            listOf(
+                Watermark.fromString("a"),
+            )
+
+        // Act
+        val result = watermarker.textGetWatermarks("a a a a a a a a a a")
 
         // Assert
         assertTrue(result.isSuccess)
