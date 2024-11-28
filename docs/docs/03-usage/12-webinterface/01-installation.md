@@ -27,6 +27,12 @@ the following commands from the root directory of the project:
 1. `cd watermarker`
 2. `./gradlew publishToMavenLocal`
 
+:::info
+The source code comes with enabled source maps to allow frontend debugging. They should be disabled
+in production to prevent the exposure of source code. To disable it, add `sourceMaps = false` inside
+the `build.gradle.kts`.
+:::
+
 ## Building from Source (Manual Build)
 
 Use Gradle to manually build and run the webinterface:

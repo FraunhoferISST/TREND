@@ -9,13 +9,14 @@ import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import io.kvision.core.FontWeight
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions
 import io.kvision.core.Trigger
 import io.kvision.core.enableTooltip
 import io.kvision.core.onInput
 import io.kvision.form.FormMethod
+import io.kvision.form.check.CheckBox
 import io.kvision.form.formPanel
 import io.kvision.form.text.Text
 import io.kvision.form.text.TextArea
@@ -24,10 +25,13 @@ import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.span
+import io.kvision.i18n.tr
 import io.kvision.modal.Confirm
 import io.kvision.modal.Modal
 import io.kvision.panel.HPanel
 import io.kvision.panel.SimplePanel
+import io.kvision.panel.fieldsetPanel
+import io.kvision.panel.hPanel
 import io.kvision.progress.Progress
 import io.kvision.progress.progressNumeric
 import io.kvision.state.ObservableValue
@@ -43,6 +47,10 @@ import kotlin.math.round
 data class WatermarkerTextForm(
     val watermark: String,
     val text: String,
+    val trendmarkCompressed: Boolean,
+    val trendmarkSized: Boolean,
+    val trendmarkCRC32: Boolean,
+    val trendmarkSHA3256: Boolean,
 )
 
 class WatermarkTextEmbedTab : SimplePanel() {
@@ -67,6 +75,62 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 TooltipOptions(
                     "The cover text will be enriched by the watermark above in a hidden way",
                     placement = Placement.BOTTOM,
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
+        }
+
+    private val compressedCheckBox =
+        CheckBox(label = "Compressed &#9432;", rich = true) {
+            paddingRight = 20.px
+            enableTooltip(
+                TooltipOptions(
+                    title =
+                        "Compress the watermark content before embedding into" +
+                            " the text. Good for longer watermarks.",
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
+        }
+
+    private val sizedCheckBox =
+        CheckBox(label = "Sized &#9432;", rich = true) {
+            paddingRight = 20.px
+            enableTooltip(
+                TooltipOptions(
+                    title =
+                        "Include the size of the watermark for additional " +
+                            "verification. Needs a longer cover text content.",
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
+        }
+
+    @Suppress("ktlint:standard:property-naming")
+    private val CRC32CheckBox =
+        CheckBox(label = "CRC32 &#9432;", rich = true) {
+            paddingRight = 20.px
+            enableTooltip(
+                TooltipOptions(
+                    title =
+                        "Uses the Cyclic Redundancy Check (CRC) " +
+                            "error-detecting code for additional robustness. " +
+                            "Needs a longer cover text content.",
+                    triggers = listOf(Trigger.HOVER),
+                ),
+            )
+        }
+
+    @Suppress("ktlint:standard:property-naming")
+    private val SHA3256CheckBox =
+        CheckBox(label = "SHA3-256 &#9432;", rich = true) {
+            paddingRight = 20.px
+            enableTooltip(
+                TooltipOptions(
+                    title =
+                        "Include a SHA3-256 hash of the watermark for " +
+                            "additional verification. Needs a longer cover text " +
+                            "content.",
                     triggers = listOf(Trigger.HOVER),
                 ),
             )
@@ -151,7 +215,30 @@ class WatermarkTextEmbedTab : SimplePanel() {
                     coverTextInput,
                     required = true,
                 )
+                fieldsetPanel(tr("Advanced Settings")) {
+                    hPanel {
+                        div("Trendmark: &#9432;", rich = true) {
+                            paddingRight = 10.px
+                            fontWeight = FontWeight.BOLD
+                            enableTooltip(
+                                TooltipOptions(
+                                    title =
+                                        "A special type of watermarks using additional " +
+                                            "features.",
+                                    triggers = listOf(Trigger.HOVER),
+                                ),
+                            )
+                        }
 
+                        add(compressedCheckBox.bind(WatermarkerTextForm::trendmarkCompressed))
+
+                        add(sizedCheckBox.bind(WatermarkerTextForm::trendmarkSized))
+
+                        add(CRC32CheckBox.bind(WatermarkerTextForm::trendmarkCRC32))
+
+                        add(SHA3256CheckBox.bind(WatermarkerTextForm::trendmarkSHA3256))
+                    }
+                }
                 add(progressBar)
                 span().bind(capacityObservable) {
                     val percentage =
@@ -164,6 +251,10 @@ class WatermarkTextEmbedTab : SimplePanel() {
         // Check if watermark fits into the cover text
         watermarkerInput.onInput { updateCapacity() }
         coverTextInput.onInput { updateCapacity() }
+        compressedCheckBox.onInput { updateCapacity() }
+        sizedCheckBox.onInput { updateCapacity() }
+        CRC32CheckBox.onInput { updateCapacity() }
+        SHA3256CheckBox.onInput { updateCapacity() }
 
         textFormPanel.add(
             HPanel {
@@ -178,6 +269,10 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             addWatermarkToText(
                                 textFormPanel.getData().watermark,
                                 textFormPanel.getData().text,
+                                textFormPanel.getData().trendmarkCompressed,
+                                textFormPanel.getData().trendmarkSized,
+                                textFormPanel.getData().trendmarkCRC32,
+                                textFormPanel.getData().trendmarkSHA3256,
                             )
 
                         if (watermarkedResult.isSuccess) {
@@ -253,6 +348,10 @@ class WatermarkTextEmbedTab : SimplePanel() {
             watermarkFitsInText(
                 watermarkerInput.value.toString(),
                 coverTextInput.value.toString(),
+                compressedCheckBox.value,
+                sizedCheckBox.value,
+                CRC32CheckBox.value,
+                SHA3256CheckBox.value,
             )
 
         // Enable or disable the submit form button and user hint
@@ -277,9 +376,19 @@ class WatermarkTextEmbedTab : SimplePanel() {
     private fun addWatermarkToText(
         watermarkString: String,
         text: String,
+        trendmarkCompressed: Boolean = false,
+        trendmarkSized: Boolean = false,
+        trendmarkCRC32: Boolean = false,
+        trendmarkSHA3256: Boolean = false,
     ): Result<String> {
         val watermarker = Watermarker()
-        val watermark = TextWatermark.new(watermarkString)
+        val watermark =
+            TextWatermark.raw(watermarkString).apply {
+                if (trendmarkCompressed) compressed()
+                if (trendmarkSized) sized()
+                if (trendmarkCRC32) CRC32()
+                if (trendmarkSHA3256) SHA3256()
+            }
         return watermarker.textAddWatermark(text, watermark)
     }
 
@@ -294,8 +403,18 @@ class WatermarkTextEmbedTab : SimplePanel() {
     private fun watermarkFitsInText(
         watermark: String,
         text: String,
+        trendmarkCompressed: Boolean,
+        trendmarkSized: Boolean,
+        trendmarkCRC32: Boolean,
+        trendmarkSHA3256: Boolean,
     ): Int {
-        val parsedWatermark = Watermark.fromString(watermark)
+        val parsedWatermark =
+            TextWatermark.raw(watermark).apply {
+                if (trendmarkCompressed) compressed()
+                if (trendmarkSized) sized()
+                if (trendmarkCRC32) CRC32()
+                if (trendmarkSHA3256) SHA3256()
+            }
 
         val numberOfInsertPositions = textWatermarker.placement(text).count()
         val numberOfNeededPositions = textWatermarker.getMinimumInsertPositions(parsedWatermark)

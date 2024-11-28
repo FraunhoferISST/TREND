@@ -94,7 +94,7 @@ class WatermarkTextExtractTab : SimplePanel() {
                                 if (watermarkedResult.value.isNullOrEmpty()) {
                                     modal.add(
                                         div(
-                                            "Could not find any valid watermark in the" +
+                                            "Could not find any valid watermark in the " +
                                                 "text.",
                                             className = "alert alert-secondary",
                                         ),
@@ -167,22 +167,22 @@ class WatermarkTextExtractTab : SimplePanel() {
                                     modal.add(watermarkDetailsPanel)
                                 }
                                 // Warning
-                            } else if (watermarkedResult.status.isWarning) {
+                            } else if (watermarkedResult.isWarning) {
                                 modal.add(
                                     div(
                                         "Some problems occur during the extraction: " +
-                                            watermarkedResult.status.getMessage(),
+                                            watermarkedResult.getMessage(),
                                         className = "alert alert-warning",
                                     ),
                                 )
                                 modal.add(strong("Extracted Data: "))
                                 modal.add(p(getWatermarkStringList(watermarkedResult).toString()))
                                 // Error
-                            } else if (watermarkedResult.status.isError) {
+                            } else if (watermarkedResult.isError) {
                                 modal.add(
                                     div(
                                         "An error occurs during the extraction: " +
-                                            watermarkedResult.status.getMessage(),
+                                            watermarkedResult.getMessage(),
                                         className = "alert alert-danger",
                                     ),
                                 )
