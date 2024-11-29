@@ -330,7 +330,9 @@ class TextWatermarker(
         val separatedWatermark = getSeparatedWatermark(watermark)
         return if (separatorStrategy is SeparatorStrategy.StartEndSeparatorChars) {
             separatedWatermark.count()
-        }else separatedWatermark.count()+1
+        } else {
+            separatedWatermark.count() + 1
+        }
     }
 
     /** Counts the minimum number of insert positions needed in a text to insert the [watermark] */
