@@ -94,7 +94,7 @@ class WatermarkerTest {
     fun textAddWatermark_watermarkTooLong_warningAndWatermarkedString() {
         // Arrange
         val watermark = "Hello, world!".encodeToByteArray().asList()
-        val expectedMessage = TextWatermarker.OversizedWatermarkWarning(53, 49).into().toString()
+        val expectedMessage = TextWatermarker.OversizedWatermarkWarning(54, 49).into().toString()
         val expected =
             "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod temp" +
                 "or invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero " +
@@ -169,18 +169,18 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetWatermarks_exactlyOneWatermark_successAndWatermark() {
+    fun textGetWatermarks_exactlyOneWatermark_warningAndWatermark() {
         // Arrange
         val expected =
             listOf(
-                Watermark.fromString("a"),
+                Watermark(listOf(0, 97)),
             )
 
         // Act
         val result = watermarker.textGetWatermarks("a a a a a a a a a a")
 
         // Assert
-        assertTrue(result.isSuccess)
+        assertTrue(result.isWarning)
         assertEquals(expected, result.value)
     }
 
