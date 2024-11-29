@@ -183,9 +183,9 @@ class TextWatermarker(
         file.content = result.toString()
 
         // Check if watermark fits at least one time into the text file with given positioning
-        if (insertPositions.count() < separatedWatermark.count()) {
+        if (insertPositions.count() < getMinimumInsertPositions(watermark)) {
             return OversizedWatermarkWarning(
-                separatedWatermark.count(),
+                getMinimumInsertPositions(watermark),
                 insertPositions.count(),
             ).into()
         }
@@ -228,7 +228,9 @@ class TextWatermarker(
                     sequence {
                         var lastSeparatorPosition = 0
                         for (separatorPosition in separatorPositions) {
-                            yield(lastSeparatorPosition to separatorPosition - 1)
+                            if (lastSeparatorPosition != separatorPosition - 1) {
+                                yield(lastSeparatorPosition to separatorPosition - 1)
+                            }
                             lastSeparatorPosition = separatorPosition + 1
                         }
                     }
@@ -326,7 +328,9 @@ class TextWatermarker(
     @JsName("getMinimumInsertPositionsBytes")
     fun getMinimumInsertPositions(watermark: List<Byte>): Int {
         val separatedWatermark = getSeparatedWatermark(watermark)
-        return separatedWatermark.count()
+        return if (separatorStrategy is SeparatorStrategy.StartEndSeparatorChars) {
+            separatedWatermark.count()
+        }else separatedWatermark.count()+1
     }
 
     /** Counts the minimum number of insert positions needed in a text to insert the [watermark] */
