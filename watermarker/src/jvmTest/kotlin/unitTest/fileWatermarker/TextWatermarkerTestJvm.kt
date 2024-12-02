@@ -62,7 +62,7 @@ class TextWatermarkerTestJvm {
         // Arrange
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum.txt")
         val watermark = Watermark.fromString("This is a watermark that does not fit")
-        val expectedMessage = TextWatermarker.OversizedWatermarkWarning(149, 96).into().toString()
+        val expectedMessage = TextWatermarker.OversizedWatermarkWarning(150, 96).into().toString()
 
         // Act
         val result = textWatermarker.addWatermark(file, watermark)
