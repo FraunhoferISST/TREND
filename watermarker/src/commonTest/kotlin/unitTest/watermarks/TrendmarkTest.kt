@@ -97,7 +97,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CompressedRawTrendmark",
-                254u,
+                64u,
                 255u,
             ).into().toString()
 
@@ -152,7 +152,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.SizedTrendmark",
-                1u,
+                32u,
                 255u,
             ).into().toString()
 
@@ -248,7 +248,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CompressedSizedTrendmark",
-                253u,
+                96u,
                 255u,
             ).into().toString()
 
@@ -308,7 +308,7 @@ class TrendmarkTest {
     @Test
     fun crc32Trendmark_creation_success() {
         // Arrange
-        val expectedCrc32 = 0x35160B87u
+        val expectedCrc32 = 0x5491107Au
         val expected =
             listOf(CRC32Trendmark.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() + content
 
@@ -335,7 +335,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CRC32Trendmark",
-                2u,
+                16u,
                 255u,
             ).into().toString()
 
@@ -358,7 +358,7 @@ class TrendmarkTest {
     @Test
     fun crc32Trendmark_invalidChecksum_warning() {
         // Arrange
-        val expectedCrc32 = 0x35160B87u
+        val expectedCrc32 = 0x5491107Au
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
             listOf(CRC32Trendmark.TYPE_TAG.toByte()) +
@@ -390,7 +390,7 @@ class TrendmarkTest {
     @Test
     fun compressedCRC32Trendmark_creation_success() {
         // Arrange
-        val expectedCrc32 = 0xFF46549Du
+        val expectedCrc32 = 0x10927326u
         val expected =
             listOf(CompressedCRC32Trendmark.TYPE_TAG.toByte()) +
                 expectedCrc32.toBytesLittleEndian() +
@@ -419,7 +419,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CompressedCRC32Trendmark",
-                252u,
+                80u,
                 255u,
             ).into().toString()
 
@@ -442,7 +442,7 @@ class TrendmarkTest {
     @Test
     fun compressedCRC32Trendmark_invalidChecksum_warning() {
         // Arrange
-        val expectedCrc32 = 0xFF46549Du
+        val expectedCrc32 = 0x10927326u
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
             listOf(CompressedCRC32Trendmark.TYPE_TAG.toByte()) +
@@ -481,7 +481,7 @@ class TrendmarkTest {
                     SizedCRC32Trendmark.CHECKSUM_SIZE +
                     content.size
             ).toUInt()
-        val expectedCrc32 = 0x045B851Eu
+        val expectedCrc32 = 0x51C833FAu
         val expected =
             listOf(SizedCRC32Trendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
@@ -524,7 +524,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.SizedCRC32Trendmark",
-                3u,
+                48u,
                 255u,
             ).into().toString()
 
@@ -547,7 +547,7 @@ class TrendmarkTest {
     @Test
     fun sizedCRC32Trendmark_mismatchedSizeInvalidChecksum_warning() {
         // Arrange
-        val expectedCrc32 = 0xD3B90546u
+        val expectedCrc32 = 0x862AB3A2u
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
             (
@@ -604,7 +604,7 @@ class TrendmarkTest {
                     SizedCRC32Trendmark.CHECKSUM_SIZE +
                     compressedContent.size
             ).toUInt()
-        val expectedCrc32 = 0xD2A70713u
+        val expectedCrc32 = 0x1D71CD9Cu
         val expected =
             listOf(CompressedSizedCRC32Trendmark.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
@@ -647,7 +647,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CompressedSizedCRC32Trendmark",
-                251u,
+                112u,
                 255u,
             ).into().toString()
 
@@ -670,7 +670,7 @@ class TrendmarkTest {
     @Test
     fun compressedSizedCRC32Trendmark_mismatchedSizeInvalidChecksum_warning() {
         // Arrange
-        val expectedCrc32 = 0x4D7D848Du
+        val expectedCrc32 = 0x82AB4E02u
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
             (
@@ -722,8 +722,8 @@ class TrendmarkTest {
         // Arrange
         val expectedHash =
             listOf<Byte>(
-                -34, 2, 101, -35, 107, 22, -96, -76, -85, 5, -92, 57, 54, -64, 115, 18, 79, 102,
-                -94, -86, 85, -77, -100, 43, 48, -74, 25, -34, 28, 17, -55, 80,
+                100, 2, -123, -78, 123, 0, 73, 0, -117, 5, -12, -11, -83, 82, -2, -34, 24, 19,
+                -76, 61, 47, 113, 121, -36, -76, 56, -100, -96, 28, 21, -66, -80,
             )
         val expectedContent =
             listOf(SHA3256Trendmark.TYPE_TAG.toByte()) + expectedHash + content
@@ -753,7 +753,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.SHA3256Trendmark",
-                4u,
+                8u,
                 255u,
             ).into().toString()
 
@@ -782,8 +782,8 @@ class TrendmarkTest {
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
             listOf<Byte>(
-                -34, 2, 101, -35, 107, 22, -96, -76, -85, 5, -92, 57, 54, -64, 115, 18, 79, 102,
-                -94, -86, 85, -77, -100, 43, 48, -74, 25, -34, 28, 17, -55, 80,
+                100, 2, -123, -78, 123, 0, 73, 0, -117, 5, -12, -11, -83, 82, -2, -34, 24, 19,
+                -76, 61, 47, 113, 121, -36, -76, 56, -100, -96, 28, 21, -66, -80,
             )
         val expectedStatus =
             Trendmark.InvalidHashWarning(
@@ -814,8 +814,8 @@ class TrendmarkTest {
         // Arrange
         val expectedHash =
             listOf<Byte>(
-                -33, 96, 25, 69, -62, 119, -104, 93, 14, 89, -52, -8, -101, 39, -19, -97, -100,
-                -104, -123, -91, -77, 62, -57, 71, -6, -120, 104, 116, -88, -17, 119, 91,
+                83, -74, -63, -41, 15, 9, 90, -55, -72, 74, 82, -63, -76, -123, 72, -16, -42, 9,
+                -120, -86, 127, 120, -35, -3, 84, -62, 33, -33, -113, -97, -79, 41,
             )
         val expectedContent =
             listOf(CompressedSHA3256Trendmark.TYPE_TAG.toByte()) + expectedHash + compressedContent
@@ -845,7 +845,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CompressedSHA3256Trendmark",
-                250u,
+                72u,
                 255u,
             ).into().toString()
 
@@ -874,8 +874,8 @@ class TrendmarkTest {
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
             listOf<Byte>(
-                -33, 96, 25, 69, -62, 119, -104, 93, 14, 89, -52, -8, -101, 39, -19, -97, -100,
-                -104, -123, -91, -77, 62, -57, 71, -6, -120, 104, 116, -88, -17, 119, 91,
+                83, -74, -63, -41, 15, 9, 90, -55, -72, 74, 82, -63, -76, -123, 72, -16, -42, 9,
+                -120, -86, 127, 120, -35, -3, 84, -62, 33, -33, -113, -97, -79, 41,
             )
         val expectedStatus =
             Trendmark.InvalidHashWarning(
@@ -916,8 +916,8 @@ class TrendmarkTest {
             ).toUInt()
         val expectedHash =
             listOf<Byte>(
-                -14, 23, -91, -82, 67, -59, 112, -94, 51, 43, -75, -112, 96, 35, 69, -38, 109,
-                53, -45, 52, -107, 92, 23, -125, -20, -20, 46, 73, 102, 69, -55, 26,
+                16, 40, 37, 39, 11, -23, 67, 16, -53, -112, -19, 39, -109, 30, 9, -53, -26, 19,
+                -70, -68, -11, 59, 8, -6, -105, 42, 27, 107, 30, -31, 59, -115,
             )
         val expectedContent =
             listOf(SizedSHA3256Trendmark.TYPE_TAG.toByte()) +
@@ -960,7 +960,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.SizedSHA3256Trendmark",
-                5u,
+                40u,
                 255u,
             ).into().toString()
 
@@ -1003,8 +1003,8 @@ class TrendmarkTest {
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
             listOf<Byte>(
-                42, 17, 9, 123, -5, 38, -78, -1, 60, 99, -65, -40, 54, 22, 125, -128, -113, -57,
-                5, 82, -71, 97, 76, -23, -39, 92, -45, 62, -36, -19, 73, -115,
+                39, -19, 18, 28, -13, 83, -11, 91, 79, 63, -53, 86, -126, -122, -70, -60, -81,
+                17, -64, 117, 19, 119, 30, 118, 40, 56, -22, -10, -94, 54, -45, 20,
             )
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
@@ -1059,8 +1059,8 @@ class TrendmarkTest {
             ).toUInt()
         val expectedHash =
             listOf<Byte>(
-                -52, -87, -76, -127, -75, 58, 51, -92, -79, -18, 122, -28, -128, 96, 69, -46, 102,
-                -28, 68, -118, 65, -44, -115, 94, -63, -103, -120, -78, -17, -125, -56, 110,
+                -33, -68, 41, 33, 109, -108, 61, 115, 107, 115, 25, -122, 76, -88, -73, 88, 0,
+                35, 122, 46, 83, -70, 108, -22, 73, 79, -48, -114, -7, 71, -99, 27,
             )
         val expectedContent =
             listOf(CompressedSizedSHA3256Trendmark.TYPE_TAG.toByte()) +
@@ -1103,7 +1103,7 @@ class TrendmarkTest {
         val expectedStatus =
             Trendmark.InvalidTagError(
                 "Trendmark.CompressedSizedSHA3256Trendmark",
-                249u,
+                104u,
                 255u,
             ).into().toString()
 
@@ -1146,8 +1146,8 @@ class TrendmarkTest {
         val invalidHash = (0 until 32).map { it.toByte() }.toList()
         val expectedHash =
             listOf<Byte>(
-                47, 42, -73, -2, -51, -41, 54, -37, 84, -120, 62, 73, -100, 0, -1, -8, 57, 54, -48,
-                21, 97, -110, -2, -9, 14, 59, -36, 117, 66, -83, -74, 47,
+                56, -83, 26, -125, 21, 20, 92, 91, 122, 82, -125, -58, 17, -34, -53, 117, 112,
+                -88, -128, -3, 72, 62, -85, 112, -103, 46, 26, -112, -67, 30, -34, 31,
             )
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
@@ -1382,7 +1382,7 @@ class TrendmarkTest {
     fun parse_completeness_success() {
         // Arrange
         check(TrendmarkInterface.TAG_SIZE == 1)
-        val existingTags = listOf(0, 1, 2, 3, 4, 5, 254, 253, 252, 251, 250, 249)
+        val existingTags = listOf(0, 32, 16, 48, 8, 40, 64, 96, 80, 112, 72, 104)
 
         // Act & Assert
         for (tag in 0..255) {

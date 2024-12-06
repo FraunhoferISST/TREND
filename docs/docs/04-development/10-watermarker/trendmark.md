@@ -19,29 +19,41 @@ predefined specification. The Trendmark class creates and implements such a spec
 specification is documented below.
 
 ## Overview
-Trendmark uses the first byte of a watermark as tag to indicate the format. This allows to parse and
-interpret the content of the watermark correctly as long as the watermark follows this
-specification. The table below lists all specified tags and explains their purpose. The tags are
-counted upwards from `0` for watermarks that add additional content and downwards from `fe` for
-watermarks that change the content itself (e.g. compression).
+Trendmark uses the first byte of a watermark as a tag composed of 8 flags to indicate the format. 
+This allows to parse and interpret the content of the watermark correctly as long as the watermark 
+follows this specification. The table below lists all specified tags sorted by the amount and 
+positions of set flags and explains their purpose. The flags carry the following meanings:  
 
-| Tag (in hex) | Class name | Meaning |
-| -- | -- | -- |
-| 00 | RawTrendmark | raw bytes without special encoding |
-| 01 | SizedTrendmark | size + raw bytes |
-| 02 | CRC32Trendmark | CRC32 checksum + raw bytes |
-| 03 | SizedCRC32Trendmark | size + CRC32 checksum + raw bytes |
-| 04 | SHA3256Trendmark | SHA3-256 hash + raw bytes |
-| 05 | SizedSHA3256Trendmark | size + SHA3-256 hash + raw bytes |
-| -- | -- | -- |
-| fe | CompressedRawTrendmark | compressed bytes |
-| fd | CompressedSizedTrendmark | size + compressed bytes |
-| fc | CompressedCRC32Trendmark | CRC32 checksum + compressed bytes |
-| fb | CompressedSizedCRC32Trendmark | size + CRC32 checksum + compressed bytes |
-| fa | CompressedSHA3256Trendmark | SHA3-256 hash + compressed bytes |
-| f9 | CompressedSizedSHA3256Trendmark | size + SHA3-256 hash + compressed bytes |
-| -- | -- | -- |
-| ff | Custom | Reserved for custom Trendmark implementations |
+(1) Custom  
+(2) Compressed  
+(3) Sized  
+(4) CRC32  
+(5) SHA3-256  
+(6) Unused  
+(7) Unused  
+(8) Unused
+
+| Tag (in bin) | Tag (in hex) | Class name                      | Meaning                                       |
+|--------------|--------------|---------------------------------|-----------------------------------------------|
+| 00000000     | 00           | RawTrendmark                    | raw bytes without special encoding            |
+| --           | --           | --                              | --                                            |
+| 10000000     | 80           | Custom                          | Reserved for custom Trendmark implementations |
+| 01000000     | 40           | CompressedRawTrendmark          | compressed bytes                              |
+| 00100000     | 20           | SizedTrendmark                  | size + raw bytes                              |
+| 00010000     | 10           | CRC32Trendmark                  | CRC32 checksum + raw bytes                    |
+| 00001000     | 08           | SHA3256Trendmark                | SHA3-256 hash + raw bytes                     |
+| 00000100     | 04           | ---Unused---                    | flag currently not in use                     |
+| 00000010     | 02           | ---Unused---                    | flag currently not in use                     |
+| 00000001     | 01           | ---Unused---                    | flag currently not in use                     |
+| --           | --           | --                              | --                                            |
+| 01100000     | 60           | CompressedSizedTrendmark        | size + compressed bytes                       |
+| 01010000     | 50           | CompressedCRC32Trendmark        | CRC32 checksum + compressed bytes             |
+| 01001000     | 48           | CompressedSHA3256Trendmark      | SHA3-256 hash + compressed bytes              |
+| 00110000     | 30           | SizedCRC32Trendmark             | size + CRC32 checksum + raw bytes             |
+| 00101000     | 28           | SizedSHA3256Trendmark           | size + SHA3-256 hash + raw bytes              |
+| --           | --           | --                              | --                                            |
+| 01110000     | 70           | CompressedSizedCRC32Trendmark   | size + CRC32 checksum + compressed bytes      |
+| 01101000     | 68           | CompressedSizedSHA3256Trendmark | size + SHA3-256 hash + compressed bytes       |
 
 ## Details
 In the following, each watermark is specified with the text ``Lorem Ipsum`` encoded in UTF-8 bytes
@@ -55,55 +67,55 @@ the watermark robustness.
 
 ### RawTrendmark
 
-| tag | raw bytes |
-| -- | -- |
-| 00 | 4c 6f 72 65 6d 20 69 70 73 75 6d |
+| tag | raw bytes                        |
+|-----|----------------------------------|
+| 00  | 4c 6f 72 65 6d 20 69 70 73 75 6d |
 
 ### SizedTrendmark
 The size is calculated over the entire watermark.
 
-| tag | size in 32 bits little-endian | raw bytes |
-| -- | -- | -- |
-| 01 | 10 00 00 00 | 4c 6f 72 65 6d 20 69 70 73 75 6d |
+| tag | size in 32 bits little-endian | raw bytes                        |
+|-----|-------------------------------|----------------------------------|
+| 20  | 10 00 00 00                   | 4c 6f 72 65 6d 20 69 70 73 75 6d |
 
 ### CRC32Trendmark
 The [CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum is calculated over the
 entire watermark, replacing the bytes containing the checksum with null bytes.
 
-| tag | CRC32 checksum little-endian | raw bytes |
-| -- | -- | -- |
-| 02 | 87 0b 16 35 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
+| tag | CRC32 checksum little-endian | raw bytes                        |
+|-----|------------------------------|----------------------------------|
+| 10  | 7a 10 91 54                  | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
 ### SizedCRC32Trendmark
 The size and CRC32 checksum are calculated over the entire watermark, replacing the bytes containing
 the checksum with null bytes.
 
-| tag | size in 32 bits little-endian | CRC32 checksum little-endian | raw bytes |
-| -- | -- | -- | -- |
-| 03 | 14 00 00 00 | 1e 85 5b 04 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
+| tag | size in 32 bits little-endian | CRC32 checksum little-endian | raw bytes                        |
+|-----|-------------------------------|------------------------------|----------------------------------|
+| 30  | 14 00 00 00                   | fa 33 c8 51                  | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
 ### SHA3256Trendmark
 The [SHA3-256](https://en.wikipedia.org/wiki/SHA-3) hash is calculated over the entire watermark,
 replacing the bytes containing the hash with null bytes.
 
-| tag | SHA3-256 hash | raw bytes |
-| -- | -- | -- |
-| 04 | de 02 65 dd 6b 16 a0 b4 ab 05 a4 39 36 c0 73 12 4f 66 a2 aa 55 b3 9c 2b 30 b6 19 de 1c 11 c9 50 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
+| tag | SHA3-256 hash                                                                                   | raw bytes                        |
+|-----|-------------------------------------------------------------------------------------------------|----------------------------------|
+| 08  | 64 02 85 b2 7b 00 49 00 8b 05 f4 f5 ad 52 fe de 18 13 b4 3d 2f 71 79 dc b4 38 9c a0 1c 15 be b0 | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
 ### SizedSHA3256Trendmark
 The size and SHA3-256 hash are calculated over the entire watermark, replacing the bytes containing the
 hash are replaced with zero-bytes.
 
-| tag | size in 32 bits little-endian | SHA3-256 hash | raw bytes |
-| -- | -- | -- | -- |
-| 05 | 30 00 00 00 | f2 17 a5 ae 43 c5 70 a2 33 2b b5 90 60 23 45 da 6d 35 d3 34 95 5c 17 83 ec ec 2e 49 66 45 c9 1a | 4c 6f 72 65 6d 20 49 70 73 75 6d |
+| tag | size in 32 bits little-endian | SHA3-256 hash                                                                                   | raw bytes                        |
+|-----|-------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------|
+| 28  | 30 00 00 00                   | 10 28 25 27 0b e9 43 10 cb 90 ed 27 93 1e 09 cb e6 13 ba bc f5 3b 08 fa 97 2a 1b 6b 1e e1 3b 8d | 4c 6f 72 65 6d 20 49 70 73 75 6d |
 
 ### CompressedRawTrendmark
 Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 
-| tag | compressed content |
-| -- | -- |
-| fe | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
+| tag | compressed content                     |
+|-----|----------------------------------------|
+| 40  | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
 ### CompressedSizedTrendmark
 The size is calculated over the entire watermark.
@@ -112,9 +124,9 @@ the watermark robustness.
 Trendmark uses [DEFLATE](https://en.wikipedia.org/wiki/Deflate) as compression algorithm
 (see RFC 1951).
 
-| tag | size in 32 bits little-endian | compressed bytes |
-| -- | -- | -- |
-| fd | 12 00 00 00 | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
+| tag | size in 32 bits little-endian | compressed bytes                       |
+|-----|-------------------------------|----------------------------------------|
+| 60  | 12 00 00 00                   | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
 ### CompressedCRC32Trendmark
 The CRC32 checksum is calculated over the entire watermark, replacing the bytes containing the
@@ -123,9 +135,9 @@ Only the content is compressed, potentially allowing to use the additional infor
 the watermark robustness.
 Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 
-| tag | CRC32 checksum little-endian | compressed bytes |
-| -- | -- | -- |
-| fc | 9d 54 46 ff | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
+| tag | CRC32 checksum little-endian | compressed bytes                       |
+|-----|------------------------------|----------------------------------------|
+| 50  | 26 73 92 10                  | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
 ### CompressedSizedCRC32Trendmark
 The size and CRC32 checksum are calculated over the entire watermark, replacing the bytes containing
@@ -134,9 +146,9 @@ Only the content is compressed, potentially allowing to use the additional infor
 the watermark robustness.
 Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 
-| tag | size in 32 bits little-endian | CRC32 checksum little-endian | compressed bytes |
-| -- | -- | -- | -- |
-| fb | 16 00 00 00 | 13 07 a7 d2 | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
+| tag | size in 32 bits little-endian | CRC32 checksum little-endian | compressed bytes                       |
+|-----|-------------------------------|------------------------------|----------------------------------------|
+| 70  | 16 00 00 00                   | 9c cd 71 1d                  | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
 ### CompressedSHA3256Trendmark
 The SHA3-256 hash is calculated over the entire watermark, replacing the bytes containing the hash
@@ -145,9 +157,9 @@ Only the content is compressed, potentially allowing to use the additional infor
 the watermark robustness.
 Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 
-| tag | SHA3-256 hash | compressed bytes |
-| -- | -- | -- |
-| fa | df 60 19 45 c2 77 98 5d 0e 59 cc f8 9b 27 ed 9f 9c 98 85 a5 b3 3e c7 47 fa 88 68 74 a8 ef 77 5b | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
+| tag | SHA3-256 hash                                                                                   | compressed bytes                       |
+|-----|-------------------------------------------------------------------------------------------------|----------------------------------------|
+| 48  | 53 b6 c1 d7 0f 09 5a c9 b8 4a 52 c1 b4 85 48 f0 d6 09 88 aa 7f 78 dd fd 54 c2 21 df 8f 9f b1 29 | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
 
 ### CompressedSizedSHA3256Trendmark
 The size and SHA3-256 hash are calculated over the entire watermark, replacing the bytes containing the
@@ -156,6 +168,6 @@ Only the content is compressed, potentially allowing to use the additional infor
 the watermark robustness.
 Trendmark uses DEFLATE as compression algorithm (see RFC 1951).
 
-| tag | size in 32 bits little-endian | SHA3-256 hash | compressed bytes |
-| -- | -- | -- | -- |
-| f9 | 32 00 00 00 | cc a9 b4 81 b5 3a 33 a4 b1 ee 7a e4 80 60 45 d2 66 e4 44 8a 41 d4 8d 5e c1 99 88 b2 ef 83 c8 6e | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |
+| tag | size in 32 bits little-endian | SHA3-256 hash                                                                                   | compressed bytes                       |
+|-----|-------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------|
+| 68  | 32 00 00 00                   | df bc 29 21 6d 94 3d 73 6b 73 19 86 4c a8 b7 58 00 23 7a 2e 53 ba 6c ea 49 4f d0 8e f9 47 9d 1b | f3 c9 2f 4a cd 55 f0 2c 28 2e cd 05 00 |

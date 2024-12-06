@@ -603,7 +603,7 @@ fun Result<List<Watermark>>.toTrendmarks(source: String = "Trendmark"): Result<L
 class RawTrendmark(content: List<Byte>) : Trendmark(content) {
     companion object {
         const val SOURCE = "Trendmark.RawTrendmark"
-        const val TYPE_TAG: UByte = 0u
+        const val TYPE_TAG: UByte = 0u // "00000000"
 
         /** Creates a new `RawTrendmark` with containing [content] */
         fun new(content: List<Byte>): RawTrendmark = RawTrendmark(createRaw(TYPE_TAG, content))
@@ -631,7 +631,7 @@ class RawTrendmark(content: List<Byte>) : Trendmark(content) {
 class SizedTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Sized {
     companion object {
         const val SOURCE = "Trendmark.SizedTrendmark"
-        const val TYPE_TAG: UByte = 1u
+        const val TYPE_TAG: UByte = 32u // "00100000"
 
         /**
          *  Number of bytes used to specify the length of the watermark. The decision to use 4 bytes
@@ -683,7 +683,7 @@ class SizedTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Sized 
 class CRC32Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CRC32Trendmark"
-        const val TYPE_TAG: UByte = 2u
+        const val TYPE_TAG: UByte = 16u // "00010000"
         const val CHECKSUM_SIZE = 4
         const val CHECKSUM_START_INDEX = TAG_SIZE
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
@@ -752,7 +752,7 @@ class SizedCRC32Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.SizedCRC32Trendmark"
-        const val TYPE_TAG: UByte = 3u
+        const val TYPE_TAG: UByte = 48u // "00110000"
         const val SIZE_SIZE: Int = 4
         const val SIZE_START_INDEX = TAG_SIZE
         const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
@@ -826,7 +826,7 @@ class SizedCRC32Trendmark(content: List<Byte>) :
 class SHA3256Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.SHA3256Trendmark"
-        const val TYPE_TAG: UByte = 4u
+        const val TYPE_TAG: UByte = 8u // "00001000"
         const val HASH_SIZE = 32
         const val HASH_START_INDEX = TAG_SIZE
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
@@ -898,7 +898,7 @@ class SizedSHA3256Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.SizedSHA3256Trendmark"
-        const val TYPE_TAG: UByte = 5u
+        const val TYPE_TAG: UByte = 40u // "00101000"
         const val SIZE_SIZE = 4
         const val SIZE_START_INDEX = TAG_SIZE
         const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
@@ -974,7 +974,7 @@ class SizedSHA3256Trendmark(content: List<Byte>) :
 class CompressedRawTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedRawTrendmark"
-        const val TYPE_TAG: UByte = 254u
+        const val TYPE_TAG: UByte = 64u // "01000000"
 
         /** Creates a new `CompressedRawTrendmark` containing [content] */
         fun new(content: List<Byte>): CompressedRawTrendmark {
@@ -1004,7 +1004,7 @@ class CompressedSizedTrendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedTrendmark"
-        const val TYPE_TAG: UByte = 253u
+        const val TYPE_TAG: UByte = 96u // 01100000
 
         /** Creates a new `CompressedSizedTrendmark` containing [content] */
         fun new(content: List<Byte>): CompressedSizedTrendmark {
@@ -1038,7 +1038,7 @@ class CompressedCRC32Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Compressed, Trendmark.Checksum {
     companion object {
         const val SOURCE = "Trendmark.CompressedCRC32Trendmark"
-        const val TYPE_TAG: UByte = 252u
+        const val TYPE_TAG: UByte = 80u // "01010000"
 
         /** Creates a new `CompressedCRC32Trendmark` containing [content] */
         fun new(content: List<Byte>): CompressedCRC32Trendmark {
@@ -1090,7 +1090,7 @@ class CompressedSizedCRC32Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Sized, Trendmark.Checksum, Trendmark.Compressed {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedCRC32Trendmark"
-        const val TYPE_TAG: UByte = 251u
+        const val TYPE_TAG: UByte = 112u // "01110000"
 
         /** Creates a new `CompressedSizedCRC32Trendmark` containing [content] */
         fun new(content: List<Byte>): CompressedSizedCRC32Trendmark {
@@ -1152,7 +1152,7 @@ class CompressedSHA3256Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Compressed, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSHA3256Trendmark"
-        const val TYPE_TAG: UByte = 250u
+        const val TYPE_TAG: UByte = 72u // "01001000"
 
         /** Creates a new `CompressedSHA3256Trendmark` containing [content] */
         fun new(content: List<Byte>): CompressedSHA3256Trendmark {
@@ -1207,7 +1207,7 @@ class CompressedSizedSHA3256Trendmark(content: List<Byte>) :
     Trendmark(content), Trendmark.Compressed, Trendmark.Sized, Trendmark.Hash {
     companion object {
         const val SOURCE = "Trendmark.CompressedSizedSHA3256Trendmark"
-        const val TYPE_TAG: UByte = 249u
+        const val TYPE_TAG: UByte = 104u // "01101000"
 
         /** Creates a new `CompressedSizedSHA3256Trendmark` containing [content] */
         fun new(content: List<Byte>): CompressedSizedSHA3256Trendmark {
