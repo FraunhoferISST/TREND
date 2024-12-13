@@ -265,14 +265,16 @@ class TextWatermarker(
 
         val status = Status()
         val watermarks = ArrayList<Watermark>()
+        val stringBuilder = StringBuilder(file.content)
+        var previousStart = 0
         for ((start, end) in sanitizedWatermarkRanges) {
             val content =
-                StringBuilder(file.content)
-                    .drop(start)
+                stringBuilder
+                    .deleteRange(0, start - previousStart)
                     .take(end - start + 1)
                     .filter { char -> char in transcoding.alphabet }
 
-            if (content.count() > 0) {
+            if (content.isNotEmpty()) {
                 val decoded =
                     with(transcoding.decode(content.asSequence())) {
                         if (!hasValue) {
@@ -284,6 +286,7 @@ class TextWatermarker(
 
                 watermarks.add(Watermark(decoded))
             }
+            previousStart = start
         }
 
         if (watermarkRanges.count() <= 0 && watermarks.isNotEmpty()) {
