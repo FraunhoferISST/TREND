@@ -44,7 +44,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.kotlincrypto.hash:sha3:0.5.3")
+                implementation("org.kotlincrypto.hash:sha3:0.5.5")
             }
         }
         val commonTest by getting {
