@@ -11,7 +11,7 @@ plugins {
     id("maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.0"
 }
 
 group = "de.fraunhofer.isst.trend"
