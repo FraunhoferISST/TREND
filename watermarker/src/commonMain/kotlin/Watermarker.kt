@@ -95,13 +95,15 @@ open class Watermarker {
         const val SOURCE = "Watermarker"
     }
 
+    private val textWatermarker: TextWatermarker = TextWatermarker.default()
+
     /** Watermarks string [text] with [watermark] */
     @JsName("textAddWatermarkBytes")
     fun textAddWatermark(
         text: String,
         watermark: List<Byte>,
     ): Result<String> {
-        val watermarker = SupportedFileType.Text.watermarker
+        val watermarker = textWatermarker
 
         val textFile = TextFile.fromString(text)
 
@@ -134,7 +136,7 @@ open class Watermarker {
 
     /** Checks if [text] contains a watermark */
     fun textContainsWatermark(text: String): Boolean {
-        val watermarker = SupportedFileType.Text.watermarker
+        val watermarker = textWatermarker
 
         val textFile = TextFile.fromString(text)
 
@@ -150,7 +152,7 @@ open class Watermarker {
         text: String,
         squash: Boolean = true,
     ): Result<List<Watermark>> {
-        val watermarker = SupportedFileType.Text.watermarker
+        val watermarker = textWatermarker
 
         val textFile = TextFile.fromString(text)
         val result = watermarker.getWatermarks(textFile)
@@ -199,7 +201,7 @@ open class Watermarker {
 
     /** Returns [text] without watermarks */
     fun textRemoveWatermarks(text: String): Result<String> {
-        val watermarker = SupportedFileType.Text.watermarker
+        val watermarker = textWatermarker
 
         val textFile = TextFile.fromString(text)
 
