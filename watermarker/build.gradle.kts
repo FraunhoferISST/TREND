@@ -7,7 +7,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-    kotlin("multiplatform") version "2.0.21"
+    kotlin("multiplatform") version "2.1.10"
     id("maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
