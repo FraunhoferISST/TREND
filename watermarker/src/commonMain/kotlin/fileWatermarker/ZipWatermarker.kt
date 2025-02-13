@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -40,22 +40,40 @@ object ZipWatermarker : FileWatermarker<ZipFile> {
         return false
     }
 
-    /** Returns all watermarks in [file] */
-    override fun getWatermarks(file: ZipFile): Result<List<Watermark>> {
+    /**
+     * Returns all watermarks in [file]
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     */
+    override fun getWatermarks(
+        file: ZipFile,
+        singleWatermark: Boolean,
+    ): Result<List<Watermark>> {
         val watermarks = ArrayList<Watermark>()
         for (extraField in file.header.extraFields) {
             if (extraField.id == ZIP_WATERMARK_ID) {
                 watermarks.add(Watermark(extraField.data))
             }
         }
+        if (singleWatermark) {
+            return Watermark.mostFrequent(watermarks)
+        }
         return Result.success(watermarks)
     }
 
-    /** Removes all watermarks in [file] and returns them */
-    override fun removeWatermarks(file: ZipFile): Result<List<Watermark>> {
+    /**
+     * Removes all watermarks in [file] and returns them
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     */
+    override fun removeWatermarks(
+        file: ZipFile,
+        singleWatermark: Boolean,
+    ): Result<List<Watermark>> {
         val watermarks = ArrayList<Watermark>()
         for (extraField in file.header.removeExtraFields(ZIP_WATERMARK_ID)) {
             watermarks.add(Watermark(extraField.data))
+        }
+        if (singleWatermark) {
+            return Watermark.mostFrequent(watermarks)
         }
         return Result.success(watermarks)
     }

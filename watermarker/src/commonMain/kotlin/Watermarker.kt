@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -147,16 +147,25 @@ open class Watermarker {
      * Returns all watermarks in [text].
      *
      * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     fun textGetWatermarks(
         text: String,
         squash: Boolean = true,
+        singleWatermark: Boolean = true,
     ): Result<List<Watermark>> {
         val watermarker = textWatermarker
 
         val textFile = TextFile.fromString(text)
-        val result = watermarker.getWatermarks(textFile)
+        var result = watermarker.getWatermarks(textFile)
 
+        if (singleWatermark && result.hasValue) {
+            val mostFrequent = Watermark.mostFrequent(result.value!!)
+            // append Status in case of warning/error
+            result.appendStatus(mostFrequent.status)
+            // replace List in result.value
+            result = result.into(mostFrequent.value)
+        }
         if (squash && result.hasValue) {
             return result.into(squashWatermarks(result.value!!))
         }
@@ -168,6 +177,7 @@ open class Watermarker {
      * Returns all watermarks in [text] as Trendmarks.
      *
      * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      *
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
@@ -175,13 +185,15 @@ open class Watermarker {
     fun textGetTrendmarks(
         text: String,
         squash: Boolean = true,
+        singleWatermark: Boolean = true,
     ): Result<List<Trendmark>> =
-        textGetWatermarks(text, squash).toTrendmarks("$SOURCE.textGetTrendmarks")
+        textGetWatermarks(text, squash, singleWatermark).toTrendmarks("$SOURCE.textGetTrendmarks")
 
     /**
      * Returns all watermarks in [text] as TextWatermarks.
      *
      * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
      *                           is false: invalid bytes sequences are replace with the char �.
      *
@@ -194,9 +206,10 @@ open class Watermarker {
     fun textGetTextWatermarks(
         text: String,
         squash: Boolean = true,
+        singleWatermark: Boolean = true,
         errorOnInvalidUTF8: Boolean = false,
     ): Result<List<TextWatermark>> =
-        textGetWatermarks(text, squash)
+        textGetWatermarks(text, squash, singleWatermark)
             .toTextWatermarks(errorOnInvalidUTF8, "$SOURCE.textGetTextWatermarks")
 
     /** Returns [text] without watermarks */
