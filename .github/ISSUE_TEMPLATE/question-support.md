@@ -1,10 +1,8 @@
 ---
 name: Question / Support
 about: Any open points to be asked or discussed
-title: ''
 labels: question
-assignees: ''
-
+type: Support
 ---
 
 # ❓ Question or Support Request
