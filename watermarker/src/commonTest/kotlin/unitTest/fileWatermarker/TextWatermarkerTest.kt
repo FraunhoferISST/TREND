@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -10,6 +10,8 @@ import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.SeparatorStrategy
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarkerBuilder
+import de.fraunhofer.isst.trend.watermarker.files.TextFile
+import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -58,6 +60,14 @@ class DefaultTranscodingTest {
 
 class TextWatermarkerTest {
     private val textWatermarker = TextWatermarker.default()
+    private val textFileDifferentWatermarks =
+        TextFile.fromString(
+            "Lorem ipsum dolor sit amet, consetetur sadipscing elitr," +
+                " sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat," +
+                " sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum" +
+                ".Lorem ipsum dolor sit amet, consetetur sadipscing elitr," +
+                " sed diam nonumy eirmod tempor invidunt ut labore et dolore magna",
+        )
 
     @Test
     fun placement_loremIpsum_success() {
@@ -167,6 +177,43 @@ class TextWatermarkerTest {
 
         // Assert
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun getWatermarks_singleWatermark_Success() {
+        // Arrange
+        val expectedWatermark = Watermark.fromString("Okay")
+        val expected = listOf(expectedWatermark, expectedWatermark)
+
+        // Act
+        val result =
+            textWatermarker.getWatermarks(
+                textFileDifferentWatermarks,
+                singleWatermark = true,
+            )
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun getWatermarks_multipleWatermark_Success() {
+        // Arrange
+        val firstWatermark = Watermark.fromString("Okay")
+        val secondWatermark = Watermark.fromString("Test")
+        val expected = listOf(firstWatermark, firstWatermark, secondWatermark)
+
+        // Act
+        val result =
+            textWatermarker.getWatermarks(
+                textFileDifferentWatermarks,
+                singleWatermark = false,
+            )
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
     }
 
     @Test

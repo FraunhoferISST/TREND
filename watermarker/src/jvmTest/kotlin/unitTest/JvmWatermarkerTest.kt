@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -338,7 +338,13 @@ class JvmWatermarkerTest {
             }
 
         // Act
-        val result = watermarker.getWatermarks(source, null, false)
+        val result =
+            watermarker.getWatermarks(
+                source,
+                fileType = null,
+                squash = false,
+                singleWatermark = false,
+            )
 
         // Assert
         assertTrue(result.isSuccess)
@@ -355,7 +361,45 @@ class JvmWatermarkerTest {
             }
 
         // Act
-        val result = watermarker.getWatermarks(source)
+        val result =
+            watermarker.getWatermarks(
+                source,
+                singleWatermark = false,
+            )
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun getWatermarks_differentWatermarks_successAndSingleWatermarkList() {
+        // Arrange
+        val source = "src/jvmTest/resources/lorem_ipsum_long_different_watermarks.txt"
+        val expected =
+            listOf("Okay", "Okay", "Okay", "Okay", "Okay").map {
+                Watermark.fromString(it)
+            }
+
+        // Act
+        val result = watermarker.getWatermarks(source, squash = false, singleWatermark = true)
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun getWatermarks_differentWatermarks_successAndSingleWatermark() {
+        // Arrange
+        val source = "src/jvmTest/resources/lorem_ipsum_long_different_watermarks.txt"
+        val expected =
+            listOf("Okay").map {
+                Watermark.fromString(it)
+            }
+
+        // Act
+        val result = watermarker.getWatermarks(source, squash = true, singleWatermark = true)
 
         // Assert
         assertTrue(result.isSuccess)
@@ -503,6 +547,24 @@ class JvmWatermarkerTest {
 
         // Cleanup
         File(target).delete()
+    }
+
+    @Test
+    fun removeWatermarks_differentWatermarks_successAndSingleWatermarkList() {
+        // Arrange
+        val source = "src/jvmTest/resources/lorem_ipsum_long_different_watermarks.txt"
+        val target = "src/jvmTest/resources/lorem_ipsum_long.txt"
+        val expected =
+            listOf("Okay", "Okay", "Okay", "Okay", "Okay").map {
+                Watermark.fromString(it)
+            }
+
+        // Act
+        val result = watermarker.removeWatermarks(source, target, singleWatermark = true)
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -199,8 +199,15 @@ class TextWatermarker(
             char in fullAlphabet
         }
 
-    /** Returns all watermarks in [file] */
-    override fun getWatermarks(file: TextFile): Result<List<Watermark>> {
+    /**
+     * Returns all watermarks in [file]
+     *
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     * */
+    override fun getWatermarks(
+        file: TextFile,
+        singleWatermark: Boolean,
+    ): Result<List<Watermark>> {
         val watermarkRanges: Sequence<Pair<Int, Int>> =
             when (separatorStrategy) {
                 is SeparatorStrategy.SkipInsertPosition -> {
@@ -292,6 +299,11 @@ class TextWatermarker(
         if (watermarkRanges.count() <= 0 && watermarks.isNotEmpty()) {
             status.addEvent(IncompleteWatermarkWarning())
         }
+        if (singleWatermark && watermarks.isNotEmpty()) {
+            val mostFrequent = Watermark.mostFrequent(watermarks)
+            status.appendStatus(mostFrequent.status)
+            return status.into(mostFrequent.value!!)
+        }
 
         return status.into(watermarks)
     }
@@ -299,11 +311,15 @@ class TextWatermarker(
     /**
      * Removes all watermarks in [file] and returns them.
      *
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      * Returns a warning if getWatermarks() returns a warning or error.
      */
-    override fun removeWatermarks(file: TextFile): Result<List<Watermark>> {
+    override fun removeWatermarks(
+        file: TextFile,
+        singleWatermark: Boolean,
+    ): Result<List<Watermark>> {
         val (status, watermarks) =
-            with(this.getWatermarks(file)) {
+            with(this.getWatermarks(file, singleWatermark)) {
                 status to (value ?: listOf())
             }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -155,24 +155,27 @@ class JvmWatermarker : Watermarker() {
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     fun getWatermarks(
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
+        singleWatermark: Boolean = true,
     ): Result<List<Watermark>> {
         val supportedFileType =
             with(SupportedFileType.getFileType(source, fileType)) {
                 value ?: return into<_>()
             }
 
-        return getWatermarksDoWork(supportedFileType.watermarker, source, squash)
+        return getWatermarksDoWork(supportedFileType.watermarker, source, squash, singleWatermark)
     }
 
     private fun <T : WatermarkableFile> getWatermarksDoWork(
         watermarker: FileWatermarker<T>,
         source: String,
         squash: Boolean,
+        singleWatermark: Boolean = false,
     ): Result<List<Watermark>> {
         val (status, bytes) =
             with(readFile(source)) {
@@ -191,6 +194,14 @@ class JvmWatermarker : Watermarker() {
                 value
             }
 
+        if (singleWatermark && bytes.isNotEmpty()) {
+            val mostFrequent = Watermark.mostFrequent(watermarks ?: emptyList())
+            // append Status in case of warning/error
+            status.appendStatus(mostFrequent.status)
+            // replace List in result.value
+            watermarks = mostFrequent.value
+        }
+
         if (squash && watermarks != null) {
             watermarks = squashWatermarks(watermarks)
         }
@@ -203,6 +214,7 @@ class JvmWatermarker : Watermarker() {
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      *
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
@@ -211,8 +223,9 @@ class JvmWatermarker : Watermarker() {
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
+        singleWatermark: Boolean = true,
     ): Result<List<Trendmark>> {
-        return getWatermarks(source, fileType, squash).toTrendmarks(SOURCE)
+        return getWatermarks(source, fileType, squash, singleWatermark).toTrendmarks(SOURCE)
     }
 
     /**
@@ -220,6 +233,7 @@ class JvmWatermarker : Watermarker() {
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent  watermark is returned.
      *
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error
      *                           is false: invalid bytes sequences are replace with the char �
@@ -234,9 +248,13 @@ class JvmWatermarker : Watermarker() {
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
+        singleWatermark: Boolean = true,
         errorOnInvalidUTF8: Boolean = false,
     ): Result<List<TextWatermark>> {
-        return getWatermarks(source, fileType, squash).toTextWatermarks(errorOnInvalidUTF8, SOURCE)
+        return getWatermarks(source, fileType, squash, singleWatermark).toTextWatermarks(
+            errorOnInvalidUTF8,
+            SOURCE,
+        )
     }
 
     /**
@@ -248,19 +266,26 @@ class JvmWatermarker : Watermarker() {
         source: String,
         target: String,
         fileType: String? = null,
+        singleWatermark: Boolean = true,
     ): Result<List<Watermark>> {
         val supportedFileType =
             with(SupportedFileType.getFileType(source, fileType)) {
                 value ?: return into<_>()
             }
 
-        return removeWatermarksDoWork(supportedFileType.watermarker, source, target)
+        return removeWatermarksDoWork(
+            supportedFileType.watermarker,
+            source,
+            target,
+            singleWatermark,
+        )
     }
 
     private fun <T : WatermarkableFile> removeWatermarksDoWork(
         watermarker: FileWatermarker<T>,
         source: String,
         target: String,
+        singleWatermark: Boolean = true,
     ): Result<List<Watermark>> {
         val (status, bytes) =
             with(readFile(source)) {
@@ -274,7 +299,7 @@ class JvmWatermarker : Watermarker() {
             }
 
         val watermarks =
-            with(watermarker.removeWatermarks(file)) {
+            with(watermarker.removeWatermarks(file, singleWatermark)) {
                 status.appendStatus(this.status)
                 value
             }

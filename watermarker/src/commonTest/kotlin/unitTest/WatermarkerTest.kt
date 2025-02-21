@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -11,6 +11,7 @@ import de.fraunhofer.isst.trend.watermarker.SupportedFileType
 import de.fraunhofer.isst.trend.watermarker.Watermarker
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.trend.watermarker.watermarks.RawTrendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.SizedTrendmark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
@@ -62,6 +63,29 @@ class WatermarkerTest {
             "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
             "sanctus est Lorem ipsum dolor sit amet."
 
+    private val differentTrendmarks = listOf("Test", "Okay", "Okay", "Yeah")
+
+    private val textWithDifferentRawTrendmarks =
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempo" +
+            "r invidunt ut labore et dolore magna. Lorem ipsum dolor sitLorem ipsum dolor sit " +
+            "amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labo" +
+            "re et dolore magna. Lorem ipsum dolor sitLorem ipsum dolor sit amet, consetetur s" +
+            "adipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna" +
+            ". Lorem ipsum dolor sitLorem ipsum dolor sit amet, consetetur sadipscing elitr, s" +
+            "ed diam nonumy eirmod tempor invidunt ut labore et dolore magna. Lorem ipsum dolo" +
+            "r sit"
+
+    private val differentTextWatermarks = listOf("Test", "Okay", "Okay", "Yeah")
+
+    private val textWithDifferentTextWatermarks =
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempo" +
+            "r invidunt ut labore et dolore magna. Lorem ipsum dolor sitLorem ipsum dolor sit " +
+            "amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labo" +
+            "re et dolore magna. Lorem ipsum dolor sitLorem ipsum dolor sit amet, consetetur s" +
+            "adipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna" +
+            ". Lorem ipsum dolor sitLorem ipsum dolor sit amet, consetetur sadipscing elitr, s" +
+            "ed diam nonumy eirmod tempor invidunt ut labore et dolore magna. Lorem ipsum dolo" +
+            "r sit"
     private val textWithWatermarksAndTrendmarks =
         textWithWatermark +
             DefaultTranscoding.SEPARATOR_CHAR +
@@ -193,7 +217,12 @@ class WatermarkerTest {
             }
 
         // Act
-        val result = watermarker.textGetWatermarks(longTextWithDifferentWatermarks, false)
+        val result =
+            watermarker.textGetWatermarks(
+                longTextWithDifferentWatermarks,
+                squash = false,
+                singleWatermark = false,
+            )
 
         // Assert
         assertTrue(result.isSuccess)
@@ -209,7 +238,11 @@ class WatermarkerTest {
             }
 
         // Act
-        val result = watermarker.textGetWatermarks(longTextWithDifferentWatermarks)
+        val result =
+            watermarker.textGetWatermarks(
+                longTextWithDifferentWatermarks,
+                singleWatermark = false,
+            )
 
         // Assert
         assertTrue(result.isSuccess)
@@ -249,6 +282,78 @@ class WatermarkerTest {
         // Assert
         assertTrue(result.isSuccess)
         assertTrue(result.value?.isEmpty() == true)
+    }
+
+    @Test
+    fun textGetWatermarks_SingleWatermark_Success() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetWatermarks(
+                longTextWithDifferentWatermarks,
+                squash = false,
+                singleWatermark = true,
+            )
+        val expected = differentWatermarks.drop(1).map { Watermark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetWatermarks_SingleWatermark_SuccessAndSquash() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetWatermarks(
+                longTextWithDifferentWatermarks,
+                squash = true,
+                singleWatermark = true,
+            )
+        val expected = differentWatermarks.takeLast(1).map { Watermark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetWatermarks_MultipleWatermark_Success() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetWatermarks(
+                longTextWithDifferentWatermarks,
+                squash = false,
+                singleWatermark = false,
+            )
+        val expected = differentWatermarks.map { Watermark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetWatermarks_MultipleWatermark_SuccessAndSquash() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetWatermarks(
+                longTextWithDifferentWatermarks,
+                squash = true,
+                singleWatermark = false,
+            )
+        val expected = differentWatermarks.distinct().map { Watermark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
     }
 
     @Test
@@ -360,12 +465,88 @@ class WatermarkerTest {
         val expectedTrendmarks = listOf(SizedTrendmark.fromString(watermarkString))
 
         // Act
-        val trendmarks = watermarker.textGetTrendmarks(textWithWatermarksAndTrendmarks)
+        val trendmarks =
+            watermarker.textGetTrendmarks(
+                textWithWatermarksAndTrendmarks,
+                singleWatermark = false,
+            )
 
         // Assert
         assertTrue(trendmarks.isWarning)
         assertEquals(expectedStatus.toString(), trendmarks.toString())
         assertEquals(expectedTrendmarks, trendmarks.value)
+    }
+
+    @Test
+    fun textGetTrendmarks_SingleWatermark_Success() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTrendmarks(
+                textWithDifferentRawTrendmarks,
+                squash = false,
+                singleWatermark = true,
+            )
+        val expected = differentTrendmarks.drop(1).dropLast(1).map { RawTrendmark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetTrendmarks_SingleWatermark_SuccessAndSquash() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTrendmarks(
+                textWithDifferentRawTrendmarks,
+                squash = true,
+                singleWatermark = true,
+            )
+        val expected = differentTrendmarks.drop(1).take(1).map { RawTrendmark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetTrendmarks_MultipleWatermark_Success() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTrendmarks(
+                textWithDifferentRawTrendmarks,
+                squash = false,
+                singleWatermark = false,
+            )
+        val expected = differentTrendmarks.map { RawTrendmark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetTrendmarks_MultipleWatermark_SuccessAndSquash() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTrendmarks(
+                textWithDifferentRawTrendmarks,
+                squash = true,
+                singleWatermark = false,
+            )
+        val expected = differentTrendmarks.distinct().map { RawTrendmark.fromString(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
     }
 
     @Test
@@ -408,7 +589,11 @@ class WatermarkerTest {
         val expectedTextWatermarks = listOf(TextWatermark.sized(watermarkString))
 
         // Act
-        val textWatermarks = watermarker.textGetTextWatermarks(textWithWatermarksAndTrendmarks)
+        val textWatermarks =
+            watermarker.textGetTextWatermarks(
+                textWithWatermarksAndTrendmarks,
+                singleWatermark = false,
+            )
 
         // Assert
         assertTrue(textWatermarks.isWarning)
@@ -462,6 +647,7 @@ class WatermarkerTest {
         val textWatermarks =
             watermarker.textGetTextWatermarks(
                 textWithInvalidandValidUTF8Trendmarks,
+                singleWatermark = false,
                 errorOnInvalidUTF8 = true,
             )
 
@@ -469,5 +655,77 @@ class WatermarkerTest {
         assertTrue(textWatermarks.isWarning)
         assertEquals(expectedStatus.toString(), textWatermarks.toString())
         assertEquals(expectedTextWatermarks, textWatermarks.value)
+    }
+
+    @Test
+    fun textGetTextWatermarks_SingleWatermark_Success() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTextWatermarks(
+                textWithDifferentTextWatermarks,
+                squash = false,
+                singleWatermark = true,
+            )
+        val expected = differentTextWatermarks.drop(1).dropLast(1).map { TextWatermark.new(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetTextWatermarks_SingleWatermark_SuccessAndSquash() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTextWatermarks(
+                textWithDifferentTextWatermarks,
+                squash = true,
+                singleWatermark = true,
+            )
+        val expected = differentTextWatermarks.drop(1).take(1).map { TextWatermark.new(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetTextWatermarks_MultipleWatermark_Success() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTextWatermarks(
+                textWithDifferentTextWatermarks,
+                squash = false,
+                singleWatermark = false,
+            )
+        val expected = differentTextWatermarks.map { TextWatermark.new(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun textGetTextWatermarks_MultipleWatermark_SuccessAndSquash() {
+        // Arrange
+
+        // Act
+        val result =
+            watermarker.textGetTextWatermarks(
+                textWithDifferentTextWatermarks,
+                squash = true,
+                singleWatermark = false,
+            )
+        val expected = differentTextWatermarks.distinct().map { TextWatermark.new(it) }
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
     }
 }
