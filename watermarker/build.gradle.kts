@@ -28,7 +28,7 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    jvmToolchain(17)
+    jvmToolchain(21)
     jvm {
         withJava()
         testRuns["test"].executionTask.configure {

@@ -6,7 +6,7 @@
 #
 
 # Build webinterface
-FROM openjdk:17 as build
+FROM eclipse-temurin:21.0.6_7-jdk-alpine as build
 
 COPY watermarker /app/watermarker
 COPY webinterface /app/webinterface
