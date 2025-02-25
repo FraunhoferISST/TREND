@@ -6,17 +6,20 @@
 #
 
 # Build webinterface
-FROM eclipse-temurin:21.0.6_7-jdk-alpine as build
+FROM eclipse-temurin:21.0.6_7-jdk-alpine-3.21 AS build
 
 COPY watermarker /app/watermarker
 COPY webinterface /app/webinterface
 
+RUN apk add findutils
 WORKDIR /app/watermarker
-RUN microdnf install findutils
 RUN ./gradlew publishToMavenLocal
 
 WORKDIR /app/webinterface
-RUN ./gradlew clean zip
+RUN ./gradlew kotlinNodeJsSetup
+RUN apk add --no-cache nodejs
+RUN ln -s /usr/bin/node ~/.gradle/nodejs/node-v22.0.0-linux-x64/bin/node -f
+RUN ./gradlew clean zip -x kotlinNodeJsSetup
 
 # Use unprivileged base image for final execution
 FROM nginxinc/nginx-unprivileged:alpine

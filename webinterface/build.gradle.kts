@@ -13,14 +13,16 @@ val kvisionVersion = "8.2.0"
 val webDir = file("src/jsMain/web")
 
 plugins {
-    val kotlinVersion = "2.0.21"
+    val kotlinVersion = "2.1.10"
     val kvisionVersion = "8.2.0"
 
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
     id("io.kvision") version kvisionVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("com.github.node-gradle.node") version "7.1.0"
 }
+
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     verbose.set(true)
@@ -40,6 +42,7 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
+
 
 kotlin {
     js(IR) {
