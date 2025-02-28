@@ -23,7 +23,6 @@ plugins {
     id("com.github.node-gradle.node") version "7.1.0"
 }
 
-
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     verbose.set(true)
     android.set(false)
@@ -42,7 +41,6 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
-
 
 kotlin {
     js(IR) {
