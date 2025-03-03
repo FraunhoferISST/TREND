@@ -8,18 +8,19 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 // Versions
-val kvisionVersion = "8.1.1"
+val kvisionVersion = "8.2.0"
 
 val webDir = file("src/jsMain/web")
 
 plugins {
-    val kotlinVersion = "2.0.21"
-    val kvisionVersion = "8.1.1"
+    val kotlinVersion = "2.1.10"
+    val kvisionVersion = "8.2.0"
 
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
     id("io.kvision") version kvisionVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("com.github.node-gradle.node") version "7.1.0"
 }
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
@@ -84,6 +85,12 @@ kotlin {
     sourceSets["jsTest"].dependencies {
         implementation(kotlin("test-js"))
         implementation("io.kvision:kvision-testutils:$kvisionVersion")
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
