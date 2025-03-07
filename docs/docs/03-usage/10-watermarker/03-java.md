@@ -25,7 +25,7 @@ Below you can see an example project that inserts a text as watermark into a cov
 extracts the watermark from the watermarked text.
 
 ### 1. Add Library as Dependency
-*Line 11 is the important line that adds our library as dependency into the project. Currently, we
+*Line 11 is the important line that adds our library as a dependency into the project. Currently, we
 are working with local deployment, so you will have to add `mavenLocal()` as repo (line 8) and
 publish the library to mavenLocal (see [Installation](../installation)).*
 ```kt title="build.gradle.kts" showLineNumbers
@@ -57,6 +57,10 @@ application {
 *The static functions `handle(...)` and `unwrap(...)` are optional for easy error handling with our
 custom return types (see [Concepts](../../../development/watermarker/concepts/#error-handling-1)
 for more details).*
+
+*Watermark extraction can be customized for different use cases using optional Boolean parameters
+(see [Watermarker](../index/#extraction-customization) for more details)*
+
 ```java title="src/main/java/Main.java" showLineNumbers
 import de.fraunhofer.isst.trend.watermarker.Watermarker;
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result;
@@ -72,18 +76,18 @@ public class Main {
         // ***** INSERTION *****
         // *********************
         
-        // the coverText should be enhanced with a watermark
+        // the coverText to be enhanced with a watermark
         String coverText =
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " +
                         "incididunt ut labore et dolore magna aliqua. Blandit volutpat maecenas " +
                         "volutpat blandit aliquam etiam erat velit.";
-        // the watermarkText is that watermark that will be included in the coverText above
+        // the watermark text that will be included in the coverText above
         String watermarkText = "Test";
 
         // prepare watermarker
         Watermarker watermarker = new Watermarker();
 
-        // creating a watermark with text as content
+        // creating a watermark with watermarkText as content
         TextWatermark watermark = TextWatermark.Companion.create(watermarkText);
 
         // inserting the watermark into the cover text and handling potential errors and warnings
@@ -100,13 +104,41 @@ public class Main {
 
         // extract the watermark from the watermarked text
         List<TextWatermark> extractedWatermarks =
-                unwrap(watermarker.textGetTextWatermarks(watermarkedText, true, false));
+                unwrap(watermarker.textGetTextWatermarks(watermarkedText, true, true, false));
         assert(extractedWatermarks.size() == 1);
         TextWatermark extractedWatermark = extractedWatermarks.get(0);
 
         // print the watermark text
         System.out.println("Found a watermark in the text:");
         System.out.println(extractedWatermark.getText());
+    
+        // *******************************
+        // ***** Multiple watermarks *****
+        // *******************************
+
+        // for multiple watermarks in a single text the parameter 'singleWatermark' must be set 
+        // to 'false' when passed to the extraction function alongside the watermarked text, 
+        // details are linked above this code block 
+
+        // a second Watermark to illustrate multiple watermark extraction
+        String secondWatermarkText = "Okay";
+
+        // creating the second watermark
+        TextWatermark secondWatermark = TextWatermark.Companion.create(secondWatermarkText);
+
+        // inserting the second watermark into the coverText
+        String secondWatermarkedText = unwrap(watermarker.textAddWatermark(coverText, secondWatermark));
+
+        // combining the watermarked texts to get two different watermarks in one Text
+        String combinedText = watermarkedText + secondWatermarkedText;
+
+        // extract the watermarks from the watermarked text
+        List<TextWatermark> extractedMultipleWatermarks =
+                unwrap(watermarker.textGetTextWatermarks(combinedText, true, false, false));
+
+        // print the watermarks found
+        extractedMultipleWatermarks.forEach(System.out::println);
+    
     }
 
     /**
@@ -119,7 +151,7 @@ public class Main {
      *  - nop
      */
     public static void handle(Status status) {
-        if (status.isSuccess() && !status.getHasCustomMessage()) {
+        if (status.isSuccess() && !status.hasCustomMessage()) {
             return;
         }
 
@@ -142,8 +174,8 @@ public class Main {
      */
     public static <T> T unwrap(Result<T> result) {
         handle(result.getStatus());
-        assert result.getHasValue() :
-                "A Result with a Status of type Success or Warning are expected to have a value";
+        assert result.hasValue() :
+                "A Result with a Status of type Success or Warning is expected to have a value";
 
         return result.getValue();
     }
