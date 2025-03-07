@@ -54,6 +54,20 @@ is designed to allow customizing its behavior in many ways:
 However, we do not provide preconfigured configuration options for these adjustments, you have to
 read the code and then create your own implementaitons.
 
+### Extraction Customizations
+The Extraction functions of the (Jvm-)Watermarker allow for passing additional parameters for
+specific use cases, **bold** indicates default values for (Jvm-)Watermarker in kotlin:
+- [`squash`](https://github.com/FraunhoferISST/TREND/blob/637c1622c5aa44668869017dae871f9b38e26abb/watermarker/src/commonMain/kotlin/Watermarker.kt#L228)
+= [**true**/false]: when true duplicate Watermarks are squashed together and only one copy is
+returned
+- [`singleWatermark`](https://github.com/FraunhoferISST/TREND/blob/81aca27b864baaef386eb800c75646cf33019299/watermarker/src/commonMain/kotlin/watermarks/Watermark.kt#L30)
+= [**true**/false]: when true only the most frequent Watermark is returned
+    - if multiple Watermarks appear with the same (highest) frequency a warning is returned with the Watermarks
+    - this is separate from the squashing above, duplicates of the most frequent Watermark(s) are still returned if squash = false
+- [`ErrorOnInvalidUTF8`](https://github.com/FraunhoferISST/TREND/blob/eb5f3b62bc31a63f985fa87c01522281adcb7c3e/watermarker/src/commonMain/kotlin/watermarks/TextWatermark.kt#L123)
+= [true/**false**]: For functions returning TextWatermarks only, when true throws a
+CharacterCodingException when encountering malformed UTF8 Bytes
+
 ## Kotlin Library: Special Characteristics
 Kotlin uses so-called
 [companion objects](https://kotlinlang.org/docs/object-declarations.html#companion-objects) to

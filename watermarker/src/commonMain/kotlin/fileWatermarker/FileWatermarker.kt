@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -47,21 +47,31 @@ interface FileWatermarker<File : WatermarkableFile> {
     /** Checks if [file] contains watermarks */
     fun containsWatermark(file: File): Boolean
 
-    /** Returns all watermarks in [file] */
-    fun getWatermarks(file: File): Result<List<Watermark>>
+    /**
+     * Returns all watermarks in [file]
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     */
+    fun getWatermarks(
+        file: File,
+        singleWatermark: Boolean = false,
+    ): Result<List<Watermark>>
 
     /**
      * Returns all watermarks in [file] as Trendmarks.
      *
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
      */
-    fun getTrendmarks(file: File): Result<List<Trendmark>> =
-        getWatermarks(file).toTrendmarks("${getSource()}.getTrendmarks")
+    fun getTrendmarks(
+        file: File,
+        singleWatermark: Boolean = false,
+    ): Result<List<Trendmark>> = getWatermarks(file).toTrendmarks("${getSource()}.getTrendmarks")
 
     /**
      * Returns all watermarks in [file] as TextWatermarks.
      *
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
      *                           is false: invalid bytes sequences are replace with the char �.
      *
@@ -73,12 +83,23 @@ interface FileWatermarker<File : WatermarkableFile> {
      */
     fun getTextWatermarks(
         file: File,
+        singleWatermark: Boolean = false,
         errorOnInvalidUTF8: Boolean = false,
     ): Result<List<TextWatermark>> =
-        getWatermarks(file).toTextWatermarks(errorOnInvalidUTF8, "${getSource()}.getTextWatermarks")
+        getWatermarks(file, singleWatermark).toTextWatermarks(
+            errorOnInvalidUTF8,
+            "${getSource()}" +
+                ".getTextWatermarks",
+        )
 
-    /** Removes all watermarks in [file] and returns them */
-    fun removeWatermarks(file: File): Result<List<Watermark>>
+    /**
+     * Removes all watermarks in [file] and returns them
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     */
+    fun removeWatermarks(
+        file: File,
+        singleWatermark: Boolean = false,
+    ): Result<List<Watermark>>
 
     /** Parses [bytes] as File */
     fun parseBytes(bytes: List<Byte>): Result<File>
