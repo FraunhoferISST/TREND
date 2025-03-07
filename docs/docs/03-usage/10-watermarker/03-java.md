@@ -59,7 +59,7 @@ custom return types (see [Concepts](../../../development/watermarker/concepts/#e
 for more details).*
 
 *Watermark extraction can be customized for different use cases using optional Boolean parameters
-(see [Watermarker](../index/#extraction-customization) for more details)*
+(see [Watermarker](../#extraction-customization) for more details)*
 
 ```java title="src/main/java/Main.java" showLineNumbers
 import de.fraunhofer.isst.trend.watermarker.Watermarker;

@@ -54,7 +54,7 @@ custom return types (see [Concepts](../../../development/watermarker/concepts/#e
 for more details).*
 
 *Watermark extraction can be customized for different use cases using optional Boolean parameters
-(see [Watermarker](../index/#extraction-customization) for more details)*
+(see [Watermarker](../#extraction-customization) for more details)*
 
 ```kt title="src/main/kotlin/Main.kt" showLineNumbers
 import de.fraunhofer.isst.trend.watermarker.Watermarker
