@@ -178,6 +178,7 @@ open class Watermarker {
      *
      * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
+     * When [validateAll] is true: All resulting Trendmarks are validated to check for errors.
      *
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
@@ -186,8 +187,19 @@ open class Watermarker {
         text: String,
         squash: Boolean = true,
         singleWatermark: Boolean = true,
-    ): Result<List<Trendmark>> =
-        textGetWatermarks(text, squash, singleWatermark).toTrendmarks("$SOURCE.textGetTrendmarks")
+        validateAll: Boolean = true,
+    ): Result<List<Trendmark>> {
+        val result =
+            textGetWatermarks(text, squash, singleWatermark)
+                .toTrendmarks("$SOURCE.textGetTrendmarks")
+        if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {
+            for (trendmark in result.value) {
+                val validationStatus = trendmark.validate()
+                result.appendStatus(validationStatus)
+            }
+        }
+        return result
+    }
 
     /**
      * Returns all watermarks in [text] as TextWatermarks.
