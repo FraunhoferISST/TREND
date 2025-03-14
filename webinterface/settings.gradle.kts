@@ -6,6 +6,12 @@
  */
 
 pluginManagement {
+    val kvisionVersion: String by settings
+
+    plugins {
+        id("io.kvision") version kvisionVersion
+    }
+
     repositories {
         gradlePluginPortal()
         mavenCentral()
