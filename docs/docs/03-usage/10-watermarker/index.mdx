@@ -64,9 +64,14 @@ returned
 = [**true**/false]: when true only the most frequent Watermark is returned
     - if multiple Watermarks appear with the same (highest) frequency a warning is returned with the Watermarks
     - this is separate from the squashing above, duplicates of the most frequent Watermark(s) are still returned if squash = false
-- [`ErrorOnInvalidUTF8`](https://github.com/FraunhoferISST/TREND/blob/eb5f3b62bc31a63f985fa87c01522281adcb7c3e/watermarker/src/commonMain/kotlin/watermarks/TextWatermark.kt#L123)
+- [`errorOnInvalidUTF8`](https://github.com/FraunhoferISST/TREND/blob/eb5f3b62bc31a63f985fa87c01522281adcb7c3e/watermarker/src/commonMain/kotlin/watermarks/TextWatermark.kt#L123)
 = [true/**false**]: For functions returning TextWatermarks only, when true throws a
 CharacterCodingException when encountering malformed UTF8 Bytes
+- [`validateAll`](https://github.com/FraunhoferISST/TREND/blob/8b47f1a373769656506a615436b558e362a8952c/watermarker/src/commonMain/kotlin/watermarks/Trendmark.kt#L56)
+= [**true**/false]: For functions returning Trendmarks only, when true calls the
+Trendmark validate() function, which will check for valid characteristics depending on the
+Trendmark type. See the [Trendmark](../../development/watermarker/trendmark) section for more
+details.
 
 ## Kotlin Library: Special Characteristics
 Kotlin uses so-called

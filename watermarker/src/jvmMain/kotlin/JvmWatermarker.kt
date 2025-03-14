@@ -215,6 +215,7 @@ class JvmWatermarker : Watermarker() {
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
+     * When [validateAll] is true: All resulting Trendmarks are validated to check for errors.
      *
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
@@ -224,8 +225,18 @@ class JvmWatermarker : Watermarker() {
         fileType: String? = null,
         squash: Boolean = true,
         singleWatermark: Boolean = true,
+        validateAll: Boolean = true,
     ): Result<List<Trendmark>> {
-        return getWatermarks(source, fileType, squash, singleWatermark).toTrendmarks(SOURCE)
+        val result = getWatermarks(source, fileType, squash, singleWatermark).toTrendmarks(SOURCE)
+
+        if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {
+            for (trendmark in result.value) {
+                val validationStatus = trendmark.validate()
+                result.appendStatus(validationStatus)
+            }
+        }
+
+        return result
     }
 
     /**
@@ -260,6 +271,7 @@ class JvmWatermarker : Watermarker() {
     /**
      * Removes all watermarks in [source] and returns them.
      *
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun removeWatermarks(
