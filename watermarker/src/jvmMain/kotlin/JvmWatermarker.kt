@@ -270,7 +270,7 @@ class JvmWatermarker : Watermarker() {
 
     /**
      * Removes all watermarks in [source] and returns them.
-     *
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      * When [fileType] is null the type is taken from [source]'s extension.
      */
@@ -278,6 +278,7 @@ class JvmWatermarker : Watermarker() {
         source: String,
         target: String,
         fileType: String? = null,
+        squash: Boolean = true,
         singleWatermark: Boolean = true,
     ): Result<List<Watermark>> {
         val supportedFileType =
@@ -289,6 +290,7 @@ class JvmWatermarker : Watermarker() {
             supportedFileType.watermarker,
             source,
             target,
+            squash,
             singleWatermark,
         )
     }
@@ -297,7 +299,8 @@ class JvmWatermarker : Watermarker() {
         watermarker: FileWatermarker<T>,
         source: String,
         target: String,
-        singleWatermark: Boolean = true,
+        squash: Boolean,
+        singleWatermark: Boolean,
     ): Result<List<Watermark>> {
         val (status, bytes) =
             with(readFile(source)) {
@@ -311,7 +314,7 @@ class JvmWatermarker : Watermarker() {
             }
 
         val watermarks =
-            with(watermarker.removeWatermarks(file, singleWatermark)) {
+            with(watermarker.removeWatermarks(file, squash, singleWatermark)) {
                 status.appendStatus(this.status)
                 value
             }

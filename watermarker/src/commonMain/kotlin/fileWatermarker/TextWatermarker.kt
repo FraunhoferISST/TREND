@@ -12,6 +12,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.squashWatermarks
 import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
@@ -201,11 +202,12 @@ class TextWatermarker(
 
     /**
      * Returns all watermarks in [file]
-     *
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      * */
     override fun getWatermarks(
         file: TextFile,
+        squash: Boolean,
         singleWatermark: Boolean,
     ): Result<List<Watermark>> {
         val watermarkRanges: Sequence<Pair<Int, Int>> =
@@ -271,7 +273,7 @@ class TextWatermarker(
             }
 
         val status = Status()
-        val watermarks = ArrayList<Watermark>()
+        var watermarks = ArrayList<Watermark>()
         val stringBuilder = StringBuilder(file.content)
         var previousStart = 0
         for ((start, end) in sanitizedWatermarkRanges) {
@@ -300,9 +302,13 @@ class TextWatermarker(
             status.addEvent(IncompleteWatermarkWarning())
         }
         if (singleWatermark && watermarks.isNotEmpty()) {
-            val mostFrequent = Watermark.mostFrequent(watermarks)
-            status.appendStatus(mostFrequent.status)
-            return status.into(mostFrequent.value!!)
+            with(Watermark.mostFrequent(watermarks)) {
+                status.appendStatus(this.status)
+                watermarks = this.value as ArrayList<Watermark>
+            }
+        }
+        if (squash && watermarks.isNotEmpty()) {
+            watermarks = ArrayList(squashWatermarks(watermarks))
         }
 
         return status.into(watermarks)
@@ -311,15 +317,17 @@ class TextWatermarker(
     /**
      * Removes all watermarks in [file] and returns them.
      *
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      * Returns a warning if getWatermarks() returns a warning or error.
      */
     override fun removeWatermarks(
         file: TextFile,
+        squash: Boolean,
         singleWatermark: Boolean,
     ): Result<List<Watermark>> {
         val (status, watermarks) =
-            with(this.getWatermarks(file, singleWatermark)) {
+            with(this.getWatermarks(file, squash, singleWatermark)) {
                 status to (value ?: listOf())
             }
 
