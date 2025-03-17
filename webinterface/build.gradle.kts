@@ -8,14 +8,17 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 // Versions
-val kvisionVersion: String by project
+val kotlinVersion: String by System.getProperties()
+val kvisionVersion: String by System.getProperties()
 
 val webDir = file("src/jsMain/web")
 
 plugins {
-    val kotlinVersion = "2.1.10"
+    val kotlinVersion: String by System.getProperties()
+    val kvisionVersion: String by System.getProperties()
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
+    id("io.kvision") version kvisionVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
     id("com.github.node-gradle.node") version "7.1.0"
 }
