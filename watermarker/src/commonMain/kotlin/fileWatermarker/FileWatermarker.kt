@@ -49,28 +49,37 @@ interface FileWatermarker<File : WatermarkableFile> {
 
     /**
      * Returns all watermarks in [file]
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     fun getWatermarks(
         file: File,
+        squash: Boolean = false,
         singleWatermark: Boolean = false,
     ): Result<List<Watermark>>
 
     /**
      * Returns all watermarks in [file] as Trendmarks.
      *
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      * Returns a warning if some watermarks could not be converted to Trendmarks.
      * Returns an error if no watermark could be converted to a Trendmark.
      */
     fun getTrendmarks(
         file: File,
+        squash: Boolean = false,
         singleWatermark: Boolean = false,
-    ): Result<List<Trendmark>> = getWatermarks(file).toTrendmarks("${getSource()}.getTrendmarks")
+    ): Result<List<Trendmark>> =
+        getWatermarks(file, squash, singleWatermark).toTrendmarks(
+            "${getSource()}" +
+                ".getTrendmarks",
+        )
 
     /**
      * Returns all watermarks in [file] as TextWatermarks.
      *
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
      *                           is false: invalid bytes sequences are replace with the char �.
@@ -83,10 +92,11 @@ interface FileWatermarker<File : WatermarkableFile> {
      */
     fun getTextWatermarks(
         file: File,
+        squash: Boolean = false,
         singleWatermark: Boolean = false,
         errorOnInvalidUTF8: Boolean = false,
     ): Result<List<TextWatermark>> =
-        getWatermarks(file, singleWatermark).toTextWatermarks(
+        getWatermarks(file, squash, singleWatermark).toTextWatermarks(
             errorOnInvalidUTF8,
             "${getSource()}" +
                 ".getTextWatermarks",
@@ -94,10 +104,12 @@ interface FileWatermarker<File : WatermarkableFile> {
 
     /**
      * Removes all watermarks in [file] and returns them
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     fun removeWatermarks(
         file: File,
+        squash: Boolean = false,
         singleWatermark: Boolean = false,
     ): Result<List<Watermark>>
 

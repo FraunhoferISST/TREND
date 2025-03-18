@@ -9,6 +9,7 @@ package de.fraunhofer.isst.trend.watermarker.fileWatermarker
 import de.fraunhofer.isst.trend.watermarker.files.ZipFile
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.trend.watermarker.squashWatermarks
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 
@@ -42,40 +43,58 @@ object ZipWatermarker : FileWatermarker<ZipFile> {
 
     /**
      * Returns all watermarks in [file]
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     override fun getWatermarks(
         file: ZipFile,
+        squash: Boolean,
         singleWatermark: Boolean,
     ): Result<List<Watermark>> {
-        val watermarks = ArrayList<Watermark>()
+        val status: Status = Status.success()
+        var watermarks = ArrayList<Watermark>()
         for (extraField in file.header.extraFields) {
             if (extraField.id == ZIP_WATERMARK_ID) {
                 watermarks.add(Watermark(extraField.data))
             }
         }
-        if (singleWatermark) {
-            return Watermark.mostFrequent(watermarks)
+        if (singleWatermark && watermarks.isNotEmpty()) {
+            with(Watermark.mostFrequent(watermarks)) {
+                status.appendStatus(this.status)
+                watermarks = this.value as ArrayList<Watermark>
+            }
         }
-        return Result.success(watermarks)
+        if (squash && watermarks.isNotEmpty()) {
+            watermarks = ArrayList(squashWatermarks(watermarks))
+        }
+        return status.into(watermarks)
     }
 
     /**
      * Removes all watermarks in [file] and returns them
+     * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     override fun removeWatermarks(
         file: ZipFile,
+        squash: Boolean,
         singleWatermark: Boolean,
     ): Result<List<Watermark>> {
-        val watermarks = ArrayList<Watermark>()
+        val status: Status = Status.success()
+        var watermarks = ArrayList<Watermark>()
         for (extraField in file.header.removeExtraFields(ZIP_WATERMARK_ID)) {
             watermarks.add(Watermark(extraField.data))
         }
-        if (singleWatermark) {
-            return Watermark.mostFrequent(watermarks)
+        if (singleWatermark && watermarks.isNotEmpty()) {
+            with(Watermark.mostFrequent(watermarks)) {
+                status.appendStatus(this.status)
+                watermarks = this.value as ArrayList<Watermark>
+            }
         }
-        return Result.success(watermarks)
+        if (squash && watermarks.isNotEmpty()) {
+            watermarks = ArrayList(squashWatermarks(watermarks))
+        }
+        return status.into(watermarks)
     }
 
     /**

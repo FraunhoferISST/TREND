@@ -189,6 +189,26 @@ class TextWatermarkerTest {
         val result =
             textWatermarker.getWatermarks(
                 textFileDifferentWatermarks,
+                squash = false,
+                singleWatermark = true,
+            )
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun getWatermarks_singleWatermark_SuccessAndSquash() {
+        // Arrange
+        val expectedWatermark = Watermark.fromString("Okay")
+        val expected = listOf(expectedWatermark)
+
+        // Act
+        val result =
+            textWatermarker.getWatermarks(
+                textFileDifferentWatermarks,
+                squash = true,
                 singleWatermark = true,
             )
 
@@ -208,6 +228,27 @@ class TextWatermarkerTest {
         val result =
             textWatermarker.getWatermarks(
                 textFileDifferentWatermarks,
+                squash = false,
+                singleWatermark = false,
+            )
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun getWatermarks_multipleWatermark_SuccessAndSquash() {
+        // Arrange
+        val firstWatermark = Watermark.fromString("Okay")
+        val secondWatermark = Watermark.fromString("Test")
+        val expected = listOf(firstWatermark, secondWatermark)
+
+        // Act
+        val result =
+            textWatermarker.getWatermarks(
+                textFileDifferentWatermarks,
+                squash = true,
                 singleWatermark = false,
             )
 

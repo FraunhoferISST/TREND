@@ -538,7 +538,30 @@ class JvmWatermarkerTest {
             )
 
         // Act
-        val result = watermarker.removeWatermarks(source, target)
+        val result = watermarker.removeWatermarks(source, target, squash = false)
+
+        // Assert
+        assertTrue(result.isSuccess)
+        assertEquals(expectedWatermarks, result.value)
+        assertTrue(areFilesEqual(expected, target))
+
+        // Cleanup
+        File(target).delete()
+    }
+
+    @Test
+    fun removeWatermarks_txtWatermark_successAndSquash() {
+        // Arrange
+        val source = "src/jvmTest/resources/lorem_ipsum_watermarked.txt"
+        val target = "src/jvmTest/resources/lorem_ipsum_test.txt"
+        val expected = "src/jvmTest/resources/lorem_ipsum.txt"
+        val expectedWatermarks =
+            listOf(
+                Watermark.fromString("Hello World"),
+            )
+
+        // Act
+        val result = watermarker.removeWatermarks(source, target, squash = true)
 
         // Assert
         assertTrue(result.isSuccess)
@@ -560,7 +583,13 @@ class JvmWatermarkerTest {
             }
 
         // Act
-        val result = watermarker.removeWatermarks(source, target, singleWatermark = true)
+        val result =
+            watermarker.removeWatermarks(
+                source,
+                target,
+                squash = false,
+                singleWatermark = true,
+            )
 
         // Assert
         assertTrue(result.isSuccess)
