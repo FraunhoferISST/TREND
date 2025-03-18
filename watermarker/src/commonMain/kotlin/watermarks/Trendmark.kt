@@ -21,6 +21,7 @@ import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkInterface.Compan
 import org.kotlincrypto.hash.sha3.SHA3_256
 import kotlin.collections.ArrayList
 import kotlin.js.JsExport
+import kotlin.jvm.JvmStatic
 
 @JsExport
 sealed interface TrendmarkInterface {
@@ -1041,6 +1042,7 @@ class CompressedCRC32Trendmark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 80u // "01010000"
 
         /** Creates a new `CompressedCRC32Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CompressedCRC32Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
@@ -1050,6 +1052,7 @@ class CompressedCRC32Trendmark(content: List<Byte>) :
         }
 
         /** Creates a new `CompressedCRC32Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1093,6 +1096,7 @@ class CompressedSizedCRC32Trendmark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 112u // "01110000"
 
         /** Creates a new `CompressedSizedCRC32Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CompressedSizedCRC32Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
@@ -1104,6 +1108,7 @@ class CompressedSizedCRC32Trendmark(content: List<Byte>) :
         }
 
         /** Creates a new `CompressedSizedCRC32Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1155,6 +1160,7 @@ class CompressedSHA3256Trendmark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 72u // "01001000"
 
         /** Creates a new `CompressedSHA3256Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CompressedSHA3256Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
@@ -1166,6 +1172,7 @@ class CompressedSHA3256Trendmark(content: List<Byte>) :
         }
 
         /** Creates a new `CompressedSHA3256Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1210,6 +1217,7 @@ class CompressedSizedSHA3256Trendmark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 104u // "01101000"
 
         /** Creates a new `CompressedSizedSHA3256Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CompressedSizedSHA3256Trendmark {
             val compressedContent = Compression.deflate(content)
             val watermark =
@@ -1221,6 +1229,7 @@ class CompressedSizedSHA3256Trendmark(content: List<Byte>) :
         }
 
         /** Creates a new `CompressedSizedSHA3256Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 

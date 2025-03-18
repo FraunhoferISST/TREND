@@ -20,6 +20,7 @@ import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
 import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.jvm.JvmStatic
 
 @JsExport
 sealed class SupportedFileType {
@@ -48,6 +49,7 @@ sealed class SupportedFileType {
          */
 
         /** Returns a variant of SupportedFileType if [extension] is supported */
+        @JvmStatic
         fun fromExtension(extension: String): Result<SupportedFileType> {
             val fileType = extensionMap[extension]
             return if (fileType == null) {
@@ -58,6 +60,7 @@ sealed class SupportedFileType {
         }
 
         /** Registers an [extension] to a variant of SupportedFileType */
+        @JvmStatic
         fun registerExtension(
             extension: String,
             fileType: SupportedFileType,
@@ -66,11 +69,13 @@ sealed class SupportedFileType {
         }
 
         /** Registers [watermarker] for zip files */
+        @JvmStatic
         fun registerZipWatermarker(watermarker: ZipWatermarker) {
             Zip.watermarker = watermarker
         }
 
         /** Registers [watermarker] for TextWatermarker */
+        @JvmStatic
         fun registerTextWatermarker(watermarker: TextWatermarker) {
             Text.watermarker = watermarker
         }
