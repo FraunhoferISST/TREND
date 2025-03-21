@@ -12,6 +12,7 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
 import kotlin.js.JsExport
+import kotlin.jvm.JvmStatic
 
 /**
  * | Expected zip File Format:   | Length (bytes)       | Expected Value |
@@ -71,6 +72,7 @@ class ZipFile internal constructor(
     }
 
     companion object {
+        @JvmStatic
         fun fromBytes(
             bytes: ByteArray,
             path: String? = null,
@@ -115,6 +117,7 @@ class ZipFileHeader internal constructor(
         internal val source = ZipFileHeader::class.simpleName!!
 
         /** Parses the ZipFile header from [bytes] */
+        @JvmStatic
         fun fromBytes(bytes: ByteArray): Result<ZipFileHeader> {
             if (bytes.size < 30) {
                 return NotEnoughBytesError().into<_>()
@@ -176,6 +179,7 @@ class ZipFileHeader internal constructor(
         }
 
         /** Parses all ExtraFields in [bytes] */
+        @JvmStatic
         private fun parseExtraFields(bytes: List<Byte>): Result<MutableList<ExtraField>> {
             val extraFields = ArrayList<ExtraField>()
             var pointer = 0

@@ -9,6 +9,7 @@ package de.fraunhofer.isst.trend.watermarker.files
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import kotlin.js.JsExport
+import kotlin.jvm.JvmStatic
 
 @JsExport
 class TextFile private constructor(path: String?, var content: String) : WatermarkableFile(path) {
@@ -21,6 +22,7 @@ class TextFile private constructor(path: String?, var content: String) : Waterma
         internal val source = TextFile::class.simpleName!!
 
         /** Creates a TextFile with the text parsed from [content] */
+        @JvmStatic
         fun fromBytes(
             bytes: ByteArray,
             path: String? = null,
@@ -38,6 +40,7 @@ class TextFile private constructor(path: String?, var content: String) : Waterma
         }
 
         /** Creates a TextFile with text [text] */
+        @JvmStatic
         fun fromString(text: String): TextFile {
             return TextFile(null, text)
         }
