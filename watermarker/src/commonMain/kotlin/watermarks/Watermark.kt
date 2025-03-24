@@ -10,6 +10,7 @@ import de.fraunhofer.isst.trend.watermarker.helper.toHexString
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
 import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import kotlin.js.JsExport
+import kotlin.jvm.JvmStatic
 
 @JsExport
 open class Watermark(var watermarkContent: List<Byte>) {
@@ -17,6 +18,7 @@ open class Watermark(var watermarkContent: List<Byte>) {
         const val SOURCE = "Watermark"
 
         /** Creates a Watermark from [text] */
+        @JvmStatic
         fun fromString(text: String): Watermark {
             val bytes = text.encodeToByteArray().asList()
             return Watermark(bytes)
@@ -27,6 +29,7 @@ open class Watermark(var watermarkContent: List<Byte>) {
          *  Returns a Warning if more than one most frequent Watermark is found.
          *  Returns an Error if an Exception is thrown.
          *  */
+        @JvmStatic
         fun mostFrequent(watermarks: List<Watermark>): Result<List<Watermark>> {
             var result: Result<List<Watermark>> = Result.success(watermarks)
             if (watermarks.isEmpty()) {
