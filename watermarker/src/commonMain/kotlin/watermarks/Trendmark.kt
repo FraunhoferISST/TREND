@@ -111,6 +111,7 @@ sealed class Trendmark(
          *  - The first byte is not a valid Trendmark tag
          *  - The `validate()` function of the created Trendmark returns an error.
          */
+        @JvmStatic
         fun parse(input: List<Byte>): Result<Trendmark> {
             if (input.size < TAG_SIZE) {
                 return NotEnoughDataError(SOURCE, TAG_SIZE).into<_>()
@@ -144,9 +145,11 @@ sealed class Trendmark(
          *  - The first byte is not a valid Trendmark tag
          *  - The `validate()` function of the created Trendmark returns an error.
          */
+        @JvmStatic
         fun fromWatermark(watermark: Watermark): Result<Trendmark> =
             parse(watermark.watermarkContent)
 
+        @JvmStatic
         private fun extractTag(content: List<Byte>): UByte {
             check(TAG_SIZE == 1)
             require(content.isNotEmpty()) { "Cannot extract tag from empty watermark." }
@@ -607,9 +610,11 @@ class RawTrendmark(content: List<Byte>) : Trendmark(content) {
         const val TYPE_TAG: UByte = 0u // "00000000"
 
         /** Creates a new `RawTrendmark` with containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): RawTrendmark = RawTrendmark(createRaw(TYPE_TAG, content))
 
         /** Creates a new `RawTrendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -644,11 +649,13 @@ class SizedTrendmark(content: List<Byte>) : Trendmark(content), Trendmark.Sized 
         const val SIZE_END_INDEX = SIZE_START_INDEX + SIZE_SIZE - 1
 
         /** Creates a new `SizedTrendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): SizedTrendmark {
             return SizedTrendmark(createRaw(TYPE_TAG, content))
         }
 
         /** Creates a new `SizedTrendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -690,6 +697,7 @@ class CRC32Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Checks
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
 
         /** Creates a new `CRC32Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CRC32Trendmark {
             val watermark = CRC32Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateChecksum()
@@ -697,6 +705,7 @@ class CRC32Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Checks
         }
 
         /** Creates a new `CRC32Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -715,6 +724,7 @@ class CRC32Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Checks
         }
 
         /** Calculates the CRC32 checksum of [input] */
+        @JvmStatic
         fun calculateChecksum(input: List<Byte>): UInt = CRC32.checksum(input)
     }
 
@@ -762,6 +772,7 @@ class SizedCRC32Trendmark(content: List<Byte>) :
         const val CHECKSUM_END_INDEX = CHECKSUM_START_INDEX + CHECKSUM_SIZE - 1
 
         /** Creates a new `SizedCRC32Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): SizedCRC32Trendmark {
             val watermark = SizedCRC32Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateChecksum()
@@ -769,6 +780,7 @@ class SizedCRC32Trendmark(content: List<Byte>) :
         }
 
         /** Creates a new `SizedCRC32Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -833,6 +845,7 @@ class SHA3256Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Hash
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
 
         /** Creates a new `SHA3256Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): SHA3256Trendmark {
             val watermark = SHA3256Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateHash()
@@ -840,6 +853,7 @@ class SHA3256Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Hash
         }
 
         /** Creates a new `SHA3256Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -859,6 +873,7 @@ class SHA3256Trendmark(content: List<Byte>) : Trendmark(content), Trendmark.Hash
         }
 
         /** Calculates the SHA3-256 hash of [input] */
+        @JvmStatic
         fun calculateHash(input: List<Byte>): List<Byte> {
             val hashAlgorithm = SHA3_256()
             hashAlgorithm.update(input.toByteArray())
@@ -908,6 +923,7 @@ class SizedSHA3256Trendmark(content: List<Byte>) :
         const val HASH_END_INDEX = HASH_START_INDEX + HASH_SIZE - 1
 
         /** Creates a new `SizedSHA3256Trendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): SizedSHA3256Trendmark {
             val watermark = SizedSHA3256Trendmark(createRaw(TYPE_TAG, content))
             watermark.updateHash()
@@ -915,6 +931,7 @@ class SizedSHA3256Trendmark(content: List<Byte>) :
         }
 
         /** Creates a new `SizedSHA3256Trendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
 
         internal fun createRaw(
@@ -978,12 +995,14 @@ class CompressedRawTrendmark(content: List<Byte>) : Trendmark(content), Trendmar
         const val TYPE_TAG: UByte = 64u // "01000000"
 
         /** Creates a new `CompressedRawTrendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CompressedRawTrendmark {
             val compressedContent = Compression.deflate(content)
             return CompressedRawTrendmark(RawTrendmark.createRaw(TYPE_TAG, compressedContent))
         }
 
         /** Creates a new `CompressedRawTrendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
@@ -1008,12 +1027,14 @@ class CompressedSizedTrendmark(content: List<Byte>) :
         const val TYPE_TAG: UByte = 96u // 01100000
 
         /** Creates a new `CompressedSizedTrendmark` containing [content] */
+        @JvmStatic
         fun new(content: List<Byte>): CompressedSizedTrendmark {
             val compressedContent = Compression.deflate(content)
             return CompressedSizedTrendmark(SizedTrendmark.createRaw(TYPE_TAG, compressedContent))
         }
 
         /** Creates a new `CompressedSizedTrendmark` with [text] as content */
+        @JvmStatic
         fun fromString(text: String) = new(text.encodeToByteArray().asList())
     }
 
