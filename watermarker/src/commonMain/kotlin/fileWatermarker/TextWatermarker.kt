@@ -17,6 +17,7 @@ import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
 import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.jvm.JvmStatic
 import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.math.pow
@@ -402,9 +403,11 @@ class TextWatermarker(
         private const val SOURCE = "TextWatermarker"
 
         /** Returns the builder for TextWatermarker */
+        @JvmStatic
         fun builder(): TextWatermarkerBuilder = TextWatermarkerBuilder()
 
         /** Returns an instance of TextWatermarker in default configuration */
+        @JvmStatic
         fun default(): TextWatermarker = TextWatermarkerBuilder().build().value!!
     }
 

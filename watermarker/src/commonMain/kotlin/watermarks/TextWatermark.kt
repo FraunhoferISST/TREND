@@ -11,6 +11,7 @@ import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
 import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
 import kotlin.js.JsExport
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
 
 /**
  * The TextWatermark class provides convenient functions to create and read Trendmarks with UTF-8
@@ -51,15 +52,19 @@ class TextWatermark private constructor(
          * The default configuration is: no compression, no size information, no checksum, no hash.
          */
         @JvmName("create")
+        @JvmStatic
         fun new(text: String): TextWatermark = TextWatermark(text)
 
         /** Creates a TextWatermark from [text] without additional information */
+        @JvmStatic
         fun raw(text: String): TextWatermark = TextWatermark(text)
 
         /** Creates a TextWatermark from [text] with compression */
+        @JvmStatic
         fun compressed(text: String): TextWatermark = TextWatermark(text, compressed = true)
 
         /** Creates a TextWatermark from [text] with compression only if compression decreases the size */
+        @JvmStatic
         fun small(text: String): TextWatermark {
             val raw = TextWatermark.raw(text)
             val rawSize = raw.finish().watermarkContent.size
@@ -74,41 +79,51 @@ class TextWatermark private constructor(
         }
 
         /** Creates a TextWatermark from [text] with size information */
+        @JvmStatic
         fun sized(text: String): TextWatermark = TextWatermark(text, sized = true)
 
         /** Creates a TextWatermark from [text] with CRC32 checksum */
         @Suppress("ktlint:standard:function-naming")
+        @JvmStatic
         fun CRC32(text: String): TextWatermark = TextWatermark(text, CRC32 = true)
 
         /** Creates a TextWatermark from [text] with SHA3256 hash */
         @Suppress("ktlint:standard:function-naming")
+        @JvmStatic
         fun SHA3256(text: String): TextWatermark = TextWatermark(text, SHA3256 = true)
 
         /** Creates a TextWatermark from [text] with size information and compression */
+        @JvmStatic
         fun compressedSized(text: String): TextWatermark =
             TextWatermark(text, compressed = true, sized = true)
 
         /** Creates a TextWatermark from [text] with compression and CRC32 checksum */
+        @JvmStatic
         fun compressedCRC32(text: String): TextWatermark =
             TextWatermark(text, compressed = true, CRC32 = true)
 
         /** Creates a TextWatermark from [text] with compression and SHA3256 hash */
+        @JvmStatic
         fun compressedSHA3256(text: String): TextWatermark =
             TextWatermark(text, compressed = true, SHA3256 = true)
 
         /** Creates a TextWatermark from [text] with size information and CRC32 checksum */
+        @JvmStatic
         fun sizedCRC32(text: String): TextWatermark =
             TextWatermark(text, sized = true, CRC32 = true)
 
         /** Creates a TextWatermark from [text] with size information and SHA3256 hash */
+        @JvmStatic
         fun sizedSHA3256(text: String): TextWatermark =
             TextWatermark(text, sized = true, SHA3256 = true)
 
         /** Creates a TextWatermark from [text] with compression, size information and CRC32 checksum */
+        @JvmStatic
         fun compressedSizedCRC32(text: String): TextWatermark =
             TextWatermark(text, compressed = true, sized = true, CRC32 = true)
 
         /** Creates a TextWatermark from [text] with compression, size information and SHA3256 hash */
+        @JvmStatic
         fun compressedSizedSHA3256(text: String): TextWatermark =
             TextWatermark(text, compressed = true, sized = true, SHA3256 = true)
 
@@ -120,6 +135,7 @@ class TextWatermark private constructor(
          *                           is false: invalid bytes sequences are replace with the char �.
          * Returns an error when [trendmark] contains an unsupported variant.
          */
+        @JvmStatic
         fun fromTrendmark(
             trendmark: Trendmark,
             errorOnInvalidUTF8: Boolean = false,
