@@ -99,7 +99,6 @@ open class Watermarker {
     companion object {
         const val SOURCE = "Watermarker"
         private val singletonWatermarker: Watermarker = Watermarker()
-
         /** Returns the singleton instance of the Watermarker class **/
         @JvmStatic
         fun getSingleton(): Watermarker {
