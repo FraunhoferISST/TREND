@@ -16,9 +16,9 @@ import kotlin.js.JsExport
  * structure and can be processed in a standardized way by the watermarking library.
  */
 @JsExport
-interface InnamarkBuilder {
+interface InnamarkTagBuilder {
     /** Generates a Innamark with the specific content */
-    fun finish(): Innamark
+    fun finish(): InnamarkTag
 
     /** Represents the Innamark with its content in a human-readable way */
     override fun toString(): String

@@ -8,26 +8,26 @@ package unitTest.watermarks
 
 import de.fraunhofer.isst.innamark.watermarker.helper.toBytesLittleEndian
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedRawInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSHA3256Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedSHA3256Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkInterface
-import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SHA3256Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256Innamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedCRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedRawInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSHA3256InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedCRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedSHA3256InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagInterface
+import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SHA3256InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedCRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256InnamarkTag
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class InnamarkTest {
+class InnamarkTagTest {
     private val content = "Lorem Ipsum".encodeToByteArray().asList()
     private val compressedContent =
         listOf<Byte>(-13, -55, 47, 74, -51, 85, -16, 44, 40, 46, -51, 5, 0)
@@ -35,10 +35,10 @@ class InnamarkTest {
     @Test
     fun rawInnamark_creation_success() {
         // Arrange
-        val expected = listOf(RawInnamark.TYPE_TAG.toByte()) + content
+        val expected = listOf(RawInnamarkTag.TYPE_TAG.toByte()) + content
 
         // Act
-        val watermark = RawInnamark.new(content)
+        val watermark = RawInnamarkTag.new(content)
         val extractedContent = watermark.getContent()
 
         // Assert
@@ -53,14 +53,14 @@ class InnamarkTest {
         // Arrange
         val watermarkContent = listOf((-1).toByte()) + content
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.RawInnamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.RawInnamarkTag",
                 0u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = RawInnamark(watermarkContent)
+        val watermark = RawInnamarkTag(watermarkContent)
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
@@ -77,10 +77,10 @@ class InnamarkTest {
     @Test
     fun compressedRawInnamark_creation_success() {
         // Arrange
-        val expected = listOf(CompressedRawInnamark.TYPE_TAG.toByte()) + compressedContent
+        val expected = listOf(CompressedRawInnamarkTag.TYPE_TAG.toByte()) + compressedContent
 
         // Act
-        val watermark = CompressedRawInnamark.new(content)
+        val watermark = CompressedRawInnamarkTag.new(content)
         val extractedContent = watermark.getContent()
 
         // Assert
@@ -95,14 +95,14 @@ class InnamarkTest {
         // Arrange
         val watermarkContent = listOf((-1).toByte()) + compressedContent
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CompressedRawInnamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CompressedRawInnamarkTag",
                 64u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedRawInnamark(watermarkContent)
+        val watermark = CompressedRawInnamarkTag(watermarkContent)
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
 
@@ -120,14 +120,14 @@ class InnamarkTest {
     fun sizedInnamark_creation_success() {
         // Arrange
         val expectedSize =
-            (InnamarkInterface.TAG_SIZE + SizedInnamark.SIZE_SIZE + content.size).toUInt()
+            (InnamarkTagInterface.TAG_SIZE + SizedInnamarkTag.SIZE_SIZE + content.size).toUInt()
         val expected =
-            listOf(SizedInnamark.TYPE_TAG.toByte()) +
+            listOf(SizedInnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 content
 
         // Act
-        val watermark = SizedInnamark.new(content)
+        val watermark = SizedInnamarkTag.new(content)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
 
@@ -144,20 +144,20 @@ class InnamarkTest {
     fun sizedInnamark_invalidTag_error() {
         // Arrange
         val expectedSize =
-            (InnamarkInterface.TAG_SIZE + SizedInnamark.SIZE_SIZE + content.size).toUInt()
+            (InnamarkTagInterface.TAG_SIZE + SizedInnamarkTag.SIZE_SIZE + content.size).toUInt()
         val watermarkContent =
             listOf((-1).toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.SizedInnamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.SizedInnamarkTag",
                 32u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = SizedInnamark(watermarkContent)
+        val watermark = SizedInnamarkTag(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -176,20 +176,20 @@ class InnamarkTest {
     fun sizedInnamark_mismatchedSize_warning() {
         // Arrange
         val invalidSize =
-            (InnamarkInterface.TAG_SIZE + SizedInnamark.SIZE_SIZE + content.size + 1).toUInt()
+            (InnamarkTagInterface.TAG_SIZE + SizedInnamarkTag.SIZE_SIZE + content.size + 1).toUInt()
         val watermarkContent =
-            listOf(SizedInnamark.TYPE_TAG.toByte()) +
+            listOf(SizedInnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
-            Innamark.MismatchedSizeWarning(
-                "Innamark.SizedInnamark",
+            InnamarkTag.MismatchedSizeWarning(
+                "InnamarkTag.SizedInnamarkTag",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ).into().toString()
 
         // Act
-        val watermark = SizedInnamark(watermarkContent)
+        val watermark = SizedInnamarkTag(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -209,17 +209,17 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedInnamark.SIZE_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedInnamarkTag.SIZE_SIZE +
                     compressedContent.size
             ).toUInt()
         val expected =
-            listOf(CompressedSizedInnamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedInnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedInnamark.new(content)
+        val watermark = CompressedSizedInnamarkTag.new(content)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
 
@@ -237,8 +237,8 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedInnamark.SIZE_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedInnamarkTag.SIZE_SIZE +
                     compressedContent.size
             ).toUInt()
         val watermarkContent =
@@ -246,14 +246,14 @@ class InnamarkTest {
                 expectedSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CompressedSizedInnamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CompressedSizedInnamarkTag",
                 96u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedSizedInnamark(watermarkContent)
+        val watermark = CompressedSizedInnamarkTag(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -273,24 +273,24 @@ class InnamarkTest {
         // Arrange
         val invalidSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedInnamark.SIZE_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedInnamarkTag.SIZE_SIZE +
                     compressedContent.size +
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(CompressedSizedInnamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedInnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
-            Innamark.MismatchedSizeWarning(
-                "Innamark.CompressedSizedInnamark",
+            InnamarkTag.MismatchedSizeWarning(
+                "InnamarkTag.CompressedSizedInnamarkTag",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ).into().toString()
 
         // Act
-        val watermark = CompressedSizedInnamark(watermarkContent)
+        val watermark = CompressedSizedInnamarkTag(watermarkContent)
         val extractedSize = watermark.extractSize()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -310,10 +310,11 @@ class InnamarkTest {
         // Arrange
         val expectedCrc32 = 0x5491107Au
         val expected =
-            listOf(CRC32Innamark.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() + content
+            listOf(CRC32InnamarkTag.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() +
+                content
 
         // Act
-        val watermark = CRC32Innamark.new(content)
+        val watermark = CRC32InnamarkTag.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
 
@@ -333,14 +334,14 @@ class InnamarkTest {
         val watermarkContent =
             listOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + content
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CRC32Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CRC32InnamarkTag",
                 16u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CRC32Innamark(watermarkContent)
+        val watermark = CRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -361,18 +362,18 @@ class InnamarkTest {
         val expectedCrc32 = 0x5491107Au
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(CRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus =
-            Innamark.InvalidChecksumWarning(
-                "Innamark.CRC32Innamark",
+            InnamarkTag.InvalidChecksumWarning(
+                "InnamarkTag.CRC32InnamarkTag",
                 invalidCrc32,
                 expectedCrc32,
             ).into()
 
         // Act
-        val watermark = CRC32Innamark(watermarkContent)
+        val watermark = CRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -392,12 +393,12 @@ class InnamarkTest {
         // Arrange
         val expectedCrc32 = 0x10927326u
         val expected =
-            listOf(CompressedCRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
 
         // Act
-        val watermark = CompressedCRC32Innamark.new(content)
+        val watermark = CompressedCRC32InnamarkTag.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
 
@@ -417,14 +418,14 @@ class InnamarkTest {
         val watermarkContent =
             listOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + compressedContent
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CompressedCRC32Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CompressedCRC32InnamarkTag",
                 80u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedCRC32Innamark(watermarkContent)
+        val watermark = CompressedCRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -445,18 +446,18 @@ class InnamarkTest {
         val expectedCrc32 = 0x10927326u
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CompressedCRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
-            Innamark.InvalidChecksumWarning(
-                "Innamark.CompressedCRC32Innamark",
+            InnamarkTag.InvalidChecksumWarning(
+                "InnamarkTag.CompressedCRC32InnamarkTag",
                 invalidCrc32,
                 expectedCrc32,
             ).into()
 
         // Act
-        val watermark = CompressedCRC32Innamark(watermarkContent)
+        val watermark = CompressedCRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -476,20 +477,20 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedCRC32Innamark.SIZE_SIZE +
-                    SizedCRC32Innamark.CHECKSUM_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedCRC32InnamarkTag.SIZE_SIZE +
+                    SizedCRC32InnamarkTag.CHECKSUM_SIZE +
                     content.size
             ).toUInt()
         val expectedCrc32 = 0x51C833FAu
         val expected =
-            listOf(SizedCRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(SizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 content
 
         // Act
-        val watermark = SizedCRC32Innamark.new(content)
+        val watermark = SizedCRC32InnamarkTag.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
@@ -511,9 +512,9 @@ class InnamarkTest {
         val expectedCrc32 = 0x735EA3E1u
         val size =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedCRC32Innamark.SIZE_SIZE +
-                    SizedCRC32Innamark.CHECKSUM_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedCRC32InnamarkTag.SIZE_SIZE +
+                    SizedCRC32InnamarkTag.CHECKSUM_SIZE +
                     content.size
             ).toUInt()
         val watermarkContent =
@@ -522,14 +523,14 @@ class InnamarkTest {
                 expectedCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.SizedCRC32Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.SizedCRC32InnamarkTag",
                 48u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = SizedCRC32Innamark(watermarkContent)
+        val watermark = SizedCRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -551,35 +552,35 @@ class InnamarkTest {
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedCRC32Innamark.SIZE_SIZE +
-                    SizedCRC32Innamark.CHECKSUM_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedCRC32InnamarkTag.SIZE_SIZE +
+                    SizedCRC32InnamarkTag.CHECKSUM_SIZE +
                     content.size +
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(SizedCRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(SizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
-            Innamark.MismatchedSizeWarning(
-                "Innamark.SizedCRC32Innamark",
+            InnamarkTag.MismatchedSizeWarning(
+                "InnamarkTag.SizedCRC32InnamarkTag",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
-            Innamark.InvalidChecksumWarning(
-                "Innamark.SizedCRC32Innamark",
+            InnamarkTag.InvalidChecksumWarning(
+                "InnamarkTag.SizedCRC32InnamarkTag",
                 invalidCrc32,
                 expectedCrc32,
             ),
         )
 
         // Act
-        val watermark = SizedCRC32Innamark(watermarkContent)
+        val watermark = SizedCRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -599,20 +600,20 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedCRC32Innamark.SIZE_SIZE +
-                    SizedCRC32Innamark.CHECKSUM_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedCRC32InnamarkTag.SIZE_SIZE +
+                    SizedCRC32InnamarkTag.CHECKSUM_SIZE +
                     compressedContent.size
             ).toUInt()
         val expectedCrc32 = 0x1D71CD9Cu
         val expected =
-            listOf(CompressedSizedCRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedCRC32Innamark.new(content)
+        val watermark = CompressedSizedCRC32InnamarkTag.new(content)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
@@ -634,9 +635,9 @@ class InnamarkTest {
         val expectedCrc32 = 0x8E069413u
         val size =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedCRC32Innamark.SIZE_SIZE +
-                    SizedCRC32Innamark.CHECKSUM_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedCRC32InnamarkTag.SIZE_SIZE +
+                    SizedCRC32InnamarkTag.CHECKSUM_SIZE +
                     compressedContent.size
             ).toUInt()
         val watermarkContent =
@@ -645,14 +646,14 @@ class InnamarkTest {
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CompressedSizedCRC32Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CompressedSizedCRC32InnamarkTag",
                 112u,
                 255u,
             ).into().toString()
 
         // Act
-        val watermark = CompressedSizedCRC32Innamark(watermarkContent)
+        val watermark = CompressedSizedCRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -674,35 +675,35 @@ class InnamarkTest {
         val invalidCrc32 = 0xFFFFFFFFu
         val invalidSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedCRC32Innamark.SIZE_SIZE +
-                    SizedCRC32Innamark.CHECKSUM_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedCRC32InnamarkTag.SIZE_SIZE +
+                    SizedCRC32InnamarkTag.CHECKSUM_SIZE +
                     compressedContent.size +
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(CompressedSizedCRC32Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
-            Innamark.MismatchedSizeWarning(
-                "Innamark.CompressedSizedCRC32Innamark",
+            InnamarkTag.MismatchedSizeWarning(
+                "InnamarkTag.CompressedSizedCRC32InnamarkTag",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
-            Innamark.InvalidChecksumWarning(
-                "Innamark.CompressedSizedCRC32Innamark",
+            InnamarkTag.InvalidChecksumWarning(
+                "InnamarkTag.CompressedSizedCRC32InnamarkTag",
                 invalidCrc32,
                 expectedCrc32,
             ),
         )
 
         // Act
-        val watermark = CompressedSizedCRC32Innamark(watermarkContent)
+        val watermark = CompressedSizedCRC32InnamarkTag(watermarkContent)
         val extractedChecksum = watermark.extractChecksum()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -726,10 +727,10 @@ class InnamarkTest {
                 -76, 61, 47, 113, 121, -36, -76, 56, -100, -96, 28, 21, -66, -80,
             )
         val expectedContent =
-            listOf(SHA3256Innamark.TYPE_TAG.toByte()) + expectedHash + content
+            listOf(SHA3256InnamarkTag.TYPE_TAG.toByte()) + expectedHash + content
 
         // Act
-        val watermark = SHA3256Innamark.new(content)
+        val watermark = SHA3256InnamarkTag.new(content)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
 
@@ -751,8 +752,8 @@ class InnamarkTest {
                 -49, -76, -26, 59, -96, -35, -99, 98, 110, -6, -49, 47, -52, 25,
             )
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.SHA3256Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.SHA3256InnamarkTag",
                 8u,
                 255u,
             ).into().toString()
@@ -761,7 +762,7 @@ class InnamarkTest {
             listOf((-1).toByte()) + expectedHash + content
 
         // Act
-        val watermark = SHA3256Innamark(watermarkContent)
+        val watermark = SHA3256InnamarkTag(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -786,15 +787,15 @@ class InnamarkTest {
                 -76, 61, 47, 113, 121, -36, -76, 56, -100, -96, 28, 21, -66, -80,
             )
         val expectedStatus =
-            Innamark.InvalidHashWarning(
-                "Innamark.SHA3256Innamark",
+            InnamarkTag.InvalidHashWarning(
+                "InnamarkTag.SHA3256InnamarkTag",
                 invalidHash,
                 expectedHash,
             ).into()
-        val watermarkContent = listOf(SHA3256Innamark.TYPE_TAG.toByte()) + invalidHash + content
+        val watermarkContent = listOf(SHA3256InnamarkTag.TYPE_TAG.toByte()) + invalidHash + content
 
         // Act
-        val watermark = SHA3256Innamark(watermarkContent)
+        val watermark = SHA3256InnamarkTag(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -818,10 +819,11 @@ class InnamarkTest {
                 -120, -86, 127, 120, -35, -3, 84, -62, 33, -33, -113, -97, -79, 41,
             )
         val expectedContent =
-            listOf(CompressedSHA3256Innamark.TYPE_TAG.toByte()) + expectedHash + compressedContent
+            listOf(CompressedSHA3256InnamarkTag.TYPE_TAG.toByte()) + expectedHash +
+                compressedContent
 
         // Act
-        val watermark = CompressedSHA3256Innamark.new(content)
+        val watermark = CompressedSHA3256InnamarkTag.new(content)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
 
@@ -843,8 +845,8 @@ class InnamarkTest {
                 54, 84, 69, -92, -70, -57, -61, -120, 113, 124, 119, -44, -38, 92,
             )
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CompressedSHA3256Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CompressedSHA3256InnamarkTag",
                 72u,
                 255u,
             ).into().toString()
@@ -853,7 +855,7 @@ class InnamarkTest {
             listOf((-1).toByte()) + expectedHash + compressedContent
 
         // Act
-        val watermark = CompressedSHA3256Innamark(watermarkContent)
+        val watermark = CompressedSHA3256InnamarkTag(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -878,18 +880,18 @@ class InnamarkTest {
                 -120, -86, 127, 120, -35, -3, 84, -62, 33, -33, -113, -97, -79, 41,
             )
         val expectedStatus =
-            Innamark.InvalidHashWarning(
-                "Innamark.CompressedSHA3256Innamark",
+            InnamarkTag.InvalidHashWarning(
+                "InnamarkTag.CompressedSHA3256InnamarkTag",
                 invalidHash,
                 expectedHash,
             ).into()
         val watermarkContent =
-            listOf(CompressedSHA3256Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 invalidHash +
                 compressedContent
 
         // Act
-        val watermark = CompressedSHA3256Innamark(watermarkContent)
+        val watermark = CompressedSHA3256InnamarkTag(watermarkContent)
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
         val status = watermark.validate()
@@ -909,9 +911,9 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedSHA3256Innamark.SIZE_SIZE +
-                    SizedSHA3256Innamark.HASH_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedSHA3256InnamarkTag.SIZE_SIZE +
+                    SizedSHA3256InnamarkTag.HASH_SIZE +
                     content.size
             ).toUInt()
         val expectedHash =
@@ -920,13 +922,13 @@ class InnamarkTest {
                 -70, -68, -11, 59, 8, -6, -105, 42, 27, 107, 30, -31, 59, -115,
             )
         val expectedContent =
-            listOf(SizedSHA3256Innamark.TYPE_TAG.toByte()) +
+            listOf(SizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 content
 
         // Act
-        val watermark = SizedSHA3256Innamark.new(content)
+        val watermark = SizedSHA3256InnamarkTag.new(content)
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
@@ -947,9 +949,9 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedSHA3256Innamark.SIZE_SIZE +
-                    SizedSHA3256Innamark.HASH_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedSHA3256InnamarkTag.SIZE_SIZE +
+                    SizedSHA3256InnamarkTag.HASH_SIZE +
                     content.size
             ).toUInt()
         val expectedHash =
@@ -958,8 +960,8 @@ class InnamarkTest {
                 -50, -44, 69, 39, 37, -21, -72, -75, -56, -90, 97, 36, 63,
             )
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.SizedSHA3256Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.SizedSHA3256InnamarkTag",
                 40u,
                 255u,
             ).into().toString()
@@ -971,7 +973,7 @@ class InnamarkTest {
                 content
 
         // Act
-        val watermark = SizedSHA3256Innamark(watermarkContent)
+        val watermark = SizedSHA3256InnamarkTag(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -994,9 +996,9 @@ class InnamarkTest {
         // Arrange
         val invalidSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedSHA3256Innamark.SIZE_SIZE +
-                    SizedSHA3256Innamark.HASH_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedSHA3256InnamarkTag.SIZE_SIZE +
+                    SizedSHA3256InnamarkTag.HASH_SIZE +
                     content.size +
                     1
             ).toUInt()
@@ -1008,28 +1010,28 @@ class InnamarkTest {
             )
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
-            Innamark.MismatchedSizeWarning(
-                "Innamark.SizedSHA3256Innamark",
+            InnamarkTag.MismatchedSizeWarning(
+                "InnamarkTag.SizedSHA3256InnamarkTag",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
-            Innamark.InvalidHashWarning(
-                "Innamark.SizedSHA3256Innamark",
+            InnamarkTag.InvalidHashWarning(
+                "InnamarkTag.SizedSHA3256InnamarkTag",
                 invalidHash,
                 expectedHash,
             ),
         )
 
         val watermarkContent =
-            listOf(SizedSHA3256Innamark.TYPE_TAG.toByte()) +
+            listOf(SizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidHash +
                 content
 
         // Act
-        val watermark = SizedSHA3256Innamark(watermarkContent)
+        val watermark = SizedSHA3256InnamarkTag(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -1052,9 +1054,9 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedSHA3256Innamark.SIZE_SIZE +
-                    SizedSHA3256Innamark.HASH_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedSHA3256InnamarkTag.SIZE_SIZE +
+                    SizedSHA3256InnamarkTag.HASH_SIZE +
                     compressedContent.size
             ).toUInt()
         val expectedHash =
@@ -1063,13 +1065,13 @@ class InnamarkTest {
                 35, 122, 46, 83, -70, 108, -22, 73, 79, -48, -114, -7, 71, -99, 27,
             )
         val expectedContent =
-            listOf(CompressedSizedSHA3256Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedSHA3256Innamark.new(content)
+        val watermark = CompressedSizedSHA3256InnamarkTag.new(content)
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
         val extractedContent = watermark.getContent()
@@ -1090,9 +1092,9 @@ class InnamarkTest {
         // Arrange
         val expectedSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedSHA3256Innamark.SIZE_SIZE +
-                    SizedSHA3256Innamark.HASH_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedSHA3256InnamarkTag.SIZE_SIZE +
+                    SizedSHA3256InnamarkTag.HASH_SIZE +
                     compressedContent.size
             ).toUInt()
         val expectedHash =
@@ -1101,8 +1103,8 @@ class InnamarkTest {
                 72, 54, 39, -70, 100, 80, -51, 116, 126, 105, 94, 14, -36, -102,
             )
         val expectedStatus =
-            Innamark.InvalidTagError(
-                "Innamark.CompressedSizedSHA3256Innamark",
+            InnamarkTag.InvalidTagError(
+                "InnamarkTag.CompressedSizedSHA3256InnamarkTag",
                 104u,
                 255u,
             ).into().toString()
@@ -1114,7 +1116,7 @@ class InnamarkTest {
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedSHA3256Innamark(watermarkContent)
+        val watermark = CompressedSizedSHA3256InnamarkTag(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -1137,9 +1139,9 @@ class InnamarkTest {
         // Arrange
         val invalidSize =
             (
-                InnamarkInterface.TAG_SIZE +
-                    SizedSHA3256Innamark.SIZE_SIZE +
-                    SizedSHA3256Innamark.HASH_SIZE +
+                InnamarkTagInterface.TAG_SIZE +
+                    SizedSHA3256InnamarkTag.SIZE_SIZE +
+                    SizedSHA3256InnamarkTag.HASH_SIZE +
                     compressedContent.size +
                     1
             ).toUInt()
@@ -1151,28 +1153,28 @@ class InnamarkTest {
             )
         val expectedStatus = Status.success()
         expectedStatus.addEvent(
-            Innamark.MismatchedSizeWarning(
-                "Innamark.CompressedSizedSHA3256Innamark",
+            InnamarkTag.MismatchedSizeWarning(
+                "InnamarkTag.CompressedSizedSHA3256InnamarkTag",
                 invalidSize.toInt(),
                 invalidSize.toInt() - 1,
             ),
         )
         expectedStatus.addEvent(
-            Innamark.InvalidHashWarning(
-                "Innamark.CompressedSizedSHA3256Innamark",
+            InnamarkTag.InvalidHashWarning(
+                "InnamarkTag.CompressedSizedSHA3256InnamarkTag",
                 invalidHash,
                 expectedHash,
             ),
         )
 
         val watermarkContent =
-            listOf(CompressedSizedSHA3256Innamark.TYPE_TAG.toByte()) +
+            listOf(CompressedSizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidHash +
                 compressedContent
 
         // Act
-        val watermark = CompressedSizedSHA3256Innamark(watermarkContent)
+        val watermark = CompressedSizedSHA3256InnamarkTag(watermarkContent)
         val extractedContent = watermark.getContent()
         val extractedSize = watermark.extractSize()
         val extractedHash = watermark.extractHash()
@@ -1193,57 +1195,58 @@ class InnamarkTest {
     @Test
     fun parse_valid_success() {
         // Arrange
-        val rawInnamark = RawInnamark.new(content)
-        val sizedInnamark = SizedInnamark.new(content)
-        val crc32Innamark = CRC32Innamark.new(content)
-        val sizedCRC32Innamark = SizedCRC32Innamark.new(content)
-        val sha3256Innamark = SHA3256Innamark.new(content)
-        val sizedSHA3256Innamark = SizedSHA3256Innamark.new(content)
-        val compressedRawInnamark = CompressedRawInnamark.new(content)
-        val compressedSizedInnamark = CompressedSizedInnamark.new(content)
-        val compressedCRC32Innamark = CompressedCRC32Innamark.new(content)
-        val compressedSizedCRC32Innamark = CompressedSizedCRC32Innamark.new(content)
-        val compressedSHA3256Innamark = CompressedSHA3256Innamark.new(content)
-        val compressedSizedSHA3256Innamark = CompressedSizedSHA3256Innamark.new(content)
+        val rawInnamark = RawInnamarkTag.new(content)
+        val sizedInnamark = SizedInnamarkTag.new(content)
+        val crc32Innamark = CRC32InnamarkTag.new(content)
+        val sizedCRC32Innamark = SizedCRC32InnamarkTag.new(content)
+        val sha3256Innamark = SHA3256InnamarkTag.new(content)
+        val sizedSHA3256Innamark = SizedSHA3256InnamarkTag.new(content)
+        val compressedRawInnamark = CompressedRawInnamarkTag.new(content)
+        val compressedSizedInnamark = CompressedSizedInnamarkTag.new(content)
+        val compressedCRC32Innamark = CompressedCRC32InnamarkTag.new(content)
+        val compressedSizedCRC32Innamark = CompressedSizedCRC32InnamarkTag.new(content)
+        val compressedSHA3256Innamark = CompressedSHA3256InnamarkTag.new(content)
+        val compressedSizedSHA3256Innamark = CompressedSizedSHA3256InnamarkTag.new(content)
 
         // Act
-        val parsedPlainWatermark = Innamark.parse(rawInnamark.watermarkContent)
-        val parsedSizedInnamark = Innamark.parse(sizedInnamark.watermarkContent)
-        val parsedCRC32Innamark = Innamark.parse(crc32Innamark.watermarkContent)
-        val parsedSizedCRC32Innamark = Innamark.parse(sizedCRC32Innamark.watermarkContent)
-        val parsedSHA3256Innamark = Innamark.parse(sha3256Innamark.watermarkContent)
-        val parsedSizedSHA3256Innamark = Innamark.parse(sizedSHA3256Innamark.watermarkContent)
-        val parsedCompressedRawInnamark = Innamark.parse(compressedRawInnamark.watermarkContent)
-        val parsedCompressedSizedInnamark =
-            Innamark.parse(compressedSizedInnamark.watermarkContent)
-        val parsedCompressedCRC32Innamark =
-            Innamark.parse(compressedCRC32Innamark.watermarkContent)
-        val parsedCompressedSizedCRC32Innamark =
-            Innamark.parse(compressedSizedCRC32Innamark.watermarkContent)
-        val parsedCompressedSHA3256Innamark =
-            Innamark.parse(compressedSHA3256Innamark.watermarkContent)
-        val parsedCompressedSizedSHA3256Innamark =
-            Innamark.parse(compressedSizedSHA3256Innamark.watermarkContent)
+        val parsedPlainWatermark = InnamarkTag.parse(rawInnamark.watermarkContent)
+        val parsedSizedInnamarkTag = InnamarkTag.parse(sizedInnamark.watermarkContent)
+        val parsedCRC32InnamarkTag = InnamarkTag.parse(crc32Innamark.watermarkContent)
+        val parsedSizedCRC32InnamarkTag = InnamarkTag.parse(sizedCRC32Innamark.watermarkContent)
+        val parsedSHA3256InnamarkTag = InnamarkTag.parse(sha3256Innamark.watermarkContent)
+        val parsedSizedSHA3256InnamarkTag = InnamarkTag.parse(sizedSHA3256Innamark.watermarkContent)
+        val parsedCompressedRawInnamarkTag =
+            InnamarkTag.parse(compressedRawInnamark.watermarkContent)
+        val parsedCompressedSizedInnamarkTag =
+            InnamarkTag.parse(compressedSizedInnamark.watermarkContent)
+        val parsedCompressedCRC32InnamarkTag =
+            InnamarkTag.parse(compressedCRC32Innamark.watermarkContent)
+        val parsedCompressedSizedCRC32InnamarkTag =
+            InnamarkTag.parse(compressedSizedCRC32Innamark.watermarkContent)
+        val parsedCompressedSHA3256InnamarkTag =
+            InnamarkTag.parse(compressedSHA3256Innamark.watermarkContent)
+        val parsedCompressedSizedSHA3256InnamarkTag =
+            InnamarkTag.parse(compressedSizedSHA3256Innamark.watermarkContent)
 
         // Assert
         assertTrue(parsedPlainWatermark.isSuccess)
         var parsedWatermark = parsedPlainWatermark.value!!
-        assertTrue(parsedWatermark is RawInnamark)
+        assertTrue(parsedWatermark is RawInnamarkTag)
         assertEquals(content, parsedWatermark.getContent().value)
         assertEquals(rawInnamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedSizedInnamark.isSuccess)
-        parsedWatermark = parsedSizedInnamark.value!!
-        assertTrue(parsedWatermark is SizedInnamark)
+        assertTrue(parsedSizedInnamarkTag.isSuccess)
+        parsedWatermark = parsedSizedInnamarkTag.value!!
+        assertTrue(parsedWatermark is SizedInnamarkTag)
         assertEquals(sizedInnamark.extractSize().value!!, parsedWatermark.extractSize().value!!)
         assertEquals(content, parsedWatermark.getContent().value)
         assertEquals(sizedInnamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCRC32Innamark.isSuccess)
-        parsedWatermark = parsedCRC32Innamark.value!!
-        assertTrue(parsedWatermark is CRC32Innamark)
+        assertTrue(parsedCRC32InnamarkTag.isSuccess)
+        parsedWatermark = parsedCRC32InnamarkTag.value!!
+        assertTrue(parsedWatermark is CRC32InnamarkTag)
         assertEquals(
             crc32Innamark.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
@@ -1251,9 +1254,9 @@ class InnamarkTest {
         assertEquals(content, parsedWatermark.getContent().value)
         assertEquals(crc32Innamark.watermarkContent, parsedWatermark.watermarkContent)
 
-        assertTrue(parsedSizedCRC32Innamark.isSuccess)
-        parsedWatermark = parsedSizedCRC32Innamark.value!!
-        assertTrue(parsedWatermark is SizedCRC32Innamark)
+        assertTrue(parsedSizedCRC32InnamarkTag.isSuccess)
+        parsedWatermark = parsedSizedCRC32InnamarkTag.value!!
+        assertTrue(parsedWatermark is SizedCRC32InnamarkTag)
         assertEquals(
             sizedCRC32Innamark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
@@ -1266,17 +1269,17 @@ class InnamarkTest {
         assertEquals(sizedCRC32Innamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedSHA3256Innamark.isSuccess)
-        parsedWatermark = parsedSHA3256Innamark.value!!
-        assertTrue(parsedWatermark is SHA3256Innamark)
+        assertTrue(parsedSHA3256InnamarkTag.isSuccess)
+        parsedWatermark = parsedSHA3256InnamarkTag.value!!
+        assertTrue(parsedWatermark is SHA3256InnamarkTag)
         assertEquals(sha3256Innamark.extractHash().value!!, parsedWatermark.extractHash().value!!)
         assertEquals(content, parsedWatermark.getContent().value)
         assertEquals(sha3256Innamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedSizedSHA3256Innamark.isSuccess)
-        parsedWatermark = parsedSizedSHA3256Innamark.value!!
-        assertTrue(parsedWatermark is SizedSHA3256Innamark)
+        assertTrue(parsedSizedSHA3256InnamarkTag.isSuccess)
+        parsedWatermark = parsedSizedSHA3256InnamarkTag.value!!
+        assertTrue(parsedWatermark is SizedSHA3256InnamarkTag)
         assertEquals(
             sizedSHA3256Innamark.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
@@ -1289,18 +1292,18 @@ class InnamarkTest {
         assertEquals(sizedSHA3256Innamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedRawInnamark.isSuccess)
-        parsedWatermark = parsedCompressedRawInnamark.value!!
-        assertTrue(parsedWatermark is CompressedRawInnamark)
+        assertTrue(parsedCompressedRawInnamarkTag.isSuccess)
+        parsedWatermark = parsedCompressedRawInnamarkTag.value!!
+        assertTrue(parsedWatermark is CompressedRawInnamarkTag)
         var decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(compressedRawInnamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSizedInnamark.isSuccess)
-        parsedWatermark = parsedCompressedSizedInnamark.value!!
-        assertTrue(parsedWatermark is CompressedSizedInnamark)
+        assertTrue(parsedCompressedSizedInnamarkTag.isSuccess)
+        parsedWatermark = parsedCompressedSizedInnamarkTag.value!!
+        assertTrue(parsedWatermark is CompressedSizedInnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
@@ -1311,9 +1314,9 @@ class InnamarkTest {
         assertEquals(compressedSizedInnamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedCRC32Innamark.isSuccess)
-        parsedWatermark = parsedCompressedCRC32Innamark.value!!
-        assertTrue(parsedWatermark is CompressedCRC32Innamark)
+        assertTrue(parsedCompressedCRC32InnamarkTag.isSuccess)
+        parsedWatermark = parsedCompressedCRC32InnamarkTag.value!!
+        assertTrue(parsedWatermark is CompressedCRC32InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
@@ -1324,9 +1327,9 @@ class InnamarkTest {
         assertEquals(compressedCRC32Innamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSizedCRC32Innamark.isSuccess)
-        parsedWatermark = parsedCompressedSizedCRC32Innamark.value!!
-        assertTrue(parsedWatermark is CompressedSizedCRC32Innamark)
+        assertTrue(parsedCompressedSizedCRC32InnamarkTag.isSuccess)
+        parsedWatermark = parsedCompressedSizedCRC32InnamarkTag.value!!
+        assertTrue(parsedWatermark is CompressedSizedCRC32InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
@@ -1344,9 +1347,9 @@ class InnamarkTest {
         )
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSHA3256Innamark.isSuccess)
-        parsedWatermark = parsedCompressedSHA3256Innamark.value!!
-        assertTrue(parsedWatermark is CompressedSHA3256Innamark)
+        assertTrue(parsedCompressedSHA3256InnamarkTag.isSuccess)
+        parsedWatermark = parsedCompressedSHA3256InnamarkTag.value!!
+        assertTrue(parsedWatermark is CompressedSHA3256InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
@@ -1357,9 +1360,9 @@ class InnamarkTest {
         assertEquals(compressedSHA3256Innamark.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
-        assertTrue(parsedCompressedSizedSHA3256Innamark.isSuccess)
-        parsedWatermark = parsedCompressedSizedSHA3256Innamark.value!!
-        assertTrue(parsedWatermark is CompressedSizedSHA3256Innamark)
+        assertTrue(parsedCompressedSizedSHA3256InnamarkTag.isSuccess)
+        parsedWatermark = parsedCompressedSizedSHA3256InnamarkTag.value!!
+        assertTrue(parsedWatermark is CompressedSizedSHA3256InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
@@ -1381,25 +1384,25 @@ class InnamarkTest {
     @Test
     fun parse_completeness_success() {
         // Arrange
-        check(InnamarkInterface.TAG_SIZE == 1)
+        check(InnamarkTagInterface.TAG_SIZE == 1)
         val existingTags = listOf(0, 32, 16, 48, 8, 40, 64, 96, 80, 112, 72, 104)
 
         // Act & Assert
         for (tag in 0..255) {
             val watermark = listOf(tag.toByte())
-            val parsedWatermark = Innamark.parse(watermark)
+            val parsedWatermark = InnamarkTag.parse(watermark)
             val events = parsedWatermark.status.getEvents()
 
             if (tag !in existingTags) {
                 assertTrue(events.size == 1, "Tag $tag should not exist!")
                 assertTrue(
-                    events.first() is Innamark.UnknownTagError,
+                    events.first() is InnamarkTag.UnknownTagError,
                     "Tag $tag should not exist!",
                 )
             } else {
                 for (event in events) {
                     assertFalse(
-                        event is Innamark.UnknownTagError,
+                        event is InnamarkTag.UnknownTagError,
                         "Tag $tag should exist!",
                     )
                 }
@@ -1410,9 +1413,9 @@ class InnamarkTest {
     @Test
     fun emptyError_defaultInput_correctWarningMessage() {
         // Arrange
-        val error = Innamark.IncompleteTagError
+        val error = InnamarkTag.IncompleteTagError
         val expected =
-            "Error (Innamark): Cannot validate a watermark without a complete tag (1 byte(s))."
+            "Error (InnamarkTag): Cannot validate a watermark without a complete tag (1 byte(s))."
 
         // Act
         val result = error.toString()
@@ -1424,7 +1427,7 @@ class InnamarkTest {
     @Test
     fun notEnoughDataError_defaultInput_correctWarningMessage() {
         // Arrange
-        val error = Innamark.NotEnoughDataError("Unittest", 42)
+        val error = InnamarkTag.NotEnoughDataError("Unittest", 42)
         val expected = "Error (Unittest): At least 42 bytes are required."
 
         // Act
@@ -1437,8 +1440,8 @@ class InnamarkTest {
     @Test
     fun unknownTagError_defaultInput_correctWarningMessage() {
         // Arrange
-        val error = Innamark.UnknownTagError(42u)
-        val expected = "Error (Innamark): Unknown watermark tag: 42."
+        val error = InnamarkTag.UnknownTagError(42u)
+        val expected = "Error (InnamarkTag): Unknown watermark tag: 42."
 
         // Act
         val result = error.toString()
@@ -1450,7 +1453,7 @@ class InnamarkTest {
     @Test
     fun invalidTagError_defaultInput_correctWarningMessage() {
         // Arrange
-        val error = Innamark.InvalidTagError("Unittest", 42u, 43u)
+        val error = InnamarkTag.InvalidTagError("Unittest", 42u, 43u)
         val expected = "Error (Unittest): Expected tag: 42, but was: 43."
 
         // Act
@@ -1463,7 +1466,7 @@ class InnamarkTest {
     @Test
     fun mismatchedSizeWarning_defaultInput_correctWarningMessage() {
         // Arrange
-        val error = Innamark.MismatchedSizeWarning("Unittest", 42, 43)
+        val error = InnamarkTag.MismatchedSizeWarning("Unittest", 42, 43)
         val expected = "Warning (Unittest): Expected 42 bytes, but extracted 43 bytes."
 
         // Act
@@ -1476,7 +1479,7 @@ class InnamarkTest {
     @Test
     fun invalidChecksumWarning_defaultInput_correctErrorMessage() {
         // Arrange
-        val error = Innamark.InvalidChecksumWarning("Unittest", 0xdeadbeefu, 0xcafebabeu)
+        val error = InnamarkTag.InvalidChecksumWarning("Unittest", 0xdeadbeefu, 0xcafebabeu)
         val expected = "Warning (Unittest): Expected checksum: 0xdeadbeef, but was: 0xcafebabe."
 
         // Act
@@ -1490,7 +1493,7 @@ class InnamarkTest {
     fun invalidHashWarning_defaultInput_correctWarningMessage() {
         // Arrange
         val error =
-            Innamark.InvalidHashWarning(
+            InnamarkTag.InvalidHashWarning(
                 "Unittest",
                 listOf<Byte>(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte()),
                 listOf<Byte>(0xca.toByte(), 0xfe.toByte(), 0xba.toByte(), 0xbe.toByte()),

@@ -10,8 +10,8 @@ package de.fraunhofer.isst.innamark.watermarker.fileWatermarker
 import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
@@ -35,13 +35,13 @@ interface FileWatermarker<File : WatermarkableFile> {
         return addWatermark(file, watermark.watermarkContent)
     }
 
-    /** Adds a [innamarkBuilder] to [file] */
+    /** Adds a [innamarkTagBuilder] to [file] */
     @JsName("addInnamarkBuilder")
     fun addWatermark(
         file: File,
-        innamarkBuilder: InnamarkBuilder,
+        innamarkTagBuilder: InnamarkTagBuilder,
     ): Status {
-        return addWatermark(file, innamarkBuilder.finish())
+        return addWatermark(file, innamarkTagBuilder.finish())
     }
 
     /** Checks if [file] contains watermarks */
@@ -70,7 +70,7 @@ interface FileWatermarker<File : WatermarkableFile> {
         file: File,
         squash: Boolean = false,
         singleWatermark: Boolean = false,
-    ): Result<List<Innamark>> =
+    ): Result<List<InnamarkTag>> =
         getWatermarks(file, squash, singleWatermark).toInnamarks(
             "${getSource()}" +
                 ".getInnamarks",

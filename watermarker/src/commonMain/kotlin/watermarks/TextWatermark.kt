@@ -44,7 +44,7 @@ class TextWatermark private constructor(
     private var sized: Boolean = false,
     private var CRC32: Boolean = false,
     private var SHA3256: Boolean = false,
-) : InnamarkBuilder {
+) : InnamarkTagBuilder {
     companion object {
         /**
          * Creates a TextWatermark in default configuration.
@@ -128,20 +128,20 @@ class TextWatermark private constructor(
             TextWatermark(text, compressed = true, sized = true, SHA3256 = true)
 
         /**
-         * Creates a TextWatermark from [innamark].
-         * Sets sized, compressed, CRC32 and SHA3256 depending on the variant of [innamark].
+         * Creates a TextWatermark from [innamarkTag].
+         * Sets sized, compressed, CRC32 and SHA3256 depending on the variant of [innamarkTag].
          *
          * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
          *                           is false: invalid bytes sequences are replace with the char �.
-         * Returns an error when [innamark] contains an unsupported variant.
+         * Returns an error when [innamarkTag] contains an unsupported variant.
          */
         @JvmStatic
         fun fromInnamark(
-            innamark: Innamark,
+            innamarkTag: InnamarkTag,
             errorOnInvalidUTF8: Boolean = false,
         ): Result<TextWatermark> {
             val (content, status) =
-                with(innamark.getContent()) {
+                with(innamarkTag.getContent()) {
                     if (!hasValue) return status.into<_>()
                     value!! to status
                 }
@@ -156,27 +156,27 @@ class TextWatermark private constructor(
                 }
 
             val textWatermark =
-                when (innamark) {
-                    is RawInnamark -> TextWatermark(text)
-                    is SizedInnamark -> TextWatermark(text, sized = true)
-                    is CompressedRawInnamark -> TextWatermark(text, compressed = true)
-                    is CompressedSizedInnamark ->
+                when (innamarkTag) {
+                    is RawInnamarkTag -> TextWatermark(text)
+                    is SizedInnamarkTag -> TextWatermark(text, sized = true)
+                    is CompressedRawInnamarkTag -> TextWatermark(text, compressed = true)
+                    is CompressedSizedInnamarkTag ->
                         TextWatermark(text, compressed = true, sized = true)
 
-                    is CRC32Innamark -> TextWatermark(text, CRC32 = true)
-                    is SizedCRC32Innamark -> TextWatermark(text, sized = true, CRC32 = true)
-                    is CompressedCRC32Innamark ->
+                    is CRC32InnamarkTag -> TextWatermark(text, CRC32 = true)
+                    is SizedCRC32InnamarkTag -> TextWatermark(text, sized = true, CRC32 = true)
+                    is CompressedCRC32InnamarkTag ->
                         TextWatermark(text, compressed = true, CRC32 = true)
-                    is CompressedSizedCRC32Innamark ->
+                    is CompressedSizedCRC32InnamarkTag ->
                         TextWatermark(text, compressed = true, sized = true, CRC32 = true)
-                    is SHA3256Innamark -> TextWatermark(text, SHA3256 = true)
-                    is SizedSHA3256Innamark -> TextWatermark(text, sized = true, SHA3256 = true)
-                    is CompressedSHA3256Innamark ->
+                    is SHA3256InnamarkTag -> TextWatermark(text, SHA3256 = true)
+                    is SizedSHA3256InnamarkTag -> TextWatermark(text, sized = true, SHA3256 = true)
+                    is CompressedSHA3256InnamarkTag ->
                         TextWatermark(text, compressed = true, SHA3256 = true)
-                    is CompressedSizedSHA3256Innamark ->
+                    is CompressedSizedSHA3256InnamarkTag ->
                         TextWatermark(text, compressed = true, sized = true, SHA3256 = true)
                     else -> {
-                        status.addEvent(UnsupportedInnamarkError(innamark.getSource()))
+                        status.addEvent(UnsupportedInnamarkError(innamarkTag.getSource()))
                         return status.into<_>()
                     }
                 }
@@ -228,33 +228,33 @@ class TextWatermark private constructor(
      *  - [CRC32]
      *  - [SHA3256].
      */
-    override fun finish(): Innamark {
+    override fun finish(): InnamarkTag {
         val content = text.encodeToByteArray().asList()
 
         return if (compressed && sized && SHA3256) {
-            CompressedSizedSHA3256Innamark.new(content)
+            CompressedSizedSHA3256InnamarkTag.new(content)
         } else if (compressed && SHA3256) {
-            CompressedSHA3256Innamark.new(content)
+            CompressedSHA3256InnamarkTag.new(content)
         } else if (sized && SHA3256) {
-            SizedSHA3256Innamark.new(content)
+            SizedSHA3256InnamarkTag.new(content)
         } else if (SHA3256) {
-            SHA3256Innamark.new(content)
+            SHA3256InnamarkTag.new(content)
         } else if (compressed && sized && CRC32) {
-            CompressedSizedCRC32Innamark.new(content)
+            CompressedSizedCRC32InnamarkTag.new(content)
         } else if (compressed && CRC32) {
-            CompressedCRC32Innamark.new(content)
+            CompressedCRC32InnamarkTag.new(content)
         } else if (sized && CRC32) {
-            SizedCRC32Innamark.new(content)
+            SizedCRC32InnamarkTag.new(content)
         } else if (CRC32) {
-            CRC32Innamark.new(content)
+            CRC32InnamarkTag.new(content)
         } else if (compressed && sized) {
-            CompressedSizedInnamark.new(content)
+            CompressedSizedInnamarkTag.new(content)
         } else if (compressed) {
-            CompressedRawInnamark.new(content)
+            CompressedRawInnamarkTag.new(content)
         } else if (sized) {
-            SizedInnamark.new(content)
+            SizedInnamarkTag.new(content)
         } else {
-            RawInnamark.new(content)
+            RawInnamarkTag.new(content)
         }
     }
 
@@ -314,7 +314,7 @@ class TextWatermark private constructor(
 }
 
 @JvmName("intoTextWatermarks")
-fun Result<List<Innamark>>.toTextWatermarks(
+fun Result<List<InnamarkTag>>.toTextWatermarks(
     errorOnInvalidUTF8: Boolean = false,
     source: String = "toTextWatermarks",
 ): Result<List<TextWatermark>> {

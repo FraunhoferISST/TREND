@@ -6,26 +6,26 @@
  */
 package integrationTest.watermarks
 
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkInterface
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagInterface
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.memberProperties
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class TrendmarkIntegrationTestJvm {
+class InnamarkIntegrationTestJvm {
     @Test
     fun trendmark_tags_consistentTags() {
         /*
          * This test is designed to verify that all variants of Trendmark are using a unique tag.
          * Otherwise, it is not guaranteed that Trendmarks can be parsed correctly.
          */
-        check(InnamarkInterface.TAG_SIZE == 1) {
+        check(InnamarkTagInterface.TAG_SIZE == 1) {
             "Please update the test as the tag type has been modified."
         }
 
-        val classes = Innamark::class.sealedSubclasses // get all variants of Trendmark
+        val classes = InnamarkTag::class.sealedSubclasses // get all variants of Trendmark
         val usedTags = Array<Boolean>(256) { false }
 
         // Iterate over all variants, extract the used tag and verify that it was not used before

@@ -13,7 +13,7 @@ import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import de.fraunhofer.isst.innamark.watermarker.squashWatermarks
-import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -369,11 +369,11 @@ class TextWatermarker(
 
     /**
      * Counts the minimum number of insert positions needed in a text to insert the
-     * [innamarkBuilder]
+     * [innamarkTagBuilder]
      */
     @JsName("getMimimumInsertPositionsTrendmarkBuilder")
-    fun getMinimumInsertPositions(innamarkBuilder: InnamarkBuilder): Int =
-        getMinimumInsertPositions(innamarkBuilder.finish())
+    fun getMinimumInsertPositions(innamarkTagBuilder: InnamarkTagBuilder): Int =
+        getMinimumInsertPositions(innamarkTagBuilder.finish())
 
     /** Transforms a [watermark] into a separated watermark */
     private fun getSeparatedWatermark(watermark: List<Byte>): Sequence<Char> {

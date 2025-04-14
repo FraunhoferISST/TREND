@@ -11,9 +11,9 @@ import de.fraunhofer.isst.innamark.watermarker.SupportedFileType
 import de.fraunhofer.isst.innamark.watermarker.Watermarker
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
@@ -430,7 +430,7 @@ class WatermarkerTest {
     @Test
     fun textGetInnamarks_innamarkedString_success() {
         // Arrange
-        val expectedInnamarks = listOf(SizedInnamark.fromString(watermarkString))
+        val expectedInnamarks = listOf(SizedInnamarkTag.fromString(watermarkString))
 
         // Act
         val innamarks = watermarker.textGetInnamarks(textWithInnamarks)
@@ -443,7 +443,7 @@ class WatermarkerTest {
     @Test
     fun textGetInnamarks_watermarkedString_error() {
         // Arrange
-        val expectedError = Innamark.UnknownTagError(0x54u).into()
+        val expectedError = InnamarkTag.UnknownTagError(0x54u).into()
 
         // Act
         val innamarks = watermarker.textGetInnamarks(textWithWatermark)
@@ -457,14 +457,14 @@ class WatermarkerTest {
     @Test
     fun textGetInnamarks_watermarkedAndInnamarkedString_warning() {
         // Arrange
-        val unkownTagError = Innamark.UnknownTagError(0x54u)
+        val unkownTagError = InnamarkTag.UnknownTagError(0x54u)
         val expectedStatus = unkownTagError.into()
         expectedStatus.addEvent(unkownTagError)
         expectedStatus.addEvent(
-            Innamark.FailedInnamarkExtractionsWarning
+            InnamarkTag.FailedInnamarkExtractionsWarning
                 ("Watermarker.textGetInnamarks"),
         )
-        val expectedInnamarks = listOf(SizedInnamark.fromString(watermarkString))
+        val expectedInnamarks = listOf(SizedInnamarkTag.fromString(watermarkString))
 
         // Act
         val innamarks =
@@ -490,7 +490,7 @@ class WatermarkerTest {
                 squash = false,
                 singleWatermark = true,
             )
-        val expected = differentInnamarks.drop(1).dropLast(1).map { RawInnamark.fromString(it) }
+        val expected = differentInnamarks.drop(1).dropLast(1).map { RawInnamarkTag.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -508,7 +508,7 @@ class WatermarkerTest {
                 squash = true,
                 singleWatermark = true,
             )
-        val expected = differentInnamarks.drop(1).take(1).map { RawInnamark.fromString(it) }
+        val expected = differentInnamarks.drop(1).take(1).map { RawInnamarkTag.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -526,7 +526,7 @@ class WatermarkerTest {
                 squash = false,
                 singleWatermark = false,
             )
-        val expected = differentInnamarks.map { RawInnamark.fromString(it) }
+        val expected = differentInnamarks.map { RawInnamarkTag.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -544,7 +544,7 @@ class WatermarkerTest {
                 squash = true,
                 singleWatermark = false,
             )
-        val expected = differentInnamarks.distinct().map { RawInnamark.fromString(it) }
+        val expected = differentInnamarks.distinct().map { RawInnamarkTag.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -568,7 +568,7 @@ class WatermarkerTest {
     @Test
     fun textGetTextWatermarks_watermarkedString_error() {
         // Arrange
-        val expectedError = Innamark.UnknownTagError(0x54u).into()
+        val expectedError = InnamarkTag.UnknownTagError(0x54u).into()
 
         // Act
         val textWatermarks = watermarker.textGetTextWatermarks(textWithWatermark)
@@ -582,11 +582,11 @@ class WatermarkerTest {
     @Test
     fun textGetTextWatermarks_watermarkedAndInnamarkedString_warning() {
         // Arrange
-        val unknownTagError = Innamark.UnknownTagError(0x54u)
+        val unknownTagError = InnamarkTag.UnknownTagError(0x54u)
         val expectedStatus = unknownTagError.into()
         expectedStatus.addEvent(unknownTagError)
         expectedStatus.addEvent(
-            Innamark.FailedInnamarkExtractionsWarning("Watermarker.textGetTextWatermarks"),
+            InnamarkTag.FailedInnamarkExtractionsWarning("Watermarker.textGetTextWatermarks"),
         )
         val expectedTextWatermarks = listOf(TextWatermark.sized(watermarkString))
 

@@ -12,8 +12,8 @@ import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.innamark.watermarker.files.writeToFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
@@ -75,17 +75,17 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Adds a [innamarkBuilder] to [source] and writes changes to [target].
+     * Adds a [innamarkTagBuilder] to [source] and writes changes to [target].
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun addWatermark(
         source: String,
         target: String,
-        innamarkBuilder: InnamarkBuilder,
+        innamarkTagBuilder: InnamarkTagBuilder,
         fileType: String? = null,
     ): Status {
-        return addWatermark(source, target, innamarkBuilder.finish(), fileType)
+        return addWatermark(source, target, innamarkTagBuilder.finish(), fileType)
     }
 
     private fun <T : WatermarkableFile> addWatermarkDoWork(
@@ -210,23 +210,23 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all watermarks in [source] as Innamark.
+     * Returns all watermarks in [source] as InnamarkTag.
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
-     * When [validateAll] is true: All resulting Innamarks are validated to check for errors.
+     * When [validateAll] is true: All resulting InnamarkTags are validated to check for errors.
      *
-     * Returns a warning if some watermarks could not be converted to Innamarks.
-     * Returns an error if no watermark could be converted to a Innamark.
+     * Returns a warning if some watermarks could not be converted to InnamarksTag.
+     * Returns an error if no watermark could be converted to a InnamarkTag.
      */
-    fun getInnamarks(
+    fun getInnamarkTags(
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
         singleWatermark: Boolean = true,
         validateAll: Boolean = true,
-    ): Result<List<Innamark>> {
+    ): Result<List<InnamarkTag>> {
         val result = getWatermarks(source, fileType, squash, singleWatermark).toInnamarks(SOURCE)
 
         if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {

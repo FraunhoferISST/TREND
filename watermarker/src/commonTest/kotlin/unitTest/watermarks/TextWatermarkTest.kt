@@ -6,18 +6,18 @@
  */
 package unitTest.watermarks
 
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedRawInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSHA3256Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedSHA3256Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SHA3256Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256Innamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedCRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedRawInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSHA3256InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedCRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedSHA3256InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SHA3256InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedCRC32InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256InnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,7 +32,7 @@ class TextWatermarkTest {
     @Test
     fun new_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = RawInnamark.new(textBytes)
+        val expectedTrendmark = RawInnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.new(text)
@@ -53,7 +53,7 @@ class TextWatermarkTest {
     @Test
     fun raw_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = RawInnamark.new(textBytes)
+        val expectedTrendmark = RawInnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.raw(text)
@@ -74,7 +74,7 @@ class TextWatermarkTest {
     @Test
     fun compressed_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedRawInnamark.new(textBytes)
+        val expectedTrendmark = CompressedRawInnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressed(text)
@@ -97,7 +97,7 @@ class TextWatermarkTest {
         // Arrange
         val customText = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
         val customTextBytes = customText.encodeToByteArray().asList()
-        val expectedTrendmark = CompressedRawInnamark.new(customTextBytes)
+        val expectedTrendmark = CompressedRawInnamarkTag.new(customTextBytes)
 
         // Act
         val textWatermark = TextWatermark.small(customText)
@@ -120,7 +120,7 @@ class TextWatermarkTest {
         // Arrange
         val customText = "Lorem"
         val customTextBytes = customText.encodeToByteArray().asList()
-        val expectedTrendmark = RawInnamark.new(customTextBytes)
+        val expectedTrendmark = RawInnamarkTag.new(customTextBytes)
 
         // Act
         val textWatermark = TextWatermark.small(customText)
@@ -141,7 +141,7 @@ class TextWatermarkTest {
     @Test
     fun sized_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = SizedInnamark.new(textBytes)
+        val expectedTrendmark = SizedInnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.sized(text)
@@ -163,7 +163,7 @@ class TextWatermarkTest {
     @Suppress("ktlint:standard:function-naming")
     fun CRC32_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CRC32Innamark.new(textBytes)
+        val expectedTrendmark = CRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.CRC32(text)
@@ -185,7 +185,7 @@ class TextWatermarkTest {
     @Suppress("ktlint:standard:function-naming")
     fun SHA3256_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = SHA3256Innamark.new(textBytes)
+        val expectedTrendmark = SHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.SHA3256(text)
@@ -206,7 +206,7 @@ class TextWatermarkTest {
     @Test
     fun compressedSized_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedSizedInnamark.new(textBytes)
+        val expectedTrendmark = CompressedSizedInnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressedSized(text)
@@ -227,7 +227,7 @@ class TextWatermarkTest {
     @Test
     fun compressedCRC32_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedCRC32Innamark.new(textBytes)
+        val expectedTrendmark = CompressedCRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressedCRC32(text)
@@ -248,7 +248,7 @@ class TextWatermarkTest {
     @Test
     fun compressedSHA3256_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedSHA3256Innamark.new(textBytes)
+        val expectedTrendmark = CompressedSHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressedSHA3256(text)
@@ -269,7 +269,7 @@ class TextWatermarkTest {
     @Test
     fun sizedCRC32_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = SizedCRC32Innamark.new(textBytes)
+        val expectedTrendmark = SizedCRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.sizedCRC32(text)
@@ -290,7 +290,7 @@ class TextWatermarkTest {
     @Test
     fun sizedSHA3256_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = SizedSHA3256Innamark.new(textBytes)
+        val expectedTrendmark = SizedSHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.sizedSHA3256(text)
@@ -311,7 +311,7 @@ class TextWatermarkTest {
     @Test
     fun compressedSizedCRC32_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedSizedCRC32Innamark.new(textBytes)
+        val expectedTrendmark = CompressedSizedCRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressedSizedCRC32(text)
@@ -332,7 +332,7 @@ class TextWatermarkTest {
     @Test
     fun compressedSizedSHA3256_loremIpsum_success() {
         // Arrange
-        val expectedTrendmark = CompressedSizedSHA3256Innamark.new(textBytes)
+        val expectedTrendmark = CompressedSizedSHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermark = TextWatermark.compressedSizedSHA3256(text)
@@ -353,7 +353,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_RawTrendmark_success() {
         // Arrange
-        val initialTrendmark = RawInnamark.new(textBytes)
+        val initialTrendmark = RawInnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -374,7 +374,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_SizedTrendmark_success() {
         // Arrange
-        val initialTrendmark = SizedInnamark.new(textBytes)
+        val initialTrendmark = SizedInnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -395,7 +395,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_CompressedSizedTrendmark_success() {
         // Arrange
-        val initialTrendmark = CompressedSizedInnamark.new(textBytes)
+        val initialTrendmark = CompressedSizedInnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -416,7 +416,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_CRC32Trendmark_success() {
         // Arrange
-        val initialTrendmark = CRC32Innamark.new(textBytes)
+        val initialTrendmark = CRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -437,7 +437,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_SizedCRC32Trendmark_success() {
         // Arrange
-        val initialTrendmark = SizedCRC32Innamark.new(textBytes)
+        val initialTrendmark = SizedCRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -458,7 +458,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_CompressedCRC32Trendmark_success() {
         // Arrange
-        val initialTrendmark = CompressedCRC32Innamark.new(textBytes)
+        val initialTrendmark = CompressedCRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -479,7 +479,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_CompressedSizedCRC32Trendmark_success() {
         // Arrange
-        val initialTrendmark = CompressedSizedCRC32Innamark.new(textBytes)
+        val initialTrendmark = CompressedSizedCRC32InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -500,7 +500,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_SHA3256Trendmark_success() {
         // Arrange
-        val initialTrendmark = SHA3256Innamark.new(textBytes)
+        val initialTrendmark = SHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -521,7 +521,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_SizedSHA3256Trendmark_success() {
         // Arrange
-        val initialTrendmark = SizedSHA3256Innamark.new(textBytes)
+        val initialTrendmark = SizedSHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -542,7 +542,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_CompressedSHA3256Trendmark_success() {
         // Arrange
-        val initialTrendmark = CompressedSHA3256Innamark.new(textBytes)
+        val initialTrendmark = CompressedSHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
@@ -563,7 +563,7 @@ class TextWatermarkTest {
     @Test
     fun fromTrendmark_CompressedSizedSHA3256Trendmark_success() {
         // Arrange
-        val initialTrendmark = CompressedSizedSHA3256Innamark.new(textBytes)
+        val initialTrendmark = CompressedSizedSHA3256InnamarkTag.new(textBytes)
 
         // Act
         val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)

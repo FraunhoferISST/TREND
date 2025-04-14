@@ -6,7 +6,7 @@
  */
 package unitTest.watermarks
 
-import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -76,9 +76,9 @@ class WatermarkTest {
     @Test
     fun mostFrequent_trendmark_success() {
         // Arrange
-        val firstTrendmark = RawInnamark.fromString("test")
-        val secondTrendmark = RawInnamark.fromString("okay")
-        val thirdTrendmark = RawInnamark.fromString("yeah")
+        val firstTrendmark = RawInnamarkTag.fromString("test")
+        val secondTrendmark = RawInnamarkTag.fromString("okay")
+        val thirdTrendmark = RawInnamarkTag.fromString("yeah")
         val watermarks =
             listOf(
                 firstTrendmark,

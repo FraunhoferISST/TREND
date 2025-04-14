@@ -12,8 +12,8 @@ import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.ZipWatermarker
 import de.fraunhofer.isst.innamark.watermarker.files.TextFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
@@ -130,13 +130,13 @@ open class Watermarker {
         return textAddWatermark(text, watermarkBytes)
     }
 
-    /** Watermarks string [text] with [innamarkBuilder] */
+    /** Watermarks string [text] with [innamarkTagBuilder] */
     @JsName("textAddInnamarkBuilder")
     fun textAddWatermark(
         text: String,
-        innamarkBuilder: InnamarkBuilder,
+        innamarkTagBuilder: InnamarkTagBuilder,
     ): Result<String> {
-        return textAddWatermark(text, innamarkBuilder.finish())
+        return textAddWatermark(text, innamarkTagBuilder.finish())
     }
 
     /** Checks if [text] contains a watermark */
@@ -193,7 +193,7 @@ open class Watermarker {
         squash: Boolean = true,
         singleWatermark: Boolean = true,
         validateAll: Boolean = true,
-    ): Result<List<Innamark>> {
+    ): Result<List<InnamarkTag>> {
         val result =
             textGetWatermarks(text, squash, singleWatermark)
                 .toInnamarks("$SOURCE.textGetInnamarks")
