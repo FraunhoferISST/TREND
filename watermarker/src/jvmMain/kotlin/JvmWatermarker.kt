@@ -12,9 +12,9 @@ import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
 import de.fraunhofer.isst.innamark.watermarker.files.writeToFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
-import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks

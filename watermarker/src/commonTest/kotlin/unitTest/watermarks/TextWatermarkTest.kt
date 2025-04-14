@@ -11,13 +11,13 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedCRC32Innamar
 import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedRawInnamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSHA3256Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedSHA3256Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedInnamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.CompressedSizedSHA3256Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SHA3256Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedCRC32Innamark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import kotlin.test.Test
 import kotlin.test.assertEquals

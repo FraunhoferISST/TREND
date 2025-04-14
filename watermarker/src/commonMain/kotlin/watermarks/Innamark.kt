@@ -19,7 +19,6 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark.IncompleteTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark.InvalidTagError
 import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkInterface.Companion.TAG_SIZE
 import org.kotlincrypto.hash.sha3.SHA3_256
-import kotlin.collections.ArrayList
 import kotlin.js.JsExport
 import kotlin.jvm.JvmStatic
 
@@ -582,14 +581,14 @@ fun Result<List<Watermark>>.toInnamarks(source: String = "Innamark"): Result<Lis
             value to status
         }
 
-    val Innamarks =
+    val innamarks =
         watermarks.mapNotNull { watermark ->
-            val Innamark = Innamark.fromWatermark(watermark)
-            status.appendStatus(Innamark.status)
-            Innamark.value
+            val innamark = Innamark.fromWatermark(watermark)
+            status.appendStatus(innamark.status)
+            innamark.value
         }
 
-    if (status.isError && Innamarks.isNotEmpty()) {
+    if (status.isError && innamarks.isNotEmpty()) {
         status.addEvent(
             FailedInnamarkExtractionsWarning(source),
             overrideSeverity = true,
@@ -599,7 +598,7 @@ fun Result<List<Watermark>>.toInnamarks(source: String = "Innamark"): Result<Lis
     return if (status.isError) {
         status.into()
     } else {
-        status.into(Innamarks)
+        status.into(innamarks)
     }
 }
 

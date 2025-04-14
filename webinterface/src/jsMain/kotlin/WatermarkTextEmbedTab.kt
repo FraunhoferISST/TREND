@@ -7,8 +7,8 @@
 
 import de.fraunhofer.isst.innamark.watermarker.Watermarker
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import io.kvision.core.FontWeight
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions

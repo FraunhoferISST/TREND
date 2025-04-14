@@ -11,11 +11,11 @@ import de.fraunhofer.isst.innamark.watermarker.SupportedFileType
 import de.fraunhofer.isst.innamark.watermarker.Watermarker
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
-import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import platform
 import kotlin.test.Test
@@ -460,7 +460,10 @@ class WatermarkerTest {
         val unkownTagError = Innamark.UnknownTagError(0x54u)
         val expectedStatus = unkownTagError.into()
         expectedStatus.addEvent(unkownTagError)
-        expectedStatus.addEvent(Innamark.FailedInnamarkExtractionsWarning("Watermarker.textGetInnamarks"))
+        expectedStatus.addEvent(
+            Innamark.FailedInnamarkExtractionsWarning
+                ("Watermarker.textGetInnamarks"),
+        )
         val expectedInnamarks = listOf(SizedInnamark.fromString(watermarkString))
 
         // Act
