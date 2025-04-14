@@ -5,11 +5,11 @@
  * that can be found in the LICENSE file.
  */
 
-import de.fraunhofer.isst.trend.watermarker.JvmWatermarker
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.JvmWatermarker
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.ExperimentalCli

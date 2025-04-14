@@ -35,7 +35,7 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 }
 
 version = "0.1.0-SNAPSHOT"
-group = "de.fraunhofer.isst.trend"
+group = "de.fraunhofer.isst.innamark"
 
 repositories {
     mavenCentral()
@@ -80,7 +80,7 @@ kotlin {
         implementation("io.kvision:kvision-state:$kvisionVersion")
         implementation("io.kvision:kvision-state-flow:$kvisionVersion")
         implementation("io.kvision:kvision-toastify:$kvisionVersion")
-        implementation("de.fraunhofer.isst.trend:watermarker:0.1.0-SNAPSHOT")
+        implementation("de.fraunhofer.isst.innamark:watermarker:0.1.0-SNAPSHOT")
     }
     sourceSets["jsTest"].dependencies {
         implementation(kotlin("test-js"))

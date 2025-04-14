@@ -11,7 +11,7 @@ plugins {
     application
 }
 
-group = "de.fraunhofer.isst.trend"
+group = "de.fraunhofer.isst.innamark"
 version = "0.1.0-SNAPSHOT"
 
 repositories {
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.fraunhofer.isst.trend:watermarker:0.1.0-SNAPSHOT")
+    implementation("de.fraunhofer.isst.innamark:watermarker-jvm:0.1.0-SNAPSHOT")
 
     implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
 

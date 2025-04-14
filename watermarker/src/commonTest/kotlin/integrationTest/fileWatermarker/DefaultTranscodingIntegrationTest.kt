@@ -6,7 +6,7 @@
  */
 package integrationTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

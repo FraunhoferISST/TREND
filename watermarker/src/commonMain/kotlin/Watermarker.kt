@@ -4,20 +4,20 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker
+package de.fraunhofer.isst.innamark.watermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.FileWatermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.ZipWatermarker
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.FileWatermarker
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.ZipWatermarker
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmStatic
@@ -130,13 +130,13 @@ open class Watermarker {
         return textAddWatermark(text, watermarkBytes)
     }
 
-    /** Watermarks string [text] with [trendmarkBuilder] */
-    @JsName("textAddTrendmarkBuilder")
+    /** Watermarks string [text] with [innamarkBuilder] */
+    @JsName("textAddInnamarkBuilder")
     fun textAddWatermark(
         text: String,
-        trendmarkBuilder: TrendmarkBuilder,
+        innamarkBuilder: InnamarkBuilder,
     ): Result<String> {
-        return textAddWatermark(text, trendmarkBuilder.finish())
+        return textAddWatermark(text, innamarkBuilder.finish())
     }
 
     /** Checks if [text] contains a watermark */
@@ -179,27 +179,27 @@ open class Watermarker {
     }
 
     /**
-     * Returns all watermarks in [text] as Trendmarks.
+     * Returns all watermarks in [text] as Innamarks.
      *
      * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
-     * When [validateAll] is true: All resulting Trendmarks are validated to check for errors.
+     * When [validateAll] is true: All resulting Innamarks are validated to check for errors.
      *
-     * Returns a warning if some watermarks could not be converted to Trendmarks.
-     * Returns an error if no watermark could be converted to a Trendmark.
+     * Returns a warning if some watermarks could not be converted to Innamarks.
+     * Returns an error if no watermark could be converted to a Innamark.
      */
-    fun textGetTrendmarks(
+    fun textGetInnamarks(
         text: String,
         squash: Boolean = true,
         singleWatermark: Boolean = true,
         validateAll: Boolean = true,
-    ): Result<List<Trendmark>> {
+    ): Result<List<Innamark>> {
         val result =
             textGetWatermarks(text, squash, singleWatermark)
-                .toTrendmarks("$SOURCE.textGetTrendmarks")
+                .toInnamarks("$SOURCE.textGetInnamarks")
         if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {
-            for (trendmark in result.value) {
-                val validationStatus = trendmark.validate()
+            for (innamark in result.value) {
+                val validationStatus = innamark.validate()
                 result.appendStatus(validationStatus)
             }
         }
@@ -214,11 +214,11 @@ open class Watermarker {
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
      *                           is false: invalid bytes sequences are replace with the char �.
      *
-     * Returns a warning if some watermarks could not be converted to Trendmarks.
-     * Returns an error if no watermark could be converted to a Trendmark.
+     * Returns a warning if some watermarks could not be converted to Innamarks.
+     * Returns an error if no watermark could be converted to a Innamark.
      *
-     * Returns a warning if some Trendmarks could not be converted to TextWatermarks.
-     * Returns an error if no Trendmark could be converted to a TextWatermark.
+     * Returns a warning if some Innamarks could not be converted to TextWatermarks.
+     * Returns an error if no Innamark could be converted to a TextWatermark.
      */
     fun textGetTextWatermarks(
         text: String,

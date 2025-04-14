@@ -14,7 +14,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
 
-group = "de.fraunhofer.isst.trend"
+group = "de.fraunhofer.isst.innamark"
 version = "0.1.0-SNAPSHOT"
 
 repositories {

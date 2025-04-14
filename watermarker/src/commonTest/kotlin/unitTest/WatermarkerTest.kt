@@ -7,17 +7,16 @@
 package unitTest
 
 import Platform
-import de.fraunhofer.isst.trend.watermarker.SupportedFileType
-import de.fraunhofer.isst.trend.watermarker.Watermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.watermarks.RawTrendmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.SizedTrendmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
-import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark.FailedTrendmarkExtractionsWarning
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.SupportedFileType
+import de.fraunhofer.isst.innamark.watermarker.Watermarker
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.watermarks.RawInnamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Innamark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import platform
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -57,15 +56,15 @@ class WatermarkerTest {
             "e. Cursus sit amet dictum sit amet justo donec enim diam. Ultricies lacus sed turpis" +
             " tincidunt id aliquet risus feugiat in. Risus commodo viverra maecenas accumsan"
 
-    private val textWithTrendmarks =
+    private val textWithInnamarks =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
             "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
             "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
             "sanctus est Lorem ipsum dolor sit amet."
 
-    private val differentTrendmarks = listOf("Test", "Okay", "Okay", "Yeah")
+    private val differentInnamarks = listOf("Test", "Okay", "Okay", "Yeah")
 
-    private val textWithDifferentRawTrendmarks =
+    private val textWithDifferentRawInnamarks =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempo" +
             "r invidunt ut labore et dolore magna. Lorem ipsum dolor sitLorem ipsum dolor sit " +
             "amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labo" +
@@ -86,21 +85,21 @@ class WatermarkerTest {
             ". Lorem ipsum dolor sitLorem ipsum dolor sit amet, consetetur sadipscing elitr, s" +
             "ed diam nonumy eirmod tempor invidunt ut labore et dolore magna. Lorem ipsum dolo" +
             "r sit"
-    private val textWithWatermarksAndTrendmarks =
+    private val textWithWatermarksAndInnamarks =
         textWithWatermark +
             DefaultTranscoding.SEPARATOR_CHAR +
-            textWithTrendmarks
+            textWithInnamarks
 
-    private val textWithInvalidUTF8Trendmark =
+    private val textWithInvalidUTF8Innamark =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
             "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
             "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
             "sanctus est Lorem ipsum dolor sit amet."
 
-    private val textWithInvalidandValidUTF8Trendmarks =
-        textWithInvalidUTF8Trendmark +
+    private val textWithInvalidandValidUTF8Innamarks =
+        textWithInvalidUTF8Innamark +
             DefaultTranscoding.SEPARATOR_CHAR +
-            textWithTrendmarks
+            textWithInnamarks
 
     @Test
     fun textAddWatermark_successfulAddition_successAndWatermarkedString() {
@@ -429,66 +428,66 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTrendmarks_trendmarkedString_success() {
+    fun textGetInnamarks_innamarkedString_success() {
         // Arrange
-        val expectedTrendmarks = listOf(SizedTrendmark.fromString(watermarkString))
+        val expectedInnamarks = listOf(SizedInnamark.fromString(watermarkString))
 
         // Act
-        val trendmarks = watermarker.textGetTrendmarks(textWithTrendmarks)
+        val innamarks = watermarker.textGetInnamarks(textWithInnamarks)
 
         // Assert
-        assertTrue(trendmarks.isSuccess)
-        assertEquals(expectedTrendmarks, trendmarks.value)
+        assertTrue(innamarks.isSuccess)
+        assertEquals(expectedInnamarks, innamarks.value)
     }
 
     @Test
-    fun textGetTrendmarks_watermarkedString_error() {
+    fun textGetInnamarks_watermarkedString_error() {
         // Arrange
-        val expectedError = Trendmark.UnknownTagError(0x54u).into()
+        val expectedError = Innamark.UnknownTagError(0x54u).into()
 
         // Act
-        val trendmarks = watermarker.textGetTrendmarks(textWithWatermark)
+        val innamarks = watermarker.textGetInnamarks(textWithWatermark)
 
         // Assert
-        assertTrue(trendmarks.isError)
-        assertEquals(expectedError.toString(), trendmarks.toString())
-        assertNull(trendmarks.value)
+        assertTrue(innamarks.isError)
+        assertEquals(expectedError.toString(), innamarks.toString())
+        assertNull(innamarks.value)
     }
 
     @Test
-    fun textGetTrendmarks_watermarkedAndTrendmarkedString_warning() {
+    fun textGetInnamarks_watermarkedAndInnamarkedString_warning() {
         // Arrange
-        val unkownTagError = Trendmark.UnknownTagError(0x54u)
+        val unkownTagError = Innamark.UnknownTagError(0x54u)
         val expectedStatus = unkownTagError.into()
         expectedStatus.addEvent(unkownTagError)
-        expectedStatus.addEvent(FailedTrendmarkExtractionsWarning("Watermarker.textGetTrendmarks"))
-        val expectedTrendmarks = listOf(SizedTrendmark.fromString(watermarkString))
+        expectedStatus.addEvent(Innamark.FailedInnamarkExtractionsWarning("Watermarker.textGetInnamarks"))
+        val expectedInnamarks = listOf(SizedInnamark.fromString(watermarkString))
 
         // Act
-        val trendmarks =
-            watermarker.textGetTrendmarks(
-                textWithWatermarksAndTrendmarks,
+        val innamarks =
+            watermarker.textGetInnamarks(
+                textWithWatermarksAndInnamarks,
                 singleWatermark = false,
             )
 
         // Assert
-        assertTrue(trendmarks.isWarning)
-        assertEquals(expectedStatus.toString(), trendmarks.toString())
-        assertEquals(expectedTrendmarks, trendmarks.value)
+        assertTrue(innamarks.isWarning)
+        assertEquals(expectedStatus.toString(), innamarks.toString())
+        assertEquals(expectedInnamarks, innamarks.value)
     }
 
     @Test
-    fun textGetTrendmarks_SingleWatermark_Success() {
+    fun textGetInnamarks_SingleWatermark_Success() {
         // Arrange
 
         // Act
         val result =
-            watermarker.textGetTrendmarks(
-                textWithDifferentRawTrendmarks,
+            watermarker.textGetInnamarks(
+                textWithDifferentRawInnamarks,
                 squash = false,
                 singleWatermark = true,
             )
-        val expected = differentTrendmarks.drop(1).dropLast(1).map { RawTrendmark.fromString(it) }
+        val expected = differentInnamarks.drop(1).dropLast(1).map { RawInnamark.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -496,17 +495,17 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTrendmarks_SingleWatermark_SuccessAndSquash() {
+    fun textGetInnamarks_SingleWatermark_SuccessAndSquash() {
         // Arrange
 
         // Act
         val result =
-            watermarker.textGetTrendmarks(
-                textWithDifferentRawTrendmarks,
+            watermarker.textGetInnamarks(
+                textWithDifferentRawInnamarks,
                 squash = true,
                 singleWatermark = true,
             )
-        val expected = differentTrendmarks.drop(1).take(1).map { RawTrendmark.fromString(it) }
+        val expected = differentInnamarks.drop(1).take(1).map { RawInnamark.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -514,17 +513,17 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTrendmarks_MultipleWatermark_Success() {
+    fun textGetInnamarks_MultipleWatermark_Success() {
         // Arrange
 
         // Act
         val result =
-            watermarker.textGetTrendmarks(
-                textWithDifferentRawTrendmarks,
+            watermarker.textGetInnamarks(
+                textWithDifferentRawInnamarks,
                 squash = false,
                 singleWatermark = false,
             )
-        val expected = differentTrendmarks.map { RawTrendmark.fromString(it) }
+        val expected = differentInnamarks.map { RawInnamark.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -532,17 +531,17 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTrendmarks_MultipleWatermark_SuccessAndSquash() {
+    fun textGetInnamarks_MultipleWatermark_SuccessAndSquash() {
         // Arrange
 
         // Act
         val result =
-            watermarker.textGetTrendmarks(
-                textWithDifferentRawTrendmarks,
+            watermarker.textGetInnamarks(
+                textWithDifferentRawInnamarks,
                 squash = true,
                 singleWatermark = false,
             )
-        val expected = differentTrendmarks.distinct().map { RawTrendmark.fromString(it) }
+        val expected = differentInnamarks.distinct().map { RawInnamark.fromString(it) }
 
         // Assert
         assertTrue(result.isSuccess)
@@ -550,13 +549,13 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTextWatermarks_trendmarkedString_success() {
+    fun textGetTextWatermarks_innamarkedString_success() {
         // Arrange
         val expectedTextWatermark = TextWatermark.sized(watermarkString)
         val expectedTextWatermarks = listOf(expectedTextWatermark)
 
         // Act
-        val textWatermarks = watermarker.textGetTextWatermarks(textWithTrendmarks)
+        val textWatermarks = watermarker.textGetTextWatermarks(textWithInnamarks)
 
         // Assert
         assertTrue(textWatermarks.isSuccess)
@@ -566,7 +565,7 @@ class WatermarkerTest {
     @Test
     fun textGetTextWatermarks_watermarkedString_error() {
         // Arrange
-        val expectedError = Trendmark.UnknownTagError(0x54u).into()
+        val expectedError = Innamark.UnknownTagError(0x54u).into()
 
         // Act
         val textWatermarks = watermarker.textGetTextWatermarks(textWithWatermark)
@@ -578,20 +577,20 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTextWatermarks_watermarkedAndTrendmarkedString_warning() {
+    fun textGetTextWatermarks_watermarkedAndInnamarkedString_warning() {
         // Arrange
-        val unknownTagError = Trendmark.UnknownTagError(0x54u)
+        val unknownTagError = Innamark.UnknownTagError(0x54u)
         val expectedStatus = unknownTagError.into()
         expectedStatus.addEvent(unknownTagError)
         expectedStatus.addEvent(
-            FailedTrendmarkExtractionsWarning("Watermarker.textGetTextWatermarks"),
+            Innamark.FailedInnamarkExtractionsWarning("Watermarker.textGetTextWatermarks"),
         )
         val expectedTextWatermarks = listOf(TextWatermark.sized(watermarkString))
 
         // Act
         val textWatermarks =
             watermarker.textGetTextWatermarks(
-                textWithWatermarksAndTrendmarks,
+                textWithWatermarksAndInnamarks,
                 singleWatermark = false,
             )
 
@@ -614,7 +613,7 @@ class WatermarkerTest {
         // Act
         val textWatermarks =
             watermarker.textGetTextWatermarks(
-                textWithInvalidUTF8Trendmark,
+                textWithInvalidUTF8Innamark,
                 errorOnInvalidUTF8 = true,
             )
 
@@ -625,7 +624,7 @@ class WatermarkerTest {
     }
 
     @Test
-    fun textGetTextWatermarks_invalidAndValidUTF8Trendmarks_warning() {
+    fun textGetTextWatermarks_invalidAndValidUTF8Innamarks_warning() {
         // Arrange
         val expectedExceptionMessage =
             when (platform) {
@@ -646,7 +645,7 @@ class WatermarkerTest {
         // Act
         val textWatermarks =
             watermarker.textGetTextWatermarks(
-                textWithInvalidandValidUTF8Trendmarks,
+                textWithInvalidandValidUTF8Innamarks,
                 singleWatermark = false,
                 errorOnInvalidUTF8 = true,
             )

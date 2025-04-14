@@ -7,10 +7,10 @@
 package unitTest.files
 
 import areFilesEqual
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
-import de.fraunhofer.isst.trend.watermarker.files.fromFile
-import de.fraunhofer.isst.trend.watermarker.files.writeToFile
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
+import de.fraunhofer.isst.innamark.watermarker.files.fromFile
+import de.fraunhofer.isst.innamark.watermarker.files.writeToFile
 import openTextFile
 import java.io.File
 import kotlin.test.Test

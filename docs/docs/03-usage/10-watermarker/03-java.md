@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.fraunhofer.isst.trend:watermarker:0.1.0-SNAPSHOT")
+    implementation("de.fraunhofer.isst.innamark:watermarker:0.1.0-SNAPSHOT")
 }
 
 java {
@@ -62,10 +62,10 @@ for more details).*
 (see [Watermarker](../#extraction-customization) for more details)*
 
 ```java title="src/main/java/Main.java" showLineNumbers
-import de.fraunhofer.isst.trend.watermarker.Watermarker;
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result;
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status;
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark;
+import de.fraunhofer.isst.innamark.watermarker.Watermarker;
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result;
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status;
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark;
 
 import java.util.List;
 
@@ -75,7 +75,7 @@ public class Main {
         // *********************
         // ***** INSERTION *****
         // *********************
-        
+
         // the coverText to be enhanced with a watermark
         String coverText =
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " +
@@ -97,7 +97,7 @@ public class Main {
         System.out.println("watermarked text:");
         System.out.println(watermarkedText);
         System.out.println();
-        
+
         // **********************
         // ***** Extraction *****
         // **********************
@@ -105,13 +105,13 @@ public class Main {
         // extract the watermark from the watermarked text
         List<TextWatermark> extractedWatermarks =
                 unwrap(watermarker.textGetTextWatermarks(watermarkedText, true, true, false));
-        assert(extractedWatermarks.size() == 1);
+        assert (extractedWatermarks.size() == 1);
         TextWatermark extractedWatermark = extractedWatermarks.get(0);
 
         // print the watermark text
         System.out.println("Found a watermark in the text:");
         System.out.println(extractedWatermark.getText());
-    
+
         // *******************************
         // ***** Multiple watermarks *****
         // *******************************
@@ -138,7 +138,7 @@ public class Main {
 
         // print the watermarks found
         extractedMultipleWatermarks.forEach(System.out::println);
-    
+
     }
 
     /**

@@ -5,13 +5,13 @@
  * that can be found in the LICENSE file.
  */
 
-import de.fraunhofer.isst.trend.watermarker.Watermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
-import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
+import de.fraunhofer.isst.innamark.watermarker.Watermarker
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
+import de.fraunhofer.isst.innamark.watermarker.helper.toUnicodeRepresentation
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import io.kvision.collapse.collapse
 import io.kvision.collapse.forCollapse
 import io.kvision.core.Placement

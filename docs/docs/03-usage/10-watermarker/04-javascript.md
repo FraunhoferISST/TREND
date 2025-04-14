@@ -33,7 +33,7 @@ In order to use this library in plain JavaScript, follow these steps:
    However, the actual watermarker object is behind the package path and you might want to reassign
    the watermarker variable to get rid of the long path like this:
    ```js
-   watermarker = watermarker.de.fraunhofer.isst.trend.watermarker;
+   watermarker = watermarker.de.fraunhofer.isst.innamark.watermarker;
    ```
 4. Now you are ready to use the watermarker in plain JS. An example HTML file can be found
 [in the repositories' examples](https://github.com/FraunhoferISST/TREND/blob/main/samples/plain_js/plain_js_minimal_example.html).
@@ -62,7 +62,7 @@ In order to use this library in JavaScript modules, follow these steps:
    However, the actual watermarker object is behind the package path and you might want to reassign
    the watermarker variable to get rid of the long path like this:
    ```Javascript
-   watermarker = watermarker.de.fraunhofer.isst.trend.watermarker;
+   watermarker = watermarker.de.fraunhofer.isst.innamark.watermarker;
    ```
    *Note that imports in ESM are implicitly constant.*
 4. Now you are ready to use the watermarker in your module. An example node script can be found

@@ -4,11 +4,11 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker.watermarks
+package de.fraunhofer.isst.innamark.watermarker.watermarks
 
-import de.fraunhofer.isst.trend.watermarker.helper.toHexString
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.helper.toHexString
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import kotlin.js.JsExport
 import kotlin.jvm.JvmStatic
 

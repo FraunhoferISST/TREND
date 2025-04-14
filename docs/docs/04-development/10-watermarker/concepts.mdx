@@ -30,7 +30,7 @@ In some cases, different code is required for different platforms. In such cases
 feature of Kotlin is used, or some features (like operating on files) are only available on some
 platforms. Because of this, code in the same package can be in different paths, depending on the
 compilation target. For this reason the following refers to packages instead of paths.
-- *Example*: when compiling for JVM, the package `de.fraunhofer.isst.trend.watermarker.files`
+- *Example*: when compiling for JVM, the package `de.fraunhofer.isst.innamark.watermarker.files`
 contains `*.kt` files from `src/commonMain/kotlin/files` and `src/jvmMain/kotlin/files`.
 
 ### Code Base
@@ -60,7 +60,7 @@ should not throw any exceptions, instead functions which can fail should return 
 ---
 
 ## Insert and Extract Watermarks
-The code in the package `de.fraunhofer.isst.trend.watermarker.files` is responsible to parse and
+The code in the package `de.fraunhofer.isst.innamark.watermarker.files` is responsible to parse and
 generate supported file types in memory:
  - all classes adding support for a file type must implement the interface
  [`WatermarkableFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/WatermarkableFile.kt)
@@ -74,7 +74,7 @@ generate supported file types in memory:
     [`TextWatermarkerBuilder`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L425)
     (from a different package but the concept is the same)
 
-The code in the package `de.fraunhofer.isst.trend.watermarker.fileWatermarker` is responsible to
+The code in the package `de.fraunhofer.isst.innamark.watermarker.fileWatermarker` is responsible to
 insert and extract watermarks into
 [`WatermarkableFile`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/files/WatermarkableFile.kt)s:
  - for each instance of
@@ -96,7 +96,7 @@ insert and extract watermarks into
     [`TextWatermarkerBuilder`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L425)
 
 ## Generate and Parse Watermarks
-The code in the package `de.fraunhofer.isst.trend.watermarker.watermarks` is responsible for
+The code in the package `de.fraunhofer.isst.innamark.watermarker.watermarks` is responsible for
 generating watermarks and parsing extracted watermarks:
  - The class 
  [`Watermark`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/watermarks/Watermark.kt)

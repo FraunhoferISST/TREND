@@ -6,8 +6,8 @@
  */
 package integrationTest.helper
 
-import de.fraunhofer.isst.trend.watermarker.helper.fromBytesLittleEndian
-import de.fraunhofer.isst.trend.watermarker.helper.toBytesLittleEndian
+import de.fraunhofer.isst.innamark.watermarker.helper.fromBytesLittleEndian
+import de.fraunhofer.isst.innamark.watermarker.helper.toBytesLittleEndian
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

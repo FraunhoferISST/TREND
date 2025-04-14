@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  */
 
-package de.fraunhofer.isst.trend.watermarker.returnTypes
+package de.fraunhofer.isst.innamark.watermarker.returnTypes
 
 import kotlin.js.JsExport
 import kotlin.js.JsName

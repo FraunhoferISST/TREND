@@ -6,7 +6,7 @@
  */
 package unitTest.files
 
-import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
+import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
 import kotlin.test.Test
 
 class WatermarkableFileTest {
