@@ -16,7 +16,7 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarkTags
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -179,14 +179,14 @@ open class Watermarker {
     }
 
     /**
-     * Returns all watermarks in [text] as Innamarks.
+     * Returns all watermarks in [text] as InnamarkTags.
      *
      * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
-     * When [validateAll] is true: All resulting Innamarks are validated to check for errors.
+     * When [validateAll] is true: All resulting InnamarkTags are validated to check for errors.
      *
-     * Returns a warning if some watermarks could not be converted to Innamarks.
-     * Returns an error if no watermark could be converted to a Innamark.
+     * Returns a warning if some watermarks could not be converted to InnamarkTags.
+     * Returns an error if no watermark could be converted to a InnamarkTag.
      */
     fun textGetInnamarks(
         text: String,
@@ -196,10 +196,10 @@ open class Watermarker {
     ): Result<List<InnamarkTag>> {
         val result =
             textGetWatermarks(text, squash, singleWatermark)
-                .toInnamarks("$SOURCE.textGetInnamarks")
+                .toInnamarkTags("$SOURCE.textGetInnamarks")
         if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {
-            for (innamark in result.value) {
-                val validationStatus = innamark.validate()
+            for (innamarkTag in result.value) {
+                val validationStatus = innamarkTag.validate()
                 result.appendStatus(validationStatus)
             }
         }
@@ -214,11 +214,11 @@ open class Watermarker {
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
      *                           is false: invalid bytes sequences are replace with the char �.
      *
-     * Returns a warning if some watermarks could not be converted to Innamarks.
-     * Returns an error if no watermark could be converted to a Innamark.
+     * Returns a warning if some watermarks could not be converted to InnamarkTags.
+     * Returns an error if no watermark could be converted to a InnamarkTag.
      *
-     * Returns a warning if some Innamarks could not be converted to TextWatermarks.
-     * Returns an error if no Innamark could be converted to a TextWatermark.
+     * Returns a warning if some InnamarkTags could not be converted to TextWatermarks.
+     * Returns an error if no InnamarkTag could be converted to a TextWatermark.
      */
     fun textGetTextWatermarks(
         text: String,

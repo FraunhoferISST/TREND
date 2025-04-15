@@ -356,7 +356,7 @@ class TextWatermarkTest {
         val initialTrendmark = RawInnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -377,7 +377,7 @@ class TextWatermarkTest {
         val initialTrendmark = SizedInnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -398,7 +398,7 @@ class TextWatermarkTest {
         val initialTrendmark = CompressedSizedInnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -419,7 +419,7 @@ class TextWatermarkTest {
         val initialTrendmark = CRC32InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -440,7 +440,7 @@ class TextWatermarkTest {
         val initialTrendmark = SizedCRC32InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -461,7 +461,7 @@ class TextWatermarkTest {
         val initialTrendmark = CompressedCRC32InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -482,7 +482,7 @@ class TextWatermarkTest {
         val initialTrendmark = CompressedSizedCRC32InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -503,7 +503,7 @@ class TextWatermarkTest {
         val initialTrendmark = SHA3256InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -524,7 +524,7 @@ class TextWatermarkTest {
         val initialTrendmark = SizedSHA3256InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -545,7 +545,7 @@ class TextWatermarkTest {
         val initialTrendmark = CompressedSHA3256InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert
@@ -566,7 +566,7 @@ class TextWatermarkTest {
         val initialTrendmark = CompressedSizedSHA3256InnamarkTag.new(textBytes)
 
         // Act
-        val textWatermarkResult = TextWatermark.fromInnamark(initialTrendmark)
+        val textWatermarkResult = TextWatermark.fromInnamarkTag(initialTrendmark)
         val trendmark = textWatermarkResult.value?.finish()
 
         // Assert

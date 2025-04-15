@@ -16,7 +16,7 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarkTags
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
 import java.io.File
 import kotlin.io.path.Path
@@ -227,11 +227,11 @@ class JvmWatermarker : Watermarker() {
         singleWatermark: Boolean = true,
         validateAll: Boolean = true,
     ): Result<List<InnamarkTag>> {
-        val result = getWatermarks(source, fileType, squash, singleWatermark).toInnamarks(SOURCE)
+        val result = getWatermarks(source, fileType, squash, singleWatermark).toInnamarkTags(SOURCE)
 
         if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {
-            for (innamark in result.value) {
-                val validationStatus = innamark.validate()
+            for (innamarkTag in result.value) {
+                val validationStatus = innamarkTag.validate()
                 result.appendStatus(validationStatus)
             }
         }
@@ -249,11 +249,11 @@ class JvmWatermarker : Watermarker() {
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error
      *                           is false: invalid bytes sequences are replace with the char �
      *
-     * Returns a warning if some watermarks could not be converted to Innamarks.
-     * Returns an error if no watermark could be converted to a Innamark.
+     * Returns a warning if some watermarks could not be converted to InnamarksTag.
+     * Returns an error if no watermark could be converted to a InnamarkTag.
      *
-     * Returns a warning if some Innamarks could not be converted to TextWatermarks.
-     * Returns an error if no Innamark could be converted to a TextWatermark.
+     * Returns a warning if some InnamarkTags could not be converted to TextWatermarks.
+     * Returns an error if no InnamarkTag could be converted to a TextWatermark.
      */
     fun getTextWatermarks(
         source: String,

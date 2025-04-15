@@ -29,13 +29,13 @@ sealed interface InnamarkTagInterface {
         const val TAG_SIZE: Int = 1
     }
 
-    /** Constant function that returns the tag used to encode this Innamark class */
+    /** Constant function that returns the tag used to encode this InnamarkTag class */
     fun getTag(): UByte
 
-    /** Constant function that returns the name of the specific Innamark */
+    /** Constant function that returns the name of the specific InnamarkTag */
     fun getSource(): String
 
-    /** Extracts the encoded tag from the bytes of the Innamark */
+    /** Extracts the encoded tag from the bytes of the InnamarkTag */
     fun extractTag(): UByte {
         check(TAG_SIZE == 1)
         val content = getRawContent()
@@ -43,7 +43,7 @@ sealed interface InnamarkTagInterface {
         return content.first().toUByte()
     }
 
-    /** Returns the decoded information stored in the Innamark */
+    /** Returns the decoded information stored in the InnamarkTag */
     fun getContent(): Result<List<Byte>>
 
     /** Returns the raw bytes of the watermark */
@@ -52,7 +52,7 @@ sealed interface InnamarkTagInterface {
     /** Updates the raw bytes of the watermark */
     fun setRawContent(content: List<Byte>)
 
-    /** Checks if the bytes represent a valid Innamark of the given class */
+    /** Checks if the bytes represent a valid InnamarkTag of the given class */
     fun validate(): Status {
         val content = getRawContent()
         if (content.size < TAG_SIZE) {
@@ -85,8 +85,8 @@ sealed interface InnamarkTagInterface {
 
 /**
  * Innamark defines a list of Watermarks with specific formats. The format is encoded in the first
- * byte of the watermark, which allows parsing unknown types of Innamarks. The implemented
- * variants of Innamark allow encoding additional information like the size or a hash into the
+ * byte of the watermark, which allows parsing unknown types of InnamarkTags. The implemented
+ * variants of InnamarkTag allow encoding additional information like the size or a hash into the
  * watermark. For detailed information about the different formats, see
  * [Innamark.md](https://github.com/FraunhoferISST/TREND/blob/main/docs/Innamark.md)
  *
@@ -94,7 +94,7 @@ sealed interface InnamarkTagInterface {
  * To create a new watermark with arbitrary content, the companion function `new` of that type must
  * be used.
  *
- * @param content: expects bytes that represent a Innamark.
+ * @param content: expects bytes that represent a InnamarkTag.
  */
 @JsExport
 sealed class InnamarkTag(
@@ -104,11 +104,11 @@ sealed class InnamarkTag(
         const val SOURCE = "InnamarkTag"
 
         /**
-         * Parses [input] as Innamark.
+         * Parses [input] as InnamarkTag.
          *
          * Returns an error if:
          *  - The first byte is not a valid Innamark tag
-         *  - The `validate()` function of the created Innamark returns an error.
+         *  - The `validate()` function of the created InnamarkTag returns an error.
          */
         @JvmStatic
         fun parse(input: List<Byte>): Result<InnamarkTag> {
@@ -141,11 +141,11 @@ sealed class InnamarkTag(
         }
 
         /**
-         * Parses [watermark] as Innamark.
+         * Parses [watermark] as InnamarkTag.
          *
          * Returns an error if:
          *  - The first byte is not a valid Innamark tag
-         *  - The `validate()` function of the created Innamark returns an error.
+         *  - The `validate()` function of the created InnamarkTag returns an error.
          */
         @JvmStatic
         fun fromWatermark(watermark: Watermark): Result<InnamarkTag> =
@@ -575,7 +575,9 @@ sealed class InnamarkTag(
     }
 }
 
-fun Result<List<Watermark>>.toInnamarks(source: String = "InnamarkTag"): Result<List<InnamarkTag>> {
+fun Result<List<Watermark>>.toInnamarkTags(
+    source: String = "InnamarkTag",
+): Result<List<InnamarkTag>> {
     val (watermarks, status) =
         with(this) {
             if (value == null) {

@@ -1195,101 +1195,105 @@ class InnamarkTagTest {
     @Test
     fun parse_valid_success() {
         // Arrange
-        val rawInnamark = RawInnamarkTag.new(content)
-        val sizedInnamark = SizedInnamarkTag.new(content)
-        val crc32Innamark = CRC32InnamarkTag.new(content)
-        val sizedCRC32Innamark = SizedCRC32InnamarkTag.new(content)
-        val sha3256Innamark = SHA3256InnamarkTag.new(content)
-        val sizedSHA3256Innamark = SizedSHA3256InnamarkTag.new(content)
-        val compressedRawInnamark = CompressedRawInnamarkTag.new(content)
-        val compressedSizedInnamark = CompressedSizedInnamarkTag.new(content)
-        val compressedCRC32Innamark = CompressedCRC32InnamarkTag.new(content)
-        val compressedSizedCRC32Innamark = CompressedSizedCRC32InnamarkTag.new(content)
-        val compressedSHA3256Innamark = CompressedSHA3256InnamarkTag.new(content)
-        val compressedSizedSHA3256Innamark = CompressedSizedSHA3256InnamarkTag.new(content)
+        val rawInnamarkTag = RawInnamarkTag.new(content)
+        val sizedInnamarkTag = SizedInnamarkTag.new(content)
+        val crc32InnamarkTag = CRC32InnamarkTag.new(content)
+        val sizedCRC32InnamarkTag = SizedCRC32InnamarkTag.new(content)
+        val sha3256InnamarkTag = SHA3256InnamarkTag.new(content)
+        val sizedSHA3256InnamarkTag = SizedSHA3256InnamarkTag.new(content)
+        val compressedRawInnamarkTag = CompressedRawInnamarkTag.new(content)
+        val compressedSizedInnamarkTag = CompressedSizedInnamarkTag.new(content)
+        val compressedCRC32InnamarkTag = CompressedCRC32InnamarkTag.new(content)
+        val compressedSizedCRC32InnamarkTag = CompressedSizedCRC32InnamarkTag.new(content)
+        val compressedSHA3256InnamarkTag = CompressedSHA3256InnamarkTag.new(content)
+        val compressedSizedSHA3256InnamarkTag = CompressedSizedSHA3256InnamarkTag.new(content)
 
         // Act
-        val parsedPlainWatermark = InnamarkTag.parse(rawInnamark.watermarkContent)
-        val parsedSizedInnamarkTag = InnamarkTag.parse(sizedInnamark.watermarkContent)
-        val parsedCRC32InnamarkTag = InnamarkTag.parse(crc32Innamark.watermarkContent)
-        val parsedSizedCRC32InnamarkTag = InnamarkTag.parse(sizedCRC32Innamark.watermarkContent)
-        val parsedSHA3256InnamarkTag = InnamarkTag.parse(sha3256Innamark.watermarkContent)
-        val parsedSizedSHA3256InnamarkTag = InnamarkTag.parse(sizedSHA3256Innamark.watermarkContent)
+        val parsedPlainWatermark = InnamarkTag.parse(rawInnamarkTag.watermarkContent)
+        val parsedSizedInnamarkTag = InnamarkTag.parse(sizedInnamarkTag.watermarkContent)
+        val parsedCRC32InnamarkTag = InnamarkTag.parse(crc32InnamarkTag.watermarkContent)
+        val parsedSizedCRC32InnamarkTag = InnamarkTag.parse(sizedCRC32InnamarkTag.watermarkContent)
+        val parsedSHA3256InnamarkTag = InnamarkTag.parse(sha3256InnamarkTag.watermarkContent)
+        val parsedSizedSHA3256InnamarkTag =
+            InnamarkTag.parse(sizedSHA3256InnamarkTag.watermarkContent)
         val parsedCompressedRawInnamarkTag =
-            InnamarkTag.parse(compressedRawInnamark.watermarkContent)
+            InnamarkTag.parse(compressedRawInnamarkTag.watermarkContent)
         val parsedCompressedSizedInnamarkTag =
-            InnamarkTag.parse(compressedSizedInnamark.watermarkContent)
+            InnamarkTag.parse(compressedSizedInnamarkTag.watermarkContent)
         val parsedCompressedCRC32InnamarkTag =
-            InnamarkTag.parse(compressedCRC32Innamark.watermarkContent)
+            InnamarkTag.parse(compressedCRC32InnamarkTag.watermarkContent)
         val parsedCompressedSizedCRC32InnamarkTag =
-            InnamarkTag.parse(compressedSizedCRC32Innamark.watermarkContent)
+            InnamarkTag.parse(compressedSizedCRC32InnamarkTag.watermarkContent)
         val parsedCompressedSHA3256InnamarkTag =
-            InnamarkTag.parse(compressedSHA3256Innamark.watermarkContent)
+            InnamarkTag.parse(compressedSHA3256InnamarkTag.watermarkContent)
         val parsedCompressedSizedSHA3256InnamarkTag =
-            InnamarkTag.parse(compressedSizedSHA3256Innamark.watermarkContent)
+            InnamarkTag.parse(compressedSizedSHA3256InnamarkTag.watermarkContent)
 
         // Assert
         assertTrue(parsedPlainWatermark.isSuccess)
         var parsedWatermark = parsedPlainWatermark.value!!
         assertTrue(parsedWatermark is RawInnamarkTag)
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(rawInnamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(rawInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedSizedInnamarkTag.isSuccess)
         parsedWatermark = parsedSizedInnamarkTag.value!!
         assertTrue(parsedWatermark is SizedInnamarkTag)
-        assertEquals(sizedInnamark.extractSize().value!!, parsedWatermark.extractSize().value!!)
+        assertEquals(sizedInnamarkTag.extractSize().value!!, parsedWatermark.extractSize().value!!)
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedInnamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sizedInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCRC32InnamarkTag.isSuccess)
         parsedWatermark = parsedCRC32InnamarkTag.value!!
         assertTrue(parsedWatermark is CRC32InnamarkTag)
         assertEquals(
-            crc32Innamark.extractChecksum().value!!,
+            crc32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(crc32Innamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(crc32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedSizedCRC32InnamarkTag.isSuccess)
         parsedWatermark = parsedSizedCRC32InnamarkTag.value!!
         assertTrue(parsedWatermark is SizedCRC32InnamarkTag)
         assertEquals(
-            sizedCRC32Innamark.extractSize().value!!,
+            sizedCRC32InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            sizedCRC32Innamark.extractChecksum().value!!,
+            sizedCRC32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedCRC32Innamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sizedCRC32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedSHA3256InnamarkTag.isSuccess)
         parsedWatermark = parsedSHA3256InnamarkTag.value!!
         assertTrue(parsedWatermark is SHA3256InnamarkTag)
-        assertEquals(sha3256Innamark.extractHash().value!!, parsedWatermark.extractHash().value!!)
+        assertEquals(
+            sha3256InnamarkTag.extractHash().value!!,
+            parsedWatermark.extractHash().value!!,
+        )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sha3256Innamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sha3256InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedSizedSHA3256InnamarkTag.isSuccess)
         parsedWatermark = parsedSizedSHA3256InnamarkTag.value!!
         assertTrue(parsedWatermark is SizedSHA3256InnamarkTag)
         assertEquals(
-            sizedSHA3256Innamark.extractSize().value!!,
+            sizedSHA3256InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            sizedSHA3256Innamark.extractHash().value!!,
+            sizedSHA3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
         assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedSHA3256Innamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(sizedSHA3256InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedRawInnamarkTag.isSuccess)
@@ -1298,7 +1302,7 @@ class InnamarkTagTest {
         var decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
-        assertEquals(compressedRawInnamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedRawInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedSizedInnamarkTag.isSuccess)
@@ -1308,10 +1312,10 @@ class InnamarkTagTest {
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSizedInnamark.extractSize().value!!,
+            compressedSizedInnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
-        assertEquals(compressedSizedInnamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedSizedInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedCRC32InnamarkTag.isSuccess)
@@ -1321,10 +1325,10 @@ class InnamarkTagTest {
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedCRC32Innamark.extractChecksum().value!!,
+            compressedCRC32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
-        assertEquals(compressedCRC32Innamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(compressedCRC32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedSizedCRC32InnamarkTag.isSuccess)
@@ -1334,15 +1338,15 @@ class InnamarkTagTest {
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSizedCRC32Innamark.extractSize().value!!,
+            compressedSizedCRC32InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            compressedSizedCRC32Innamark.extractChecksum().value!!,
+            compressedSizedCRC32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
         assertEquals(
-            compressedSizedCRC32Innamark.watermarkContent,
+            compressedSizedCRC32InnamarkTag.watermarkContent,
             parsedWatermark.watermarkContent,
         )
         assertTrue(parsedWatermark.validate().isSuccess)
@@ -1354,10 +1358,13 @@ class InnamarkTagTest {
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSHA3256Innamark.extractHash().value!!,
+            compressedSHA3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
-        assertEquals(compressedSHA3256Innamark.watermarkContent, parsedWatermark.watermarkContent)
+        assertEquals(
+            compressedSHA3256InnamarkTag.watermarkContent,
+            parsedWatermark.watermarkContent,
+        )
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedSizedSHA3256InnamarkTag.isSuccess)
@@ -1367,15 +1374,15 @@ class InnamarkTagTest {
         assertTrue(decompressedContent.isSuccess)
         assertEquals(content, decompressedContent.value)
         assertEquals(
-            compressedSizedSHA3256Innamark.extractSize().value!!,
+            compressedSizedSHA3256InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
         assertEquals(
-            compressedSizedSHA3256Innamark.extractHash().value!!,
+            compressedSizedSHA3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
         assertEquals(
-            compressedSizedSHA3256Innamark.watermarkContent,
+            compressedSizedSHA3256InnamarkTag.watermarkContent,
             parsedWatermark.watermarkContent,
         )
         assertTrue(parsedWatermark.validate().isSuccess)

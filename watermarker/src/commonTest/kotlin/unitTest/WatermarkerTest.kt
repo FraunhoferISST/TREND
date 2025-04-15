@@ -85,19 +85,19 @@ class WatermarkerTest {
             ". Lorem ipsum dolor sitLorem ipsum dolor sit amet, consetetur sadipscing elitr, s" +
             "ed diam nonumy eirmod tempor invidunt ut labore et dolore magna. Lorem ipsum dolo" +
             "r sit"
-    private val textWithWatermarksAndInnamarks =
+    private val textWithWatermarksAndInnamarkTags =
         textWithWatermark +
             DefaultTranscoding.SEPARATOR_CHAR +
             textWithInnamarks
 
-    private val textWithInvalidUTF8Innamark =
+    private val textWithInvalidUTF8InnamarkTag =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
             "nvidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et a" +
             "ccusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata " +
             "sanctus est Lorem ipsum dolor sit amet."
 
-    private val textWithInvalidandValidUTF8Innamarks =
-        textWithInvalidUTF8Innamark +
+    private val textWithInvalidandValidUTF8InnamarkTags =
+        textWithInvalidUTF8InnamarkTag +
             DefaultTranscoding.SEPARATOR_CHAR +
             textWithInnamarks
 
@@ -469,7 +469,7 @@ class WatermarkerTest {
         // Act
         val innamarks =
             watermarker.textGetInnamarks(
-                textWithWatermarksAndInnamarks,
+                textWithWatermarksAndInnamarkTags,
                 singleWatermark = false,
             )
 
@@ -593,7 +593,7 @@ class WatermarkerTest {
         // Act
         val textWatermarks =
             watermarker.textGetTextWatermarks(
-                textWithWatermarksAndInnamarks,
+                textWithWatermarksAndInnamarkTags,
                 singleWatermark = false,
             )
 
@@ -616,7 +616,7 @@ class WatermarkerTest {
         // Act
         val textWatermarks =
             watermarker.textGetTextWatermarks(
-                textWithInvalidUTF8Innamark,
+                textWithInvalidUTF8InnamarkTag,
                 errorOnInvalidUTF8 = true,
             )
 
@@ -648,7 +648,7 @@ class WatermarkerTest {
         // Act
         val textWatermarks =
             watermarker.textGetTextWatermarks(
-                textWithInvalidandValidUTF8Innamarks,
+                textWithInvalidandValidUTF8InnamarkTags,
                 singleWatermark = false,
                 errorOnInvalidUTF8 = true,
             )

@@ -9,20 +9,20 @@ package de.fraunhofer.isst.innamark.watermarker.watermarks
 import kotlin.js.JsExport
 
 /**
- * The InnamarkBuilder interface is designed to create classes for generating a Innamark from
+ * The InnamarkTagBuilder interface is designed to create classes for generating a InnamarkTag from
  * various types of data. Implementing classes will provide the specific logic to convert different
  * data types, such as text or other formats, into a list of bytes which will make up the
- * Innamark's content. This interface ensures that all types of Innamarks maintain a consistent
- * structure and can be processed in a standardized way by the watermarking library.
+ * InnamarkTag's content. This interface ensures that all types of InnamarksTag maintain a
+ * consistent structure and can be processed in a standardized way by the watermarking library.
  */
 @JsExport
 interface InnamarkTagBuilder {
-    /** Generates a Innamark with the specific content */
+    /** Generates a InnamarkTag with the specific content */
     fun finish(): InnamarkTag
 
-    /** Represents the Innamark with its content in a human-readable way */
+    /** Represents the InnamarkTag with its content in a human-readable way */
     override fun toString(): String
 
-    /** Returns true if [this].finish() and [other].finish() produce an equal Innamark */
+    /** Returns true if [this].finish() and [other].finish() produce an equal InnamarkTag */
     override fun equals(other: Any?): Boolean
 }

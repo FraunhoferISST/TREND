@@ -14,24 +14,25 @@ import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 /**
- * The TextWatermark class provides convenient functions to create and read Innamarks with UTF-8
+ * The TextWatermark class provides convenient functions to create and read InnamarkTags with UTF-8
  * text as content.
  *
  * TextWatermark can be instantiated using the companion functions. The functions `new`, `raw`,
  * `compressed`, `sized`, `CRC32`, `SHA3256`, `compressedSized`, `compressedCRC32`,
  * `compressedSHA3256`, `sizedCRC32`, `sizedSHA3256`, `compressedSizedCRC32` and
  * `compressedSizedSHA3256` allows creation of a new TextWatermark from a String and specifying
- * the format of the produced Innamark.
+ * the format of the produced InnamarkTag.
  *
- * The function `fromInnamark` allows parsing a supported Innamark into a TextWatermark, giving
- * direct access to the contained text without having to consider the format of the Innamark.
+ * The function `fromInnamarkTag` allows parsing a supported InnamarkTag into a TextWatermark,
+ * giving direct access to the contained text without having to consider the format of the
+ * InnamarkTag.
  *
- * Sized TextWatermarks will create Innamarks that encode the size of the Innamark into the
+ * Sized TextWatermarks will create InnamarkTags that encode the size of the InnamarkTag into the
  * watermark.
  *
- * CRC32 TextWatermarks will create Innamarks that encode a CRC32 checksum into the watermark.
+ * CRC32 TextWatermarks will create InnamarkTags that encode a CRC32 checksum into the watermark.
  *
- * SHA3256 TextWatermarks will create Innamarks that encode a SHA3256 hash into the watermark.
+ * SHA3256 TextWatermarks will create InnamarkTags that encode a SHA3256 hash into the watermark.
  *
  * Compressed TextWatermarks will compress the Text using a compression algorithm. This can be
  * useful when the watermark text is very long, but it might reduce the watermark robustness.
@@ -136,7 +137,7 @@ class TextWatermark private constructor(
          * Returns an error when [innamarkTag] contains an unsupported variant.
          */
         @JvmStatic
-        fun fromInnamark(
+        fun fromInnamarkTag(
             innamarkTag: InnamarkTag,
             errorOnInvalidUTF8: Boolean = false,
         ): Result<TextWatermark> {
@@ -198,7 +199,7 @@ class TextWatermark private constructor(
         sized = active
     }
 
-    /** true if size information is added to the Innamark */
+    /** true if size information is added to the InnamarkTag */
     fun isSized(): Boolean = sized
 
     /** sets CRC32 to [active] */
@@ -207,7 +208,7 @@ class TextWatermark private constructor(
         CRC32 = active
     }
 
-    /** true if checksum information is added to the Innamark */
+    /** true if checksum information is added to the InnamarkTag */
     fun isCRC32(): Boolean = CRC32
 
     /** sets SHA3256 to [active] */
@@ -216,13 +217,13 @@ class TextWatermark private constructor(
         SHA3256 = active
     }
 
-    /** true if hash information is added to the Innamark */
+    /** true if hash information is added to the InnamarkTag */
     fun isSHA3256(): Boolean = SHA3256
 
     /**
-     * Generates a Innamark with [text] as content.
+     * Generates a InnamarkTag with [text] as content.
      *
-     * The used variant of Innamark depends on:
+     * The used variant of InnamarkTag depends on:
      *  - [compressed]
      *  - [sized]
      *  - [CRC32]
@@ -258,7 +259,7 @@ class TextWatermark private constructor(
         }
     }
 
-    /** Contains the used Innamark variant followed by [text] */
+    /** Contains the used InnamarkTag variant followed by [text] */
     override fun toString(): String {
         return if (compressed && sized && SHA3256) {
             "CompressedSizedSHA3256TextWatermark: '$text'"
@@ -287,23 +288,23 @@ class TextWatermark private constructor(
         }
     }
 
-    /** Returns true if [this].finish() and [other].finish() produce an equal Innamark */
+    /** Returns true if [this].finish() and [other].finish() produce an equal InnamarkTag */
     override fun equals(other: Any?): Boolean {
         if (other !is TextWatermark) return false
         return text == other.text && compressed == other.compressed && sized == other.sized &&
             CRC32 == other.CRC32 && SHA3256 == other.SHA3256
     }
 
-    class DecodeToStringError(val reason: String) : Event.Error("TextWatermark.fromInnamark") {
+    class DecodeToStringError(val reason: String) : Event.Error("TextWatermark.fromInnamarkTag") {
         /** Returns a String explaining the event */
         override fun getMessage(): String = "Failed to decode bytes to string: $reason."
     }
 
-    class UnsupportedInnamarkError(val Innamark: String) :
-        Event.Error("TextWatermark.fromInnamark") {
+    class UnsupportedInnamarkError(val innamarkTag: String) :
+        Event.Error("TextWatermark.fromInnamarkTag") {
         /** Returns a String explaining the event */
         override fun getMessage(): String =
-            "The Innamark type $Innamark is not supported by TextWatermark."
+            "The InnamarkTag type $innamarkTag is not supported by TextWatermark."
     }
 
     class FailedTextWatermarkExtractionsWarning(source: String) : Event.Warning(source) {
@@ -327,8 +328,8 @@ fun Result<List<InnamarkTag>>.toTextWatermarks(
         }
 
     val textWatermarks =
-        Innamarks.mapNotNull { Innamark ->
-            val textWatermark = TextWatermark.fromInnamark(Innamark, errorOnInvalidUTF8)
+        Innamarks.mapNotNull { innamarkTag ->
+            val textWatermark = TextWatermark.fromInnamarkTag(innamarkTag, errorOnInvalidUTF8)
             status.appendStatus(textWatermark.status)
             textWatermark.value
         }
@@ -351,5 +352,5 @@ fun Result<List<Watermark>>.toTextWatermarks(
     errorOnInvalidUTF8: Boolean = false,
     source: String = "toTextWatermarks",
 ): Result<List<TextWatermark>> {
-    return this.toInnamarks(source).toTextWatermarks(errorOnInvalidUTF8, source)
+    return this.toInnamarkTags(source).toTextWatermarks(errorOnInvalidUTF8, source)
 }

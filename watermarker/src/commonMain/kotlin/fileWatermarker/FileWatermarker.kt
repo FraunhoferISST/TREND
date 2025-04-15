@@ -14,7 +14,7 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarks
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarkTags
 import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
@@ -71,7 +71,7 @@ interface FileWatermarker<File : WatermarkableFile> {
         squash: Boolean = false,
         singleWatermark: Boolean = false,
     ): Result<List<InnamarkTag>> =
-        getWatermarks(file, squash, singleWatermark).toInnamarks(
+        getWatermarks(file, squash, singleWatermark).toInnamarkTags(
             "${getSource()}" +
                 ".getInnamarks",
         )
