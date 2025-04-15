@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.fraunhofer.isst.trend:watermarker:0.1.0-SNAPSHOT")
+    implementation("de.fraunhofer.isst.innamark:watermarker:0.1.0-SNAPSHOT")
 }
 
 application {
@@ -57,10 +57,10 @@ for more details).*
 (see [Watermarker](../#extraction-customization) for more details)*
 
 ```kt title="src/main/kotlin/Main.kt" showLineNumbers
-import de.fraunhofer.isst.trend.watermarker.Watermarker
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.Watermarker
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import kotlin.system.exitProcess
 
 fun main() {

@@ -4,13 +4,13 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker.files
+package de.fraunhofer.isst.innamark.watermarker.files
 
-import de.fraunhofer.isst.trend.watermarker.helper.fromBytesLittleEndian
-import de.fraunhofer.isst.trend.watermarker.helper.toBytesLittleEndian
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.helper.fromBytesLittleEndian
+import de.fraunhofer.isst.innamark.watermarker.helper.toBytesLittleEndian
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import kotlin.js.JsExport
 import kotlin.jvm.JvmStatic
 

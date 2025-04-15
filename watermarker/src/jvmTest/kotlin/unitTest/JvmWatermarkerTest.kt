@@ -7,12 +7,12 @@
 package unitTest
 
 import areFilesEqual
-import de.fraunhofer.isst.trend.watermarker.JvmWatermarker
-import de.fraunhofer.isst.trend.watermarker.SupportedFileType
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
-import de.fraunhofer.isst.trend.watermarker.files.ZipFileHeader
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.JvmWatermarker
+import de.fraunhofer.isst.innamark.watermarker.SupportedFileType
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
+import de.fraunhofer.isst.innamark.watermarker.files.ZipFileHeader
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals

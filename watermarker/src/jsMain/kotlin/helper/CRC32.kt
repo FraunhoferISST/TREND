@@ -7,7 +7,7 @@
  * This code is based on the C implementation of the RFC 1952 standard:
  * https://datatracker.ietf.org/doc/html/rfc1952#section-8
  */
-package de.fraunhofer.isst.trend.watermarker.helper
+package de.fraunhofer.isst.innamark.watermarker.helper
 
 actual object CRC32 {
     private val table =

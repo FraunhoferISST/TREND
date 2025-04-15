@@ -6,7 +6,7 @@
  */
 package unitTest.files
 
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

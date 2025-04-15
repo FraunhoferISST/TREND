@@ -6,11 +6,11 @@
  */
 package unitTest.helper
 
-import de.fraunhofer.isst.trend.watermarker.helper.fromBytesLittleEndian
-import de.fraunhofer.isst.trend.watermarker.helper.toBytesLittleEndian
-import de.fraunhofer.isst.trend.watermarker.helper.toHexString
-import de.fraunhofer.isst.trend.watermarker.helper.toIntUnsigned
-import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
+import de.fraunhofer.isst.innamark.watermarker.helper.fromBytesLittleEndian
+import de.fraunhofer.isst.innamark.watermarker.helper.toBytesLittleEndian
+import de.fraunhofer.isst.innamark.watermarker.helper.toHexString
+import de.fraunhofer.isst.innamark.watermarker.helper.toIntUnsigned
+import de.fraunhofer.isst.innamark.watermarker.helper.toUnicodeRepresentation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

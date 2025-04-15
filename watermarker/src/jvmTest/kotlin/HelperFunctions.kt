@@ -4,9 +4,9 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.files.ZipFile
-import de.fraunhofer.isst.trend.watermarker.files.fromFile
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.files.ZipFile
+import de.fraunhofer.isst.innamark.watermarker.files.fromFile
 import java.io.File
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

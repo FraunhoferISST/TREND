@@ -4,13 +4,13 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker.fileWatermarker
+package de.fraunhofer.isst.innamark.watermarker.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.files.ZipFile
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.squashWatermarks
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.files.ZipFile
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.squashWatermarks
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 
 const val ZIP_WATERMARK_ID: UShort = 0x8777u

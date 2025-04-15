@@ -5,10 +5,10 @@
  * that can be found in the LICENSE file.
  */
 
-import de.fraunhofer.isst.trend.watermarker.Watermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.Watermarker
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import io.kvision.core.FontWeight
 import io.kvision.core.Placement
 import io.kvision.core.TooltipOptions
@@ -47,10 +47,10 @@ import kotlin.math.round
 data class WatermarkerTextForm(
     val watermark: String,
     val text: String,
-    val trendmarkCompressed: Boolean,
-    val trendmarkSized: Boolean,
-    val trendmarkCRC32: Boolean,
-    val trendmarkSHA3256: Boolean,
+    val innamarkTagCompressed: Boolean,
+    val innamarkTagSized: Boolean,
+    val innamarkTagCRC32: Boolean,
+    val innamarkTagSHA3256: Boolean,
 )
 
 class WatermarkTextEmbedTab : SimplePanel() {
@@ -217,7 +217,7 @@ class WatermarkTextEmbedTab : SimplePanel() {
                 )
                 fieldsetPanel(tr("Advanced Settings")) {
                     hPanel {
-                        div("Trendmark: &#9432;", rich = true) {
+                        div("InnamarkTag: &#9432;", rich = true) {
                             paddingRight = 10.px
                             fontWeight = FontWeight.BOLD
                             enableTooltip(
@@ -230,13 +230,13 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             )
                         }
 
-                        add(compressedCheckBox.bind(WatermarkerTextForm::trendmarkCompressed))
+                        add(compressedCheckBox.bind(WatermarkerTextForm::innamarkTagCompressed))
 
-                        add(sizedCheckBox.bind(WatermarkerTextForm::trendmarkSized))
+                        add(sizedCheckBox.bind(WatermarkerTextForm::innamarkTagSized))
 
-                        add(CRC32CheckBox.bind(WatermarkerTextForm::trendmarkCRC32))
+                        add(CRC32CheckBox.bind(WatermarkerTextForm::innamarkTagCRC32))
 
-                        add(SHA3256CheckBox.bind(WatermarkerTextForm::trendmarkSHA3256))
+                        add(SHA3256CheckBox.bind(WatermarkerTextForm::innamarkTagSHA3256))
                     }
                 }
                 add(progressBar)
@@ -269,10 +269,10 @@ class WatermarkTextEmbedTab : SimplePanel() {
                             addWatermarkToText(
                                 textFormPanel.getData().watermark,
                                 textFormPanel.getData().text,
-                                textFormPanel.getData().trendmarkCompressed,
-                                textFormPanel.getData().trendmarkSized,
-                                textFormPanel.getData().trendmarkCRC32,
-                                textFormPanel.getData().trendmarkSHA3256,
+                                textFormPanel.getData().innamarkTagCompressed,
+                                textFormPanel.getData().innamarkTagSized,
+                                textFormPanel.getData().innamarkTagCRC32,
+                                textFormPanel.getData().innamarkTagSHA3256,
                             )
 
                         if (watermarkedResult.isSuccess) {
@@ -376,18 +376,18 @@ class WatermarkTextEmbedTab : SimplePanel() {
     private fun addWatermarkToText(
         watermarkString: String,
         text: String,
-        trendmarkCompressed: Boolean = false,
-        trendmarkSized: Boolean = false,
-        trendmarkCRC32: Boolean = false,
-        trendmarkSHA3256: Boolean = false,
+        innamarkTagCompressed: Boolean = false,
+        innamarkTagSized: Boolean = false,
+        innamarkTagCRC32: Boolean = false,
+        innamarkTagSHA3256: Boolean = false,
     ): Result<String> {
         val watermarker = Watermarker()
         val watermark =
             TextWatermark.raw(watermarkString).apply {
-                if (trendmarkCompressed) compressed()
-                if (trendmarkSized) sized()
-                if (trendmarkCRC32) CRC32()
-                if (trendmarkSHA3256) SHA3256()
+                if (innamarkTagCompressed) compressed()
+                if (innamarkTagSized) sized()
+                if (innamarkTagCRC32) CRC32()
+                if (innamarkTagSHA3256) SHA3256()
             }
         return watermarker.textAddWatermark(text, watermark)
     }
@@ -403,17 +403,17 @@ class WatermarkTextEmbedTab : SimplePanel() {
     private fun watermarkFitsInText(
         watermark: String,
         text: String,
-        trendmarkCompressed: Boolean,
-        trendmarkSized: Boolean,
-        trendmarkCRC32: Boolean,
-        trendmarkSHA3256: Boolean,
+        innamarkTagCompressed: Boolean,
+        innamarkTagSized: Boolean,
+        innamarkTagCRC32: Boolean,
+        innamarkTagSHA3256: Boolean,
     ): Int {
         val parsedWatermark =
             TextWatermark.raw(watermark).apply {
-                if (trendmarkCompressed) compressed()
-                if (trendmarkSized) sized()
-                if (trendmarkCRC32) CRC32()
-                if (trendmarkSHA3256) SHA3256()
+                if (innamarkTagCompressed) compressed()
+                if (innamarkTagSized) sized()
+                if (innamarkTagCRC32) CRC32()
+                if (innamarkTagSHA3256) SHA3256()
             }
 
         val numberOfInsertPositions = textWatermarker.placement(text).count()

@@ -5,17 +5,17 @@
  * that can be found in the LICENSE file.
  */
 
-package de.fraunhofer.isst.trend.watermarker.fileWatermarker
+package de.fraunhofer.isst.innamark.watermarker.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
+import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarkTags
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
@@ -35,13 +35,13 @@ interface FileWatermarker<File : WatermarkableFile> {
         return addWatermark(file, watermark.watermarkContent)
     }
 
-    /** Adds a [trendmarkBuilder] to [file] */
-    @JsName("addTrendmarkBuilder")
+    /** Adds a [innamarkTagBuilder] to [file] */
+    @JsName("addInnamarkBuilder")
     fun addWatermark(
         file: File,
-        trendmarkBuilder: TrendmarkBuilder,
+        innamarkTagBuilder: InnamarkTagBuilder,
     ): Status {
-        return addWatermark(file, trendmarkBuilder.finish())
+        return addWatermark(file, innamarkTagBuilder.finish())
     }
 
     /** Checks if [file] contains watermarks */
@@ -70,10 +70,10 @@ interface FileWatermarker<File : WatermarkableFile> {
         file: File,
         squash: Boolean = false,
         singleWatermark: Boolean = false,
-    ): Result<List<Trendmark>> =
-        getWatermarks(file, squash, singleWatermark).toTrendmarks(
+    ): Result<List<InnamarkTag>> =
+        getWatermarks(file, squash, singleWatermark).toInnamarkTags(
             "${getSource()}" +
-                ".getTrendmarks",
+                ".getInnamarks",
         )
 
     /**

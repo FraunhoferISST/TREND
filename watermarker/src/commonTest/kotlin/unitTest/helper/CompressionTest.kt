@@ -6,7 +6,7 @@
  */
 package unitTest.helper
 
-import de.fraunhofer.isst.trend.watermarker.helper.Compression
+import de.fraunhofer.isst.innamark.watermarker.helper.Compression
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -6,9 +6,9 @@
  */
 package unitTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import openTextFile
 import kotlin.test.Test
 import kotlin.test.assertEquals

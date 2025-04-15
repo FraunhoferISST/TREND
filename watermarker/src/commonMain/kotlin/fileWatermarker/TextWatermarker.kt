@@ -4,17 +4,17 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker.fileWatermarker
+package de.fraunhofer.isst.innamark.watermarker.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.helper.toIntUnsigned
-import de.fraunhofer.isst.trend.watermarker.helper.toUnicodeRepresentation
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.squashWatermarks
-import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.helper.toIntUnsigned
+import de.fraunhofer.isst.innamark.watermarker.helper.toUnicodeRepresentation
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.squashWatermarks
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmStatic
@@ -369,11 +369,11 @@ class TextWatermarker(
 
     /**
      * Counts the minimum number of insert positions needed in a text to insert the
-     * [trendmarkBuilder]
+     * [innamarkTagBuilder]
      */
     @JsName("getMimimumInsertPositionsTrendmarkBuilder")
-    fun getMinimumInsertPositions(trendmarkBuilder: TrendmarkBuilder): Int =
-        getMinimumInsertPositions(trendmarkBuilder.finish())
+    fun getMinimumInsertPositions(innamarkTagBuilder: InnamarkTagBuilder): Int =
+        getMinimumInsertPositions(innamarkTagBuilder.finish())
 
     /** Transforms a [watermark] into a separated watermark */
     private fun getSeparatedWatermark(watermark: List<Byte>): Sequence<Char> {

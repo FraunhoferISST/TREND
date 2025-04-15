@@ -5,19 +5,19 @@
  * that can be found in the LICENSE file.
  */
 
-package de.fraunhofer.isst.trend.watermarker
+package de.fraunhofer.isst.innamark.watermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.FileWatermarker
-import de.fraunhofer.isst.trend.watermarker.files.WatermarkableFile
-import de.fraunhofer.isst.trend.watermarker.files.writeToFile
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.Trendmark
-import de.fraunhofer.isst.trend.watermarker.watermarks.TrendmarkBuilder
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTextWatermarks
-import de.fraunhofer.isst.trend.watermarker.watermarks.toTrendmarks
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.FileWatermarker
+import de.fraunhofer.isst.innamark.watermarker.files.WatermarkableFile
+import de.fraunhofer.isst.innamark.watermarker.files.writeToFile
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTag
+import de.fraunhofer.isst.innamark.watermarker.watermarks.InnamarkTagBuilder
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toInnamarkTags
+import de.fraunhofer.isst.innamark.watermarker.watermarks.toTextWatermarks
 import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.extension
@@ -75,17 +75,17 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Adds a [trendmarkBuilder] to [source] and writes changes to [target].
+     * Adds a [innamarkTagBuilder] to [source] and writes changes to [target].
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      */
     fun addWatermark(
         source: String,
         target: String,
-        trendmarkBuilder: TrendmarkBuilder,
+        innamarkTagBuilder: InnamarkTagBuilder,
         fileType: String? = null,
     ): Status {
-        return addWatermark(source, target, trendmarkBuilder.finish(), fileType)
+        return addWatermark(source, target, innamarkTagBuilder.finish(), fileType)
     }
 
     private fun <T : WatermarkableFile> addWatermarkDoWork(
@@ -210,28 +210,28 @@ class JvmWatermarker : Watermarker() {
     }
 
     /**
-     * Returns all watermarks in [source] as Trendmark.
+     * Returns all watermarks in [source] as InnamarkTag.
      *
      * When [fileType] is null the type is taken from [source]'s extension.
      * When [squash] is true: watermarks with the same content are merged.
      * When [singleWatermark] is true: only the most frequent watermark is returned.
-     * When [validateAll] is true: All resulting Trendmarks are validated to check for errors.
+     * When [validateAll] is true: All resulting InnamarkTags are validated to check for errors.
      *
-     * Returns a warning if some watermarks could not be converted to Trendmarks.
-     * Returns an error if no watermark could be converted to a Trendmark.
+     * Returns a warning if some watermarks could not be converted to InnamarksTag.
+     * Returns an error if no watermark could be converted to a InnamarkTag.
      */
-    fun getTrendmarks(
+    fun getInnamarkTags(
         source: String,
         fileType: String? = null,
         squash: Boolean = true,
         singleWatermark: Boolean = true,
         validateAll: Boolean = true,
-    ): Result<List<Trendmark>> {
-        val result = getWatermarks(source, fileType, squash, singleWatermark).toTrendmarks(SOURCE)
+    ): Result<List<InnamarkTag>> {
+        val result = getWatermarks(source, fileType, squash, singleWatermark).toInnamarkTags(SOURCE)
 
         if (validateAll && result.hasValue && result.value!!.isNotEmpty()) {
-            for (trendmark in result.value) {
-                val validationStatus = trendmark.validate()
+            for (innamarkTag in result.value) {
+                val validationStatus = innamarkTag.validate()
                 result.appendStatus(validationStatus)
             }
         }
@@ -249,11 +249,11 @@ class JvmWatermarker : Watermarker() {
      * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error
      *                           is false: invalid bytes sequences are replace with the char �
      *
-     * Returns a warning if some watermarks could not be converted to Trendmarks.
-     * Returns an error if no watermark could be converted to a Trendmark.
+     * Returns a warning if some watermarks could not be converted to InnamarksTag.
+     * Returns an error if no watermark could be converted to a InnamarkTag.
      *
-     * Returns a warning if some Trendmarks could not be converted to TextWatermarks.
-     * Returns an error if no Trendmark could be converted to a TextWatermark.
+     * Returns a warning if some InnamarkTags could not be converted to TextWatermarks.
+     * Returns an error if no InnamarkTag could be converted to a TextWatermark.
      */
     fun getTextWatermarks(
         source: String,

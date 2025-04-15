@@ -4,34 +4,35 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker.watermarks
+package de.fraunhofer.isst.innamark.watermarker.watermarks
 
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Result
-import de.fraunhofer.isst.trend.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark.FailedTextWatermarkExtractionsWarning
 import kotlin.js.JsExport
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 /**
- * The TextWatermark class provides convenient functions to create and read Trendmarks with UTF-8
+ * The TextWatermark class provides convenient functions to create and read InnamarkTags with UTF-8
  * text as content.
  *
  * TextWatermark can be instantiated using the companion functions. The functions `new`, `raw`,
  * `compressed`, `sized`, `CRC32`, `SHA3256`, `compressedSized`, `compressedCRC32`,
  * `compressedSHA3256`, `sizedCRC32`, `sizedSHA3256`, `compressedSizedCRC32` and
  * `compressedSizedSHA3256` allows creation of a new TextWatermark from a String and specifying
- * the format of the produced Trendmark.
+ * the format of the produced InnamarkTag.
  *
- * The function `fromTrendmark` allows parsing a supported Trendmark into a TextWatermark, giving
- * direct access to the contained text without having to consider the format of the Trendmark.
+ * The function `fromInnamarkTag` allows parsing a supported InnamarkTag into a TextWatermark,
+ * giving direct access to the contained text without having to consider the format of the
+ * InnamarkTag.
  *
- * Sized TextWatermarks will create Trendmarks that encode the size of the Trendmark into the
+ * Sized TextWatermarks will create InnamarkTags that encode the size of the InnamarkTag into the
  * watermark.
  *
- * CRC32 TextWatermarks will create Trendmarks that encode a CRC32 checksum into the watermark.
+ * CRC32 TextWatermarks will create InnamarkTags that encode a CRC32 checksum into the watermark.
  *
- * SHA3256 TextWatermarks will create Trendmarks that encode a SHA3256 hash into the watermark.
+ * SHA3256 TextWatermarks will create InnamarkTags that encode a SHA3256 hash into the watermark.
  *
  * Compressed TextWatermarks will compress the Text using a compression algorithm. This can be
  * useful when the watermark text is very long, but it might reduce the watermark robustness.
@@ -44,7 +45,7 @@ class TextWatermark private constructor(
     private var sized: Boolean = false,
     private var CRC32: Boolean = false,
     private var SHA3256: Boolean = false,
-) : TrendmarkBuilder {
+) : InnamarkTagBuilder {
     companion object {
         /**
          * Creates a TextWatermark in default configuration.
@@ -128,20 +129,20 @@ class TextWatermark private constructor(
             TextWatermark(text, compressed = true, sized = true, SHA3256 = true)
 
         /**
-         * Creates a TextWatermark from [trendmark].
-         * Sets sized, compressed, CRC32 and SHA3256 depending on the variant of [trendmark].
+         * Creates a TextWatermark from [innamarkTag].
+         * Sets sized, compressed, CRC32 and SHA3256 depending on the variant of [innamarkTag].
          *
          * When [errorOnInvalidUTF8] is true: invalid bytes sequences cause an error.
          *                           is false: invalid bytes sequences are replace with the char �.
-         * Returns an error when [trendmark] contains an unsupported variant.
+         * Returns an error when [innamarkTag] contains an unsupported variant.
          */
         @JvmStatic
-        fun fromTrendmark(
-            trendmark: Trendmark,
+        fun fromInnamarkTag(
+            innamarkTag: InnamarkTag,
             errorOnInvalidUTF8: Boolean = false,
         ): Result<TextWatermark> {
             val (content, status) =
-                with(trendmark.getContent()) {
+                with(innamarkTag.getContent()) {
                     if (!hasValue) return status.into<_>()
                     value!! to status
                 }
@@ -156,27 +157,27 @@ class TextWatermark private constructor(
                 }
 
             val textWatermark =
-                when (trendmark) {
-                    is RawTrendmark -> TextWatermark(text)
-                    is SizedTrendmark -> TextWatermark(text, sized = true)
-                    is CompressedRawTrendmark -> TextWatermark(text, compressed = true)
-                    is CompressedSizedTrendmark ->
+                when (innamarkTag) {
+                    is RawInnamarkTag -> TextWatermark(text)
+                    is SizedInnamarkTag -> TextWatermark(text, sized = true)
+                    is CompressedRawInnamarkTag -> TextWatermark(text, compressed = true)
+                    is CompressedSizedInnamarkTag ->
                         TextWatermark(text, compressed = true, sized = true)
 
-                    is CRC32Trendmark -> TextWatermark(text, CRC32 = true)
-                    is SizedCRC32Trendmark -> TextWatermark(text, sized = true, CRC32 = true)
-                    is CompressedCRC32Trendmark ->
+                    is CRC32InnamarkTag -> TextWatermark(text, CRC32 = true)
+                    is SizedCRC32InnamarkTag -> TextWatermark(text, sized = true, CRC32 = true)
+                    is CompressedCRC32InnamarkTag ->
                         TextWatermark(text, compressed = true, CRC32 = true)
-                    is CompressedSizedCRC32Trendmark ->
+                    is CompressedSizedCRC32InnamarkTag ->
                         TextWatermark(text, compressed = true, sized = true, CRC32 = true)
-                    is SHA3256Trendmark -> TextWatermark(text, SHA3256 = true)
-                    is SizedSHA3256Trendmark -> TextWatermark(text, sized = true, SHA3256 = true)
-                    is CompressedSHA3256Trendmark ->
+                    is SHA3256InnamarkTag -> TextWatermark(text, SHA3256 = true)
+                    is SizedSHA3256InnamarkTag -> TextWatermark(text, sized = true, SHA3256 = true)
+                    is CompressedSHA3256InnamarkTag ->
                         TextWatermark(text, compressed = true, SHA3256 = true)
-                    is CompressedSizedSHA3256Trendmark ->
+                    is CompressedSizedSHA3256InnamarkTag ->
                         TextWatermark(text, compressed = true, sized = true, SHA3256 = true)
                     else -> {
-                        status.addEvent(UnsupportedTrendmarkError(trendmark.getSource()))
+                        status.addEvent(UnsupportedInnamarkError(innamarkTag.getSource()))
                         return status.into<_>()
                     }
                 }
@@ -198,7 +199,7 @@ class TextWatermark private constructor(
         sized = active
     }
 
-    /** true if size information is added to the Trendmark */
+    /** true if size information is added to the InnamarkTag */
     fun isSized(): Boolean = sized
 
     /** sets CRC32 to [active] */
@@ -207,7 +208,7 @@ class TextWatermark private constructor(
         CRC32 = active
     }
 
-    /** true if checksum information is added to the Trendmark */
+    /** true if checksum information is added to the InnamarkTag */
     fun isCRC32(): Boolean = CRC32
 
     /** sets SHA3256 to [active] */
@@ -216,49 +217,49 @@ class TextWatermark private constructor(
         SHA3256 = active
     }
 
-    /** true if hash information is added to the Trendmark */
+    /** true if hash information is added to the InnamarkTag */
     fun isSHA3256(): Boolean = SHA3256
 
     /**
-     * Generates a Trendmark with [text] as content.
+     * Generates a InnamarkTag with [text] as content.
      *
-     * The used variant of Trendmark depends on:
+     * The used variant of InnamarkTag depends on:
      *  - [compressed]
      *  - [sized]
      *  - [CRC32]
      *  - [SHA3256].
      */
-    override fun finish(): Trendmark {
+    override fun finish(): InnamarkTag {
         val content = text.encodeToByteArray().asList()
 
         return if (compressed && sized && SHA3256) {
-            CompressedSizedSHA3256Trendmark.new(content)
+            CompressedSizedSHA3256InnamarkTag.new(content)
         } else if (compressed && SHA3256) {
-            CompressedSHA3256Trendmark.new(content)
+            CompressedSHA3256InnamarkTag.new(content)
         } else if (sized && SHA3256) {
-            SizedSHA3256Trendmark.new(content)
+            SizedSHA3256InnamarkTag.new(content)
         } else if (SHA3256) {
-            SHA3256Trendmark.new(content)
+            SHA3256InnamarkTag.new(content)
         } else if (compressed && sized && CRC32) {
-            CompressedSizedCRC32Trendmark.new(content)
+            CompressedSizedCRC32InnamarkTag.new(content)
         } else if (compressed && CRC32) {
-            CompressedCRC32Trendmark.new(content)
+            CompressedCRC32InnamarkTag.new(content)
         } else if (sized && CRC32) {
-            SizedCRC32Trendmark.new(content)
+            SizedCRC32InnamarkTag.new(content)
         } else if (CRC32) {
-            CRC32Trendmark.new(content)
+            CRC32InnamarkTag.new(content)
         } else if (compressed && sized) {
-            CompressedSizedTrendmark.new(content)
+            CompressedSizedInnamarkTag.new(content)
         } else if (compressed) {
-            CompressedRawTrendmark.new(content)
+            CompressedRawInnamarkTag.new(content)
         } else if (sized) {
-            SizedTrendmark.new(content)
+            SizedInnamarkTag.new(content)
         } else {
-            RawTrendmark.new(content)
+            RawInnamarkTag.new(content)
         }
     }
 
-    /** Contains the used Trendmark variant followed by [text] */
+    /** Contains the used InnamarkTag variant followed by [text] */
     override fun toString(): String {
         return if (compressed && sized && SHA3256) {
             "CompressedSizedSHA3256TextWatermark: '$text'"
@@ -287,23 +288,23 @@ class TextWatermark private constructor(
         }
     }
 
-    /** Returns true if [this].finish() and [other].finish() produce an equal Trendmark */
+    /** Returns true if [this].finish() and [other].finish() produce an equal InnamarkTag */
     override fun equals(other: Any?): Boolean {
         if (other !is TextWatermark) return false
         return text == other.text && compressed == other.compressed && sized == other.sized &&
             CRC32 == other.CRC32 && SHA3256 == other.SHA3256
     }
 
-    class DecodeToStringError(val reason: String) : Event.Error("TextWatermark.fromTrendmark") {
+    class DecodeToStringError(val reason: String) : Event.Error("TextWatermark.fromInnamarkTag") {
         /** Returns a String explaining the event */
         override fun getMessage(): String = "Failed to decode bytes to string: $reason."
     }
 
-    class UnsupportedTrendmarkError(val trendmark: String) :
-        Event.Error("TextWatermark.fromTrendmark") {
+    class UnsupportedInnamarkError(val innamarkTag: String) :
+        Event.Error("TextWatermark.fromInnamarkTag") {
         /** Returns a String explaining the event */
         override fun getMessage(): String =
-            "The Trendmark type $trendmark is not supported by TextWatermark."
+            "The InnamarkTag type $innamarkTag is not supported by TextWatermark."
     }
 
     class FailedTextWatermarkExtractionsWarning(source: String) : Event.Warning(source) {
@@ -314,11 +315,11 @@ class TextWatermark private constructor(
 }
 
 @JvmName("intoTextWatermarks")
-fun Result<List<Trendmark>>.toTextWatermarks(
+fun Result<List<InnamarkTag>>.toTextWatermarks(
     errorOnInvalidUTF8: Boolean = false,
     source: String = "toTextWatermarks",
 ): Result<List<TextWatermark>> {
-    val (trendmarks, status) =
+    val (Innamarks, status) =
         with(this) {
             if (value == null) {
                 return status.into()
@@ -327,8 +328,8 @@ fun Result<List<Trendmark>>.toTextWatermarks(
         }
 
     val textWatermarks =
-        trendmarks.mapNotNull { trendmark ->
-            val textWatermark = TextWatermark.fromTrendmark(trendmark, errorOnInvalidUTF8)
+        Innamarks.mapNotNull { innamarkTag ->
+            val textWatermark = TextWatermark.fromInnamarkTag(innamarkTag, errorOnInvalidUTF8)
             status.appendStatus(textWatermark.status)
             textWatermark.value
         }
@@ -351,5 +352,5 @@ fun Result<List<Watermark>>.toTextWatermarks(
     errorOnInvalidUTF8: Boolean = false,
     source: String = "toTextWatermarks",
 ): Result<List<TextWatermark>> {
-    return this.toTrendmarks(source).toTextWatermarks(errorOnInvalidUTF8, source)
+    return this.toInnamarkTags(source).toTextWatermarks(errorOnInvalidUTF8, source)
 }

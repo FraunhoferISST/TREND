@@ -6,7 +6,7 @@
  */
 package unitTest.files
 
-import de.fraunhofer.isst.trend.watermarker.files.ZipFileHeader
+import de.fraunhofer.isst.innamark.watermarker.files.ZipFileHeader
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

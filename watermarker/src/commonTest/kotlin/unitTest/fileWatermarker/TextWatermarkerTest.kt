@@ -6,12 +6,12 @@
  */
 package unitTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.DefaultTranscoding
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.SeparatorStrategy
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarkerBuilder
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.DefaultTranscoding
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.SeparatorStrategy
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarkerBuilder
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

@@ -4,9 +4,9 @@
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
  */
-package de.fraunhofer.isst.trend.watermarker.files
+package de.fraunhofer.isst.innamark.watermarker.files
 
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Status
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import java.io.File
 
 /** Writes the text file from memory into the file [path] */

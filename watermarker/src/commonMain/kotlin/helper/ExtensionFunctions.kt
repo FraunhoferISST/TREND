@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  */
 
-package de.fraunhofer.isst.trend.watermarker.helper
+package de.fraunhofer.isst.innamark.watermarker.helper
 
 /**
  * Returns an UInt created from 4 bytes in little endian order

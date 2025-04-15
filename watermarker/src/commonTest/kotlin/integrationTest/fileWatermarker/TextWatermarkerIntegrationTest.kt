@@ -6,9 +6,9 @@
  */
 package integrationTest.fileWatermarker
 
-import de.fraunhofer.isst.trend.watermarker.fileWatermarker.TextWatermarker
-import de.fraunhofer.isst.trend.watermarker.files.TextFile
-import de.fraunhofer.isst.trend.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.files.TextFile
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -43,7 +43,7 @@ class TextWatermarkerIntegrationTest {
         // Assert
         assertTrue(watermarks.isSuccess)
         assertEquals(watermarks.value!!.size, 1)
-        val firstWatermark = watermarks.value[0].watermarkContent.toByteArray().decodeToString()
+        val firstWatermark = watermarks.value!![0].watermarkContent.toByteArray().decodeToString()
         assertEquals(watermark, firstWatermark)
     }
 
@@ -75,7 +75,7 @@ class TextWatermarkerIntegrationTest {
         // Assert
         assertTrue(watermarks.isSuccess)
         assertEquals(watermarks.value!!.size, 1)
-        val firstWatermark = watermarks.value[0].watermarkContent.toByteArray().decodeToString()
+        val firstWatermark = watermarks.value!![0].watermarkContent.toByteArray().decodeToString()
         assertEquals(watermark, firstWatermark)
     }
 }

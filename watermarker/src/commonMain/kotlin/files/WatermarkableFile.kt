@@ -5,9 +5,9 @@
  * that can be found in the LICENSE file.
  */
 
-package de.fraunhofer.isst.trend.watermarker.files
+package de.fraunhofer.isst.innamark.watermarker.files
 
-import de.fraunhofer.isst.trend.watermarker.returnTypes.Event
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Event
 import kotlin.js.JsExport
 
 @JsExport
