@@ -35,27 +35,27 @@ Use Gradle to build the CLI tool:
     - This will create a standalone jar file: `./build/libs/cli-<version>-all.jar`
 3. `java -jar build/libs/cli-<version>-all.jar --help`
     - This will print all possible commands of the CLI tool.
-4. *(Optional)* Create alias `trend` to run the CLI tool:
-    - Fish: `alias -s trend "java -jar $PWD/build/libs/cli-<version>-all.jar"`
+4. *(Optional)* Create alias `Innamark` to run the CLI tool:
+    - Fish: `alias -s Innamark "java -jar $PWD/build/libs/cli-<version>-all.jar"`
     - Zsh / Bash:
         - *Note:* You must replace `<path/to/cli>` and `<version` in the following commands
         - add the following line to your `~/.zshrc` or `~/.bashrc`:\
-          `alias trend='java -jar <path/to/cli>/build/libs/cli-<version>-all.jar'`
+          `alias Innamark='java -jar <path/to/cli>/build/libs/cli-<version>-all.jar'`
 
 ## Usage Example
 
 - List all watermarks contained in a file:\
-  `trend list example.watermarked.txt`
+  `Innamark list example.watermarked.txt`
 - *Create a new file from the source file:*
     - Add a watermark to a text file:\
-      `trend add "<watermark>" example.txt example.watermarked.txt`
+      `Innamark add "<watermark>" example.txt example.watermarked.txt`
     - Remove all watermarks contained in a file:\
-      `trend remove example.watermarked.txt example.txt`
+      `Innamark remove example.watermarked.txt example.txt`
 - *Modify the source file:*
     - Add a watermark to a text file:\
-      `trend add "<watermark>" example.txt`
+      `Innamark add "<watermark>" example.txt`
     - Remove all watermarks contained in a file:\
-      `trend remove example.watermarked.txt`
+      `Innamark remove example.watermarked.txt`
 
 ## Development Build
 

@@ -27,7 +27,7 @@ In order to use this library in plain JavaScript, follow these steps:
 1. Build the library ([see above](#compile-the-library))
 2. Import the generated JS library:
    ```html
-   <script src='[relative-path-to]/TREND/watermarker/build/dist/js/productionExecutable/watermarker.js'></script>
+   <script src='[relative-path-to]/Innamark/watermarker/build/dist/js/productionExecutable/watermarker.js'></script>
    ```
 3. This generates a variable `watermarker`s that provides access to the library functionalities.
    However, the actual watermarker object is behind the package path and you might want to reassign
@@ -36,7 +36,7 @@ In order to use this library in plain JavaScript, follow these steps:
    watermarker = watermarker.de.fraunhofer.isst.innamark.watermarker;
    ```
 4. Now you are ready to use the watermarker in plain JS. An example HTML file can be found
-[in the repositories' examples](https://github.com/FraunhoferISST/TREND/blob/main/samples/plain_js/plain_js_minimal_example.html).
+[in the repositories' examples](https://github.com/FraunhoferISST/Innamark/blob/main/samples/plain_js/plain_js_minimal_example.html).
 
 You can open the file in the browser, no web server required.
 
@@ -48,14 +48,14 @@ In order to use this library in JavaScript modules, follow these steps:
 
    ```Javascript
    // CommonJS (CJS)
-   let watermarker = require('[relative-path-to]/TREND/watermarker/build/dist/js/productionExecutable/watermarker.js'); // built as executable
+   let watermarker = require('[relative-path-to]/Innamark/watermarker/build/dist/js/productionExecutable/watermarker.js'); // built as executable
    // or
-   let watermarker = require('[relative-path-to]/TREND/watermarker/build/js/packages/watermarker/kotlin/watermarker.js'); // built as module
+   let watermarker = require('[relative-path-to]/Innamark/watermarker/build/js/packages/watermarker/kotlin/watermarker.js'); // built as module
 
    // ECMAScript Modules (ESM)
-   import watermarker from '[relative-path-to]/TREND/watermarker/build/dist/js/productionExecutable/watermarker.js'; // built as executable
+   import watermarker from '[relative-path-to]/Innamark/watermarker/build/dist/js/productionExecutable/watermarker.js'; // built as executable
    // or
-   import watermarker from '[relative-path-to]/TREND/watermarker/build/js/packages/watermarker/kotlin/watermarker.js'; // built as module
+   import watermarker from '[relative-path-to]/Innamark/watermarker/build/js/packages/watermarker/kotlin/watermarker.js'; // built as module
    ```
 
 3. This generates a variable `watermarker` that provides access to the library functionalities.
@@ -66,6 +66,6 @@ In order to use this library in JavaScript modules, follow these steps:
    ```
    *Note that imports in ESM are implicitly constant.*
 4. Now you are ready to use the watermarker in your module. An example node script can be found
-[in the repositories' examples](https://github.com/FraunhoferISST/TREND/blob/main/samples/js_modules/js_modules_minimal_example.js).
+[in the repositories' examples](https://github.com/FraunhoferISST/Innamark/blob/main/samples/js_modules/js_modules_minimal_example.js).
 
 Run it using `node npm_minimal_example.js`.
