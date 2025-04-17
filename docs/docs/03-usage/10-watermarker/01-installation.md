@@ -20,7 +20,7 @@ import PatentHint from './../../patent-hint.mdx'
 **Java** is required to build the library with [Gradle](https://gradle.org/).
 
 ## Building from Source
-1. Clone the TREND repository
-2. Go into the directory of the watermarker: `cd TREND/watermarker`
+1. Clone the Innamark repository
+2. Go into the directory of the watermarker: `cd Innamark/watermarker`
 3. Build the library: `./gradlew build`
 4. Publish the artifacts locally: `./gradlew publishToMavenLocal`

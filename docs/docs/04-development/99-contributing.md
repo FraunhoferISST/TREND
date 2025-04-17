@@ -12,7 +12,7 @@ description: Contributing in the GitHub project (guidelines, processes, rules, c
 
 # Contributing
 
-When you are interested in contributing to the TREND project, please make sure to follow our 
-[CONTRIBUTING](https://github.com/FraunhoferISST/TREND/blob/main/CONTRIBUTING.md) guidelines. 
+If you are interested in contributing to the Innamark project, please make sure to follow our 
+[CONTRIBUTING](https://github.com/FraunhoferISST/Innamark/blob/main/CONTRIBUTING.md) guidelines. 
 This ensures a clean code base and a structured process. Further, check out our
-[Code of Conduct](https://github.com/FraunhoferISST/TREND/blob/main/CODE_OF_CONDUCT.md).
+[Code of Conduct](https://github.com/FraunhoferISST/Innamark/blob/main/CODE_OF_CONDUCT.md).

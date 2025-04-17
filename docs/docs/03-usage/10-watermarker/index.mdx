@@ -42,7 +42,7 @@ it into our library. See the [Development](../../development/watermarker) sectio
 
 ### TextWatermarker Customizations
 The
-[`TextWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt)
+[`TextWatermarker`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt)
 is designed to allow customizing its behavior in many ways:
 - changing how watermarks are separated
    - empty insert position
@@ -57,20 +57,20 @@ read the code and then create your own implementaitons.
 ### Extraction Customizations
 The Extraction functions of the (Jvm-)Watermarker allow for passing additional parameters for
 specific use cases, **bold** indicates default values for (Jvm-)Watermarker in kotlin:
-- [`squash`](https://github.com/FraunhoferISST/TREND/blob/637c1622c5aa44668869017dae871f9b38e26abb/watermarker/src/commonMain/kotlin/Watermarker.kt#L228)
+- [`squash`](https://github.com/FraunhoferISST/Innamark/blob/637c1622c5aa44668869017dae871f9b38e26abb/watermarker/src/commonMain/kotlin/Watermarker.kt#L228)
 = [**true**/false]: when true duplicate Watermarks are squashed together and only one copy is
 returned
-- [`singleWatermark`](https://github.com/FraunhoferISST/TREND/blob/81aca27b864baaef386eb800c75646cf33019299/watermarker/src/commonMain/kotlin/watermarks/Watermark.kt#L30)
+- [`singleWatermark`](https://github.com/FraunhoferISST/Innamark/blob/81aca27b864baaef386eb800c75646cf33019299/watermarker/src/commonMain/kotlin/watermarks/Watermark.kt#L30)
 = [**true**/false]: when true only the most frequent Watermark is returned
     - if multiple Watermarks appear with the same (highest) frequency a warning is returned with the Watermarks
     - this is separate from the squashing above, duplicates of the most frequent Watermark(s) are still returned if squash = false
-- [`errorOnInvalidUTF8`](https://github.com/FraunhoferISST/TREND/blob/eb5f3b62bc31a63f985fa87c01522281adcb7c3e/watermarker/src/commonMain/kotlin/watermarks/TextWatermark.kt#L123)
+- [`errorOnInvalidUTF8`](https://github.com/FraunhoferISST/Innamark/blob/eb5f3b62bc31a63f985fa87c01522281adcb7c3e/watermarker/src/commonMain/kotlin/watermarks/TextWatermark.kt#L123)
 = [true/**false**]: For functions returning TextWatermarks only, when true throws a
 CharacterCodingException when encountering malformed UTF8 Bytes
-- [`validateAll`](https://github.com/FraunhoferISST/TREND/blob/8b47f1a373769656506a615436b558e362a8952c/watermarker/src/commonMain/kotlin/watermarks/Trendmark.kt#L56)
-= [**true**/false]: For functions returning Trendmarks only, when true calls the
-Trendmark validate() function, which will check for valid characteristics depending on the
-Trendmark type. See the [Trendmark](../../development/watermarker/trendmark) section for more
+- [`validateAll`](https://github.com/FraunhoferISST/Innamark/blob/121b647a40154a272b11466556428b278d9609c9/watermarker/src/commonMain/kotlin/watermarks/InnamarkTag.kt#L56)
+= [**true**/false]: For functions returning InnamarkTags only, when true calls the
+InnamarkTag validate() function, which will check for valid characteristics depending on the
+InnamarkTag type. See the [InnamarkTag](../../development/watermarker/InnamarkTag) section for more
 details.
 
 ## Kotlin Library: Special Characteristics

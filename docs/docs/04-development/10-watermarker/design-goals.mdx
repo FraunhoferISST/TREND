@@ -23,14 +23,14 @@ This documentation is in a pretty early stage and updated continuously. Watch it
 intended yet). Most functions only require *interfaces* instead of specialized classes to allow
 creating your own classes with different behavior.
    - *Example*: Interface
-   [`FileWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/FileWatermarker.kt)
+   [`FileWatermarker`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/FileWatermarker.kt)
    which allows adding support for other file types.
 
 - **Flexibility**: for most of the functionalities we created an interface and then
 implemented our *default* implementation. If this implementation does not meet the requirements, it
 can be exchanged with another class implementing the interface. 
    - *Example*: class
-   [`TextWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L37)
+   [`TextWatermarker`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/commonMain/kotlin/fileWatermarker/TextWatermarker.kt#L39)
    allows specifying your own transcoding.
 
 - **Usage**: offering extensibility and flexibility often introduces a lot of complexity which makes it
@@ -39,9 +39,9 @@ convenient classes and functions which reduce the flexibility but should make it
 library for general use-cases. Only users with special requirements have to look into the more
 flexible and complex API's.
    - *Example*: the classes
-   [`Watermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/Watermarker.kt)
+   [`Watermarker`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/commonMain/kotlin/Watermarker.kt)
    and
-   [`JvmWatermarker`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/jvmMain/kotlin/JvmWatermarker.kt)
+   [`JvmWatermarker`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/jvmMain/kotlin/JvmWatermarker.kt)
    offer functions to insert/extract watermarks into/from all supported file types/data without any
    additional configuration.
 
@@ -59,9 +59,9 @@ tests also provide a good point of reference for new devs on how the code should
 
 - **Error handling**: We handle errors (and warnings) as value, not as exceptions. Our library
 should not throw any exceptions, instead functions which can fail should return a
-[`Status`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Status.kt)
+[`Status`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Status.kt)
 or a
-[`Result`](https://github.com/FraunhoferISST/TREND/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Result.kt)
+[`Result`](https://github.com/FraunhoferISST/Innamark/blob/main/watermarker/src/commonMain/kotlin/returnTypes/Result.kt)
 if they return a value. See [Concepts](../concepts/#error-handling-1) for details.
 
 **Devs working on the project need to understand these goals and implement them in their daily
