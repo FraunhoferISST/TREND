@@ -13,15 +13,15 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'TREND',
-  tagline: 'Traceability Enforcement of Datatransfers',
+  title: 'Innamark',
+  tagline: 'Invisible Watermarking',
   favicon: 'img/branding/favicon.ico',
 
   url: 'https://fraunhoferisst.github.io/',
-  baseUrl: '/TREND/',
+  baseUrl: '/Innamark/',
 
   organizationName: 'FraunhoferISST',
-  projectName: 'TREND',
+  projectName: 'Innamark',
   trailingSlash: true,
 
   onBrokenLinks: 'throw',
@@ -40,7 +40,7 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           editUrl:
-            'https://github.com/FraunhoferISST/TREND/tree/main/docs/',
+            'https://github.com/FraunhoferISST/Innamark/tree/main/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -56,7 +56,7 @@ const config = {
       navbar: {
         title: '',
         logo: {
-          alt: 'TREND Logo',
+          alt: 'Innamark Logo',
           src: 'img/branding/logo/black/trend_logo_b.svg',
           srcDark: 'img/branding/logo/white/trend_logo_w.svg',
         },
@@ -68,7 +68,7 @@ const config = {
             label: 'Documentation',
           },
           {
-            href: 'https://github.com/FraunhoferISST/TREND',
+            href: 'https://github.com/FraunhoferISST/Innamark',
             label: 'GitHub',
             position: 'right',
           },
@@ -90,7 +90,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/FraunhoferISST/TREND',
+                href: 'https://github.com/FraunhoferISST/Innamark',
               },
             ],
           },
