@@ -40,6 +40,7 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         val status = watermarker.addWatermark(cover, watermark.toList())
         return status.into(cover)
     }
+
     /**
      * Adds watermark object [watermark] to [cover]
      * Returns an error if the size of the ExtraFields exceed UShort::MAX
