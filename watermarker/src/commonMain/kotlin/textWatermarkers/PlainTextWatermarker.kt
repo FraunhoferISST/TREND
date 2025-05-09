@@ -51,6 +51,7 @@ class PlainTextWatermarker(
         val status = watermarker.addWatermark(textFile, watermark.toList())
         return status.into(textFile.content)
     }
+
     /**
      * Adds a watermark created from [watermark] ByteArray to [cover]
      *
@@ -63,6 +64,7 @@ class PlainTextWatermarker(
     ): Result<String> {
         return addWatermark(cover, watermark.encodeToByteArray())
     }
+
     /**
      * Adds watermark object [watermark] to [cover]
      *
