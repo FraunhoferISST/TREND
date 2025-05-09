@@ -14,6 +14,14 @@ import de.fraunhofer.isst.innamark.watermarker.files.TextFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 
+/**
+ * Implementation of [de.fraunhofer.isst.innamark.watermarker.textWatermarkers.TextWatermarker] for watermarking plaintext
+ *
+ * Takes optional arguments to customize behavior:
+ * - [transcoding]: for defining the watermarking alphabet, encoding, and decoding.
+ * - [separatorStrategy]: for defining how multiple watermarks are separated.
+ * - [placement]: function for finding positions where transcoding alphabet characters are inserted.
+ */
 class PlainTextWatermarker(
     private val transcoding: Transcoding = DefaultTranscoding,
     private val separatorStrategy: SeparatorStrategy =
@@ -29,7 +37,12 @@ class PlainTextWatermarker(
     // create instance of (old) TextWatermarker with provided parameters (or defaults)
     private val watermarker = TextWatermarker(transcoding, separatorStrategy, placement)
 
-    // override functions
+    /**
+     * Adds a watermark created from [watermark] String to [cover]
+     *
+     * Returns a warning if the watermark does not fit at least a single time into the file.
+     * Returns an error if the text file contains a character from the transcoding alphabet.
+     */
     override fun addWatermark(
         cover: String,
         watermark: ByteArray,
@@ -38,14 +51,24 @@ class PlainTextWatermarker(
         val status = watermarker.addWatermark(textFile, watermark.toList())
         return status.into(textFile.content)
     }
-
+    /**
+     * Adds a watermark created from [watermark] ByteArray to [cover]
+     *
+     * Returns a warning if the watermark does not fit at least a single time into the file.
+     * Returns an error if the text file contains a character from the transcoding alphabet.
+     */
     override fun addWatermark(
         cover: String,
         watermark: String,
     ): Result<String> {
         return addWatermark(cover, watermark.encodeToByteArray())
     }
-
+    /**
+     * Adds watermark object [watermark] to [cover]
+     *
+     * Returns a warning if the watermark does not fit at least a single time into the file.
+     * Returns an error if the text file contains a character from the transcoding alphabet.
+     */
     override fun addWatermark(
         cover: String,
         watermark: Watermark,

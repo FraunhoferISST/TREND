@@ -10,46 +10,35 @@ import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 
 /**
- * Concept: Client application specific Transcoding, Strategy, and Placement are passed to the
- * concrete implementation at creation and not modified after
- *
- * Ideas like zerowidth etc. would be handled by separate, as yet unimplemented concrete
- * Watermarkers since it requires differences in the actual add functions, not just Transcoding,
- * Strategy, and Placement
- *
- * The basic idea of inserting Unicode Chars between words of a given String remains unchanged
- * throughout implementations of this Interface
+ * Interface for implementations facilitating watermarking of [String] covers
  */
-
 interface TextWatermarker {
-    /**
-     * Watermarks [cover] String with a Watermark containing [watermark] String
-     */
+    /** Adds a watermark created from [watermark] String to [cover] */
     fun addWatermark(
         cover: String,
         watermark: String,
     ): Result<String>
 
-    /**
-     * Watermarks [cover] String with a Watermark containing [watermark] Bytes
-     */
+    /** Adds a watermark created from [watermark] ByteArray to [cover] */
     fun addWatermark(
         cover: String,
         watermark: ByteArray,
     ): Result<String>
 
+    /** Adds watermark object [watermark] to [cover] */
     fun addWatermark(
         cover: String,
         watermark: Watermark,
     ): Result<String>
 
-    /**
-     * Checks the provided [cover] String for Watermark characters
-     */
+    /** Returns a [Boolean] indicating whether [cover] contains watermarks */
     fun containsWatermark(cover: String): Boolean
 
     /**
-     * Extracts and returns Watermarks
+     * Returns a [Result] containing a list of [Watermark]s in [cover]
+     *
+     * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
      */
     fun getWatermarks(
         cover: String,
@@ -57,9 +46,6 @@ interface TextWatermarker {
         singleWatermark: Boolean = false,
     ): Result<List<Watermark>>
 
-    /**
-     * Returns the provided [cover] String with any Watermark characters replaced with regular
-     * spaces.
-     */
+    /** Removes all watermarks from [cover] and returns a [Result] containing the cleaned cover */
     fun removeWatermarks(cover: String): Result<String>
 }
