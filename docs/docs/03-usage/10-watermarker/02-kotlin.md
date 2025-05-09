@@ -57,11 +57,12 @@ for more details).*
 (see [Watermarker](../#extraction-customization) for more details)*
 
 ```kt title="src/main/kotlin/Main.kt" showLineNumbers
-import de.fraunhofer.isst.innamark.watermarker.Watermarker
+import de.fraunhofer.isst.innamark.watermarker.textWatermarkers.TextWatermarker
+import de.fraunhofer.isst.innamark.watermarker.textWatermarkers.PlainTextWatermarker
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
-import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import kotlin.system.exitProcess
+import kotlin.text.decodeToString
 
 fun main() {
     // *********************
@@ -77,13 +78,10 @@ fun main() {
     val watermarkText = "Test"
 
     // prepare watermarker
-    val watermarker = Watermarker()
-
-    // creating a watermark with watermarkText as content
-    val watermark = TextWatermark.new(watermarkText)
+    val watermarker: TextWatermarker = PlainTextWatermarker()
 
     // inserting the watermark into the cover text and handling potential errors and warnings
-    val watermarkedText = watermarker.textAddWatermark(coverText, watermark).unwrap()
+    val watermarkedText = watermarker.addWatermark(coverText, watermarkText).unwrap()
 
     // print the watermarked text
     println("watermarked text:")
@@ -95,13 +93,14 @@ fun main() {
     // **********************
 
     // extract the watermark from the watermarked text
-    val extractedWatermarks = watermarker.textGetTextWatermarks(watermarkedText).unwrap()
+    val extractedWatermarks = watermarker.getWatermarks(watermarkedText).unwrap()
     check(extractedWatermarks.size == 1)
     val extractedWatermark = extractedWatermarks[0]
 
     // print the watermark text
     println("Found a watermark in the text:")
-    println(extractedWatermark.text)
+    println(extractedWatermark.watermarkContent.toByteArray().decodeToString())
+    println()
 
 
     // *******************************
@@ -115,21 +114,20 @@ fun main() {
     // a second Watermark to illustrate multiple watermark extraction
     val secondWatermarkText = "Okay"
 
-    // creating the second watermark
-    val secondWatermark = TextWatermark.new(secondWatermarkText)
-
     // inserting the second watermark into the coverText
-    val secondWatermarkedText = watermarker.textAddWatermark(coverText, secondWatermark).unwrap()
+    val secondWatermarkedText = watermarker.addWatermark(coverText, secondWatermarkText).unwrap()
 
     // combining the watermarked texts to get two different watermarks in one Text
     val combinedText = watermarkedText + secondWatermarkedText
 
     // extract the watermarks from the watermarked text
     val extractedMultipleWatermarks =
-        watermarker.textGetTextWatermarks(combinedText, singleWatermark = false).unwrap()
+        watermarker.getWatermarks(combinedText, singleWatermark = false).unwrap()
 
     // print the watermarks found
-    for (extracted in extractedMultipleWatermarks) println("Found watermark: $extracted")
+    for (extracted in extractedMultipleWatermarks) {
+        println("Found watermark: ${extracted.watermarkContent.toByteArray().decodeToString()}")
+    }
 
 }
 
