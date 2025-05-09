@@ -11,9 +11,16 @@ import de.fraunhofer.isst.innamark.watermarker.files.ZipFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 
+/**
+ * Implementation of [BinaryWatermarker] for [ZipFile] covers
+ */
 class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
     private val watermarker = ZipWatermarker
 
+    /**
+     * Adds a watermark created from [watermark] String to [cover]
+     * Returns an error if the size of the ExtraFields exceed UShort::MAX
+     */
     override fun addWatermark(
         cover: ZipFile,
         watermark: String,
@@ -22,6 +29,10 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         return status.into(cover)
     }
 
+    /**
+     * Adds a watermark created from [watermark] ByteArray to [cover]
+     * Returns an error if the size of the ExtraFields exceed UShort::MAX
+     */
     override fun addWatermark(
         cover: ZipFile,
         watermark: ByteArray,
@@ -29,7 +40,10 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         val status = watermarker.addWatermark(cover, watermark.toList())
         return status.into(cover)
     }
-
+    /**
+     * Adds watermark object [watermark] to [cover]
+     * Returns an error if the size of the ExtraFields exceed UShort::MAX
+     */
     override fun addWatermark(
         cover: ZipFile,
         watermark: Watermark,
