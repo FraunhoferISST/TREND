@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -39,7 +39,7 @@ class TextWatermarkerTestJvm {
     fun addWatermark_containsAlphabetChars_error() {
         // Arrange
         val file = openTextFile("src/jvmTest/resources/lorem_ipsum_watermarked.txt")
-        val watermarkBytes = "Hello World".encodeToByteArray().asList()
+        val watermarkBytes = "Hello World".encodeToByteArray()
         val watermark = Watermark(watermarkBytes)
         val expectedMessage =
             TextWatermarker.ContainsAlphabetCharsError(

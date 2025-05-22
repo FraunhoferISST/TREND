@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -38,7 +38,7 @@ class ZipWatermarkerTestJvm {
     fun addWatermark_oversizedWatermark_error() {
         // Arrange
         val file = openZipFile("src/jvmTest/resources/multiple_files.zip")
-        val watermark = Watermark(List<Byte>(UShort.MAX_VALUE.toInt()) { 0 })
+        val watermark = Watermark(ByteArray(UShort.MAX_VALUE.toInt()) { 0 })
         val expectedMessage = ZipFileHeader.ExtraField.OversizedHeaderError(65567).into().toString()
 
         // Act

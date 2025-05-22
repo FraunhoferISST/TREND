@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -208,9 +208,9 @@ class ExtensionFunctionsTest {
     }
 
     @Test
-    fun listByteToHexString_bytes_success() {
+    fun byteArrayToHexString_bytes_success() {
         // Arrange
-        val bytes = listOf<Byte>(0x12, 0x34, 0xAB.toByte(), 0xCD.toByte())
+        val bytes = byteArrayOf(0x12, 0x34, 0xAB.toByte(), 0xCD.toByte())
         val expected = "[12, 34, AB, CD]"
 
         // Act

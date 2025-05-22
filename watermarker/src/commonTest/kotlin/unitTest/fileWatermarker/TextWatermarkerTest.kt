@@ -13,13 +13,14 @@ import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarkerBu
 import de.fraunhofer.isst.innamark.watermarker.files.TextFile
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class DefaultTranscodingTest {
     private val loremIpsum =
-        listOf<Byte>(
+        byteArrayOf(
             0x00, 0x01, 0x0F, 0x41, 0x62, 0xAA.toByte(), 0xF0.toByte(), 0xFE.toByte(),
             0xFF.toByte(), 0x42, 0xef.toByte(), 0xfc.toByte(), 0x2d, 0xe3.toByte(), 0xc9.toByte(),
             0xfa.toByte(), 0x08, 0x87.toByte(), 0x2d,
@@ -54,7 +55,7 @@ class DefaultTranscodingTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertEquals(loremIpsum, result.value?.toList())
+        assertContentEquals(loremIpsum, result.value)
     }
 }
 
