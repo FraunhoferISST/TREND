@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -13,8 +13,8 @@ import java.util.zip.Inflater
 
 actual object Compression {
     /** Compresses [data] using the deflate algorithm */
-    actual fun inflate(data: List<Byte>): Result<List<Byte>> {
-        val input = data.toByteArray()
+    actual fun inflate(data: ByteArray): Result<ByteArray> {
+        val input = data
         val outputStream = ByteArrayOutputStream()
 
         val inflater = Inflater(true)
@@ -32,12 +32,12 @@ actual object Compression {
         }
         inflater.end()
 
-        return Result.success(outputStream.toByteArray().asList())
+        return Result.success(outputStream.toByteArray())
     }
 
     /** Uncompresses [data] using the inflate algorithm */
-    actual fun deflate(data: List<Byte>): List<Byte> {
-        val input = data.toByteArray()
+    actual fun deflate(data: ByteArray): ByteArray {
+        val input = data
 
         // Compress the bytes - 1 to 4 bytes/char for UTF-8
         val deflater =
@@ -47,6 +47,6 @@ actual object Compression {
             }
         val output = ByteArray(input.size * 4)
         val compressedLength = deflater.deflate(output)
-        return output.copyOfRange(0, compressedLength).asList()
+        return output.copyOfRange(0, compressedLength)
     }
 }

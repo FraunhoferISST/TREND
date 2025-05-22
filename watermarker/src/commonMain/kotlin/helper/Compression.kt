@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -14,10 +14,10 @@ const val COMPRESSION_LEVEL: Int = 9
 
 expect object Compression {
     /** Compresses [data] using the deflate algorithm */
-    fun deflate(data: List<Byte>): List<Byte>
+    fun deflate(data: ByteArray): ByteArray
 
     /** Uncompresses [data] using the inflate algorithm */
-    fun inflate(data: List<Byte>): Result<List<Byte>>
+    fun inflate(data: ByteArray): Result<ByteArray>
 }
 
 @JsExport
