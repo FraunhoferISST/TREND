@@ -96,7 +96,7 @@ class JvmWatermarker : Watermarker() {
     ): Status {
         val (status, bytes) =
             with(readFile(source)) {
-                status to (value?.asList() ?: return into())
+                status to (value ?: return into())
             }
 
         val file =
@@ -137,7 +137,7 @@ class JvmWatermarker : Watermarker() {
     ): Result<Boolean> {
         val (status, bytes) =
             with(readFile(source)) {
-                status to (value?.asList() ?: return into<_>())
+                status to (value ?: return into<_>())
             }
 
         val file =
@@ -179,7 +179,7 @@ class JvmWatermarker : Watermarker() {
     ): Result<List<Watermark>> {
         val (status, bytes) =
             with(readFile(source)) {
-                status to (value?.asList() ?: return into<_>())
+                status to (value ?: return into<_>())
             }
 
         val file =
@@ -304,7 +304,7 @@ class JvmWatermarker : Watermarker() {
     ): Result<List<Watermark>> {
         val (status, bytes) =
             with(readFile(source)) {
-                status to (value?.asList() ?: return into<_>())
+                status to (value ?: return into<_>())
             }
 
         val file =

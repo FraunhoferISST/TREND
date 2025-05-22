@@ -106,7 +106,7 @@ open class Watermarker {
     @JsName("textAddWatermarkBytes")
     fun textAddWatermark(
         text: String,
-        watermark: List<Byte>,
+        watermark: ByteArray,
     ): Result<String> {
         val watermarker = textWatermarker
 

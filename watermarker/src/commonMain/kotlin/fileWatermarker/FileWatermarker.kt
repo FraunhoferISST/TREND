@@ -24,7 +24,7 @@ interface FileWatermarker<File : WatermarkableFile> {
     @JsName("addWatermarkBytes")
     fun addWatermark(
         file: File,
-        watermark: List<Byte>,
+        watermark: ByteArray,
     ): Status
 
     /** Adds a [watermark] to [file] */
@@ -114,7 +114,7 @@ interface FileWatermarker<File : WatermarkableFile> {
     ): Result<List<Watermark>>
 
     /** Parses [bytes] as File */
-    fun parseBytes(bytes: List<Byte>): Result<File>
+    fun parseBytes(bytes: ByteArray): Result<File>
 
     /** Returns the name of the FileWatermark. Used in Event messages. */
     fun getSource(): String

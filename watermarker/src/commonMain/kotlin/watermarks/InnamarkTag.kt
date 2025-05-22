@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -44,13 +44,13 @@ sealed interface InnamarkTagInterface {
     }
 
     /** Returns the decoded information stored in the InnamarkTag */
-    fun getContent(): Result<List<Byte>>
+    fun getContent(): Result<ByteArray>
 
     /** Returns the raw bytes of the watermark */
-    fun getRawContent(): List<Byte>
+    fun getRawContent(): ByteArray
 
     /** Updates the raw bytes of the watermark */
-    fun setRawContent(content: List<Byte>)
+    fun setRawContent(content: ByteArray)
 
     /** Checks if the bytes represent a valid InnamarkTag of the given class */
     fun validate(): Status {
@@ -98,7 +98,7 @@ sealed interface InnamarkTagInterface {
  */
 @JsExport
 sealed class InnamarkTag(
-    content: List<Byte>,
+    content: ByteArray,
 ) : Watermark(content), InnamarkTagInterface {
     companion object {
         const val SOURCE = "InnamarkTag"
@@ -111,7 +111,7 @@ sealed class InnamarkTag(
          *  - The `validate()` function of the created InnamarkTag returns an error.
          */
         @JvmStatic
-        fun parse(input: List<Byte>): Result<InnamarkTag> {
+        fun parse(input: ByteArray): Result<InnamarkTag> {
             if (input.size < TAG_SIZE) {
                 return NotEnoughDataError(SOURCE, TAG_SIZE).into<_>()
             }
@@ -152,7 +152,7 @@ sealed class InnamarkTag(
             parse(watermark.watermarkContent)
 
         @JvmStatic
-        private fun extractTag(content: List<Byte>): UByte {
+        private fun extractTag(content: ByteArray): UByte {
             check(TAG_SIZE == 1)
             require(content.isNotEmpty()) { "Cannot extract tag from empty watermark." }
             return content[0].toUByte()
@@ -171,10 +171,10 @@ sealed class InnamarkTag(
     override fun extractTag(): UByte = Companion.extractTag(watermarkContent)
 
     /** Returns the all bytes of the watermark */
-    override fun getRawContent(): List<Byte> = watermarkContent
+    override fun getRawContent(): ByteArray = watermarkContent
 
     /** Sets all bytes of the watermark to [content] */
-    override fun setRawContent(content: List<Byte>) {
+    override fun setRawContent(content: ByteArray) {
         watermarkContent = content
     }
 
@@ -230,7 +230,9 @@ sealed class InnamarkTag(
             }
 
             return Result.success(
-                UInt.fromBytesLittleEndian(content.subList(sizeRange.first, sizeRange.last + 1)),
+                UInt.fromBytesLittleEndian(
+                    content.slice(sizeRange.first until sizeRange.last + 1),
+                ),
             )
         }
 
@@ -290,7 +292,11 @@ sealed class InnamarkTag(
                 return NotEnoughDataError(getSource(), checksumRange.last + 1).into<_>()
             }
 
-            val checksumBytes = content.subList(checksumRange.first, checksumRange.last + 1)
+            val checksumBytes =
+                content.slice(
+                    checksumRange.first until
+                        checksumRange.last + 1,
+                )
             val checksum = UInt.fromBytesLittleEndian(checksumBytes)
 
             return Result.success(checksum)
@@ -300,10 +306,10 @@ sealed class InnamarkTag(
          * Returns checksum placeholder bytes that are used as checksum during the calculation of
          * the checksum.
          */
-        fun getChecksumPlaceholder(): List<Byte> {
+        fun getChecksumPlaceholder(): ByteArray {
             val checksumRange = getChecksumRange()
             val size = checksumRange.last - checksumRange.first + 1
-            return List(size) { ChecksumConstants.CHECKSUM_PLACEHOLDER }
+            return ByteArray(size) { ChecksumConstants.CHECKSUM_PLACEHOLDER }
         }
 
         /**
@@ -312,7 +318,7 @@ sealed class InnamarkTag(
          * This function must be overridden if more than the checksum itself is excluded from the
          * checksum input. E.g., when a placeholder for a hash is required.
          */
-        fun getChecksumInput(): Result<List<Byte>> {
+        fun getChecksumInput(): Result<ByteArray> {
             val rawContent = getRawContent()
             val checksumRange = getChecksumRange()
             if (rawContent.size <= checksumRange.last) {
@@ -320,11 +326,13 @@ sealed class InnamarkTag(
             }
 
             val checksumInput = ArrayList<Byte>(rawContent.size)
-            checksumInput.addAll(rawContent.subList(0, checksumRange.first))
-            checksumInput.addAll(getChecksumPlaceholder())
-            checksumInput.addAll(rawContent.subList(checksumRange.last + 1, rawContent.size))
+            checksumInput.addAll(rawContent.slice(0 until checksumRange.first))
+            checksumInput.addAll(getChecksumPlaceholder().asList())
+            checksumInput.addAll(
+                rawContent.slice(checksumRange.last + 1 until rawContent.size),
+            )
 
-            return Result.success(checksumInput)
+            return Result.success(checksumInput.toByteArray())
         }
 
         /**
@@ -360,7 +368,7 @@ sealed class InnamarkTag(
                 content[i] = checksum.next()
             }
             check(!checksum.hasNext())
-            setRawContent(content)
+            setRawContent(content.toByteArray())
 
             return Status.success()
         }
@@ -414,7 +422,7 @@ sealed class InnamarkTag(
          * Returns an error if the watermark content does not contain enough bytes (according to
          * the `getHashRange()` function).
          */
-        fun extractHash(): Result<List<Byte>> {
+        fun extractHash(): Result<ByteArray> {
             val content = getRawContent()
             val hashRange = getHashRange()
 
@@ -422,17 +430,19 @@ sealed class InnamarkTag(
                 return NotEnoughDataError(getSource(), hashRange.last + 1).into<_>()
             }
 
-            return Result.success(content.subList(hashRange.first, hashRange.last + 1))
+            return Result.success(
+                content.copyOfRange(hashRange.first, hashRange.last + 1),
+            )
         }
 
         /**
          * Returns hash placeholder bytes that are used as checksum during the calculation of the
          * checksum.
          */
-        fun getHashPlaceholder(): List<Byte> {
+        fun getHashPlaceholder(): ByteArray {
             val hashRange = getHashRange()
             val size = hashRange.last - hashRange.first + 1
-            return List(size) { HashConstants.HASH_PLACEHOLDER }
+            return ByteArray(size) { HashConstants.HASH_PLACEHOLDER }
         }
 
         /**
@@ -441,7 +451,7 @@ sealed class InnamarkTag(
          * This function must be overridden if more than the hash itself is excluded from the
          * hash input. E.g., when a placeholder for a checksum is required.
          */
-        fun getHashInput(): Result<List<Byte>> {
+        fun getHashInput(): Result<ByteArray> {
             val rawContent = getRawContent()
             val hashRange = getHashRange()
             if (rawContent.size <= hashRange.last) {
@@ -449,11 +459,11 @@ sealed class InnamarkTag(
             }
 
             val hashInput = ArrayList<Byte>(rawContent.size)
-            hashInput.addAll(rawContent.subList(0, hashRange.first))
-            hashInput.addAll(getHashPlaceholder())
-            hashInput.addAll(rawContent.subList(hashRange.last + 1, rawContent.size))
+            hashInput.addAll(rawContent.slice(0 until hashRange.first))
+            hashInput.addAll(getHashPlaceholder().asList())
+            hashInput.addAll(rawContent.slice(hashRange.last + 1 until rawContent.size))
 
-            return Result.success(hashInput)
+            return Result.success(hashInput.toByteArray())
         }
 
         /**
@@ -462,7 +472,7 @@ sealed class InnamarkTag(
          * The bytes of `getHashPlaceholder()` replace the actual checksum in the watermark
          * content.
          */
-        fun calculateHash(): Result<List<Byte>>
+        fun calculateHash(): Result<ByteArray>
 
         /**
          * Uses the `calculateHash()` function to update the hash store in the watermark content.
@@ -482,7 +492,7 @@ sealed class InnamarkTag(
                 content[i] = hash.next()
             }
             check(!hash.hasNext())
-            setRawContent(content)
+            setRawContent(content.toByteArray())
 
             return Status.success()
         }
@@ -507,7 +517,7 @@ sealed class InnamarkTag(
                     value!!
                 }
 
-            return if (extractedHash != calculatedHash) {
+            return if (!extractedHash.contentEquals(calculatedHash)) {
                 InvalidHashWarning(getSource(), extractedHash, calculatedHash).into()
             } else {
                 Status.success()
@@ -559,8 +569,8 @@ sealed class InnamarkTag(
 
     class InvalidHashWarning(
         source: String,
-        val expectedHash: List<Byte>,
-        val actualHash: List<Byte>,
+        val expectedHash: ByteArray,
+        val actualHash: ByteArray,
     ) : Event.Warning(source) {
         override fun getMessage(): String {
             val expectedHex = expectedHash.toHexString()
@@ -608,23 +618,23 @@ fun Result<List<Watermark>>.toInnamarkTags(
 }
 
 @JsExport
-class RawInnamarkTag(content: List<Byte>) : InnamarkTag(content) {
+class RawInnamarkTag(content: ByteArray) : InnamarkTag(content) {
     companion object {
         const val SOURCE = "InnamarkTag.RawInnamarkTag"
         const val TYPE_TAG: UByte = 0u // "00000000"
 
         /** Creates a new `RawInnamarkTag` with containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): RawInnamarkTag = RawInnamarkTag(createRaw(TYPE_TAG, content))
+        fun new(content: ByteArray): RawInnamarkTag = RawInnamarkTag(createRaw(TYPE_TAG, content))
 
         /** Creates a new `RawInnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
 
         internal fun createRaw(
             tag: UByte,
-            content: List<Byte>,
-        ): List<Byte> = listOf(tag.toByte()) + content
+            content: ByteArray,
+        ): ByteArray = byteArrayOf(tag.toByte()) + content
     }
 
     /** Constant function that returns the name of the specific InnamarkTag */
@@ -634,11 +644,11 @@ class RawInnamarkTag(content: List<Byte>) : InnamarkTag(content) {
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE))
+    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE).toByteArray())
 }
 
 @JsExport
-class SizedInnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.Sized {
+class SizedInnamarkTag(content: ByteArray) : InnamarkTag(content), InnamarkTag.Sized {
     companion object {
         const val SOURCE = "InnamarkTag.SizedInnamarkTag"
         const val TYPE_TAG: UByte = 32u // "00100000"
@@ -654,27 +664,27 @@ class SizedInnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.
 
         /** Creates a new `SizedInnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): SizedInnamarkTag {
+        fun new(content: ByteArray): SizedInnamarkTag {
             return SizedInnamarkTag(createRaw(TYPE_TAG, content))
         }
 
         /** Creates a new `SizedInnamark` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
 
         internal fun createRaw(
             tag: UByte,
-            content: List<Byte>,
-        ): List<Byte> {
+            content: ByteArray,
+        ): ByteArray {
             val size = TAG_SIZE + SIZE_SIZE + content.size
             val watermark = ArrayList<Byte>(size)
             val encodedSize = size.toUInt().toBytesLittleEndian()
 
             watermark.add(tag.toByte())
             watermark.addAll(encodedSize)
-            watermark.addAll(content)
+            watermark.addAll(content.asList())
 
-            return watermark
+            return watermark.toByteArray()
         }
     }
 
@@ -685,14 +695,19 @@ class SizedInnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE))
+    override fun getContent() =
+        Result.success(
+            watermarkContent.drop(TAG_SIZE + SIZE_SIZE).toByteArray(),
+        )
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the size */
     override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 }
 
 @JsExport
-class CRC32InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.Checksum {
+class CRC32InnamarkTag(
+    content: ByteArray,
+) : InnamarkTag(content), InnamarkTag.Checksum {
     companion object {
         const val SOURCE = "InnamarkTag.CRC32InnamarkTag"
         const val TYPE_TAG: UByte = 16u // "00010000"
@@ -702,7 +717,7 @@ class CRC32InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.
 
         /** Creates a new `CRC32InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CRC32InnamarkTag {
+        fun new(content: ByteArray): CRC32InnamarkTag {
             val watermark = CRC32InnamarkTag(createRaw(TYPE_TAG, content))
             watermark.updateChecksum()
             return watermark
@@ -710,26 +725,26 @@ class CRC32InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.
 
         /** Creates a new `CRC32InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
 
         internal fun createRaw(
             tag: UByte,
-            content: List<Byte>,
-        ): List<Byte> {
+            content: ByteArray,
+        ): ByteArray {
             val watermark = ArrayList<Byte>(TAG_SIZE + CHECKSUM_SIZE + content.size)
 
             watermark.add(tag.toByte())
             repeat(CHECKSUM_SIZE) {
                 watermark.add(ChecksumConstants.CHECKSUM_PLACEHOLDER)
             }
-            watermark.addAll(content)
+            watermark.addAll(content.toList())
 
-            return watermark
+            return watermark.toByteArray()
         }
 
         /** Calculates the CRC32 checksum of [input] */
         @JvmStatic
-        fun calculateChecksum(input: List<Byte>): UInt = CRC32.checksum(input)
+        fun calculateChecksum(input: ByteArray): UInt = CRC32.checksum(input)
     }
 
     /** Constant function that returns the name of the specific InnamarkTag */
@@ -739,7 +754,10 @@ class CRC32InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + CHECKSUM_SIZE))
+    override fun getContent() =
+        Result.success(
+            watermarkContent.drop(TAG_SIZE + CHECKSUM_SIZE).toByteArray(),
+        )
 
     /**
      * Returns the range of bytes (inclusive) within the watermark bytes that represent the checksum
@@ -763,7 +781,7 @@ class CRC32InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.
 }
 
 @JsExport
-class SizedCRC32InnamarkTag(content: List<Byte>) :
+class SizedCRC32InnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Sized, InnamarkTag.Checksum {
     companion object {
         const val SOURCE = "InnamarkTag.SizedCRC32InnamarkTag"
@@ -777,7 +795,7 @@ class SizedCRC32InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `SizedCRC32InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): SizedCRC32InnamarkTag {
+        fun new(content: ByteArray): SizedCRC32InnamarkTag {
             val watermark = SizedCRC32InnamarkTag(createRaw(TYPE_TAG, content))
             watermark.updateChecksum()
             return watermark
@@ -785,24 +803,24 @@ class SizedCRC32InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `SizedCRC32InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
 
         internal fun createRaw(
             tag: UByte,
-            content: List<Byte>,
-        ): List<Byte> {
+            content: ByteArray,
+        ): ByteArray {
             val size = TAG_SIZE + SIZE_SIZE + CHECKSUM_SIZE + content.size
             val encodedSize = size.toUInt().toBytesLittleEndian()
             val watermark = ArrayList<Byte>(size)
 
             watermark.add(tag.toByte())
-            watermark.addAll(encodedSize)
+            watermark.addAll(encodedSize.toList())
             repeat(CHECKSUM_SIZE) {
                 watermark.add(ChecksumConstants.CHECKSUM_PLACEHOLDER)
             }
-            watermark.addAll(content)
+            watermark.addAll(content.toList())
 
-            return watermark
+            return watermark.toByteArray()
         }
     }
 
@@ -814,7 +832,7 @@ class SizedCRC32InnamarkTag(content: List<Byte>) :
 
     /** Returns the decoded information stored in the InnamarkTag */
     override fun getContent() =
-        Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE + CHECKSUM_SIZE))
+        Result.success(watermarkContent.drop(TAG_SIZE + SIZE_SIZE + CHECKSUM_SIZE).toByteArray())
 
     override fun getSizeRange(): IntRange = SIZE_START_INDEX..SIZE_END_INDEX
 
@@ -840,7 +858,9 @@ class SizedCRC32InnamarkTag(content: List<Byte>) :
 }
 
 @JsExport
-class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.Hash {
+class SHA3256InnamarkTag(
+    content: ByteArray,
+) : InnamarkTag(content), InnamarkTag.Hash {
     companion object {
         const val SOURCE = "InnamarkTag.SHA3256InnamarkTag"
         const val TYPE_TAG: UByte = 8u // "00001000"
@@ -850,7 +870,7 @@ class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTa
 
         /** Creates a new `SHA3256InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): SHA3256InnamarkTag {
+        fun new(content: ByteArray): SHA3256InnamarkTag {
             val watermark = SHA3256InnamarkTag(createRaw(TYPE_TAG, content))
             watermark.updateHash()
             return watermark
@@ -858,12 +878,12 @@ class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTa
 
         /** Creates a new `SHA3256InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
 
         internal fun createRaw(
             tag: UByte,
-            content: List<Byte>,
-        ): List<Byte> {
+            content: ByteArray,
+        ): ByteArray {
             val size = TAG_SIZE + HASH_SIZE + content.size
 
             val watermark = ArrayList<Byte>(size)
@@ -871,17 +891,17 @@ class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTa
             repeat(HASH_SIZE) {
                 watermark.add(HashConstants.HASH_PLACEHOLDER)
             }
-            watermark.addAll(content)
+            watermark.addAll(content.toList())
 
-            return watermark
+            return watermark.toByteArray()
         }
 
         /** Calculates the SHA3-256 hash of [input] */
         @JvmStatic
-        fun calculateHash(input: List<Byte>): List<Byte> {
+        fun calculateHash(input: ByteArray): ByteArray {
             val hashAlgorithm = SHA3_256()
-            hashAlgorithm.update(input.toByteArray())
-            return hashAlgorithm.digest().asList()
+            hashAlgorithm.update(input)
+            return hashAlgorithm.digest()
         }
     }
 
@@ -892,7 +912,10 @@ class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTa
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent() = Result.success(watermarkContent.drop(TAG_SIZE + HASH_SIZE))
+    override fun getContent() =
+        Result.success(
+            watermarkContent.drop(TAG_SIZE + HASH_SIZE).toByteArray(),
+        )
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the hash */
     override fun getHashRange(): IntRange = HASH_START_INDEX..HASH_END_INDEX
@@ -903,7 +926,7 @@ class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTa
      * The bytes of `getHashPlaceholder()` replace the actual checksum in the watermark
      * content.
      */
-    override fun calculateHash(): Result<List<Byte>> {
+    override fun calculateHash(): Result<ByteArray> {
         val hashInput =
             with(getHashInput()) {
                 if (!isSuccess) return status.into<_>()
@@ -914,7 +937,7 @@ class SHA3256InnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTa
 }
 
 @JsExport
-class SizedSHA3256InnamarkTag(content: List<Byte>) :
+class SizedSHA3256InnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Sized, InnamarkTag.Hash {
     companion object {
         const val SOURCE = "InnamarkTag.SizedSHA3256InnamarkTag"
@@ -928,7 +951,7 @@ class SizedSHA3256InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `SizedSHA3256InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): SizedSHA3256InnamarkTag {
+        fun new(content: ByteArray): SizedSHA3256InnamarkTag {
             val watermark = SizedSHA3256InnamarkTag(createRaw(TYPE_TAG, content))
             watermark.updateHash()
             return watermark
@@ -936,24 +959,24 @@ class SizedSHA3256InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `SizedSHA3256InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
 
         internal fun createRaw(
             tag: UByte,
-            content: List<Byte>,
-        ): List<Byte> {
+            content: ByteArray,
+        ): ByteArray {
             val size = TAG_SIZE + SIZE_SIZE + HASH_SIZE + content.size
             val encodedSize = size.toUInt().toBytesLittleEndian()
 
             val watermark = ArrayList<Byte>(size)
             watermark.add(tag.toByte())
-            watermark.addAll(encodedSize)
+            watermark.addAll(encodedSize.toList())
             repeat(HASH_SIZE) {
                 watermark.add(HashConstants.HASH_PLACEHOLDER)
             }
-            watermark.addAll(content)
+            watermark.addAll(content.toList())
 
-            return watermark
+            return watermark.toByteArray()
         }
     }
 
@@ -966,7 +989,7 @@ class SizedSHA3256InnamarkTag(content: List<Byte>) :
     /** Returns the decoded information stored in the InnamarkTag */
     override fun getContent() =
         Result.success(
-            watermarkContent.drop(TAG_SIZE + SIZE_SIZE + HASH_SIZE),
+            watermarkContent.drop(TAG_SIZE + SIZE_SIZE + HASH_SIZE).toByteArray(),
         )
 
     /** Returns the range of bytes (inclusive) within the watermark bytes that represent the size */
@@ -981,7 +1004,7 @@ class SizedSHA3256InnamarkTag(content: List<Byte>) :
      * The bytes of `getHashPlaceholder()` replace the actual checksum in the watermark
      * content.
      */
-    override fun calculateHash(): Result<List<Byte>> {
+    override fun calculateHash(): Result<ByteArray> {
         val hashInput =
             with(getHashInput()) {
                 if (!isSuccess) return status.into<_>()
@@ -993,21 +1016,23 @@ class SizedSHA3256InnamarkTag(content: List<Byte>) :
 }
 
 @JsExport
-class CompressedRawInnamarkTag(content: List<Byte>) : InnamarkTag(content), InnamarkTag.Compressed {
+class CompressedRawInnamarkTag(
+    content: ByteArray,
+) : InnamarkTag(content), InnamarkTag.Compressed {
     companion object {
         const val SOURCE = "InnamarkTag.CompressedRawInnamarkTag"
         const val TYPE_TAG: UByte = 64u // "01000000"
 
         /** Creates a new `CompressedRawInnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CompressedRawInnamarkTag {
+        fun new(content: ByteArray): CompressedRawInnamarkTag {
             val compressedContent = Compression.deflate(content)
             return CompressedRawInnamarkTag(RawInnamarkTag.createRaw(TYPE_TAG, compressedContent))
         }
 
         /** Creates a new `CompressedRawInnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
     }
 
     /** Constant function that returns the name of the specific InnamarkTag */
@@ -1017,14 +1042,14 @@ class CompressedRawInnamarkTag(content: List<Byte>) : InnamarkTag(content), Inna
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent(): Result<List<Byte>> {
-        val compressedContent = watermarkContent.drop(TAG_SIZE)
+    override fun getContent(): Result<ByteArray> {
+        val compressedContent = watermarkContent.drop(TAG_SIZE).toByteArray()
         return Compression.inflate(compressedContent)
     }
 }
 
 @JsExport
-class CompressedSizedInnamarkTag(content: List<Byte>) :
+class CompressedSizedInnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Sized, InnamarkTag.Compressed {
     companion object {
         const val SOURCE = "InnamarkTag.CompressedSizedInnamarkTag"
@@ -1032,7 +1057,7 @@ class CompressedSizedInnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSizedInnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CompressedSizedInnamarkTag {
+        fun new(content: ByteArray): CompressedSizedInnamarkTag {
             val compressedContent = Compression.deflate(content)
             return CompressedSizedInnamarkTag(
                 SizedInnamarkTag.createRaw(
@@ -1044,7 +1069,7 @@ class CompressedSizedInnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSizedInnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
     }
 
     /** Constant function that returns the name of the specific InnamarkTag */
@@ -1054,8 +1079,11 @@ class CompressedSizedInnamarkTag(content: List<Byte>) :
     override fun getTag(): UByte = TYPE_TAG
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent(): Result<List<Byte>> {
-        val compressedContent = watermarkContent.drop(TAG_SIZE + SizedInnamarkTag.SIZE_SIZE)
+    override fun getContent(): Result<ByteArray> {
+        val compressedContent =
+            watermarkContent.drop(
+                TAG_SIZE + SizedInnamarkTag.SIZE_SIZE,
+            ).toByteArray()
         return Compression.inflate(compressedContent)
     }
 
@@ -1065,7 +1093,7 @@ class CompressedSizedInnamarkTag(content: List<Byte>) :
 }
 
 @JsExport
-class CompressedCRC32InnamarkTag(content: List<Byte>) :
+class CompressedCRC32InnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Compressed, InnamarkTag.Checksum {
     companion object {
         const val SOURCE = "InnamarkTag.CompressedCRC32InnamarkTag"
@@ -1073,7 +1101,7 @@ class CompressedCRC32InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedCRC32InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CompressedCRC32InnamarkTag {
+        fun new(content: ByteArray): CompressedCRC32InnamarkTag {
             val compressedContent = Compression.deflate(content)
             val watermark =
                 CompressedCRC32InnamarkTag(CRC32InnamarkTag.createRaw(TYPE_TAG, compressedContent))
@@ -1083,7 +1111,7 @@ class CompressedCRC32InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedCRC32InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
     }
 
     /** Constant function that returns the name of the specific InnamarkTag */
@@ -1099,8 +1127,11 @@ class CompressedCRC32InnamarkTag(content: List<Byte>) :
         CRC32InnamarkTag.CHECKSUM_START_INDEX..CRC32InnamarkTag.CHECKSUM_END_INDEX
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent(): Result<List<Byte>> {
-        val compressedContent = watermarkContent.drop(TAG_SIZE + CRC32InnamarkTag.CHECKSUM_SIZE)
+    override fun getContent(): Result<ByteArray> {
+        val compressedContent =
+            watermarkContent.drop(
+                TAG_SIZE + CRC32InnamarkTag.CHECKSUM_SIZE,
+            ).toByteArray()
         return Compression.inflate(compressedContent)
     }
 
@@ -1119,7 +1150,7 @@ class CompressedCRC32InnamarkTag(content: List<Byte>) :
 }
 
 @JsExport
-class CompressedSizedCRC32InnamarkTag(content: List<Byte>) :
+class CompressedSizedCRC32InnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Sized, InnamarkTag.Checksum, InnamarkTag.Compressed {
     companion object {
         const val SOURCE = "InnamarkTag.CompressedSizedCRC32InnamarkTag"
@@ -1127,7 +1158,7 @@ class CompressedSizedCRC32InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSizedCRC32InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CompressedSizedCRC32InnamarkTag {
+        fun new(content: ByteArray): CompressedSizedCRC32InnamarkTag {
             val compressedContent = Compression.deflate(content)
             val watermark =
                 CompressedSizedCRC32InnamarkTag(
@@ -1139,7 +1170,7 @@ class CompressedSizedCRC32InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSizedCRC32InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
     }
 
     /** Constant function that returns the name of the specific InnamarkTag */
@@ -1159,10 +1190,10 @@ class CompressedSizedCRC32InnamarkTag(content: List<Byte>) :
         SizedCRC32InnamarkTag.CHECKSUM_START_INDEX..SizedCRC32InnamarkTag.CHECKSUM_END_INDEX
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent(): Result<List<Byte>> {
+    override fun getContent(): Result<ByteArray> {
         val contentOffset =
             TAG_SIZE + SizedCRC32InnamarkTag.SIZE_SIZE + SizedCRC32InnamarkTag.CHECKSUM_SIZE
-        val compressedContent = watermarkContent.drop(contentOffset)
+        val compressedContent = watermarkContent.drop(contentOffset).toByteArray()
         return Compression.inflate(compressedContent)
     }
 
@@ -1183,7 +1214,7 @@ class CompressedSizedCRC32InnamarkTag(content: List<Byte>) :
 }
 
 @JsExport
-class CompressedSHA3256InnamarkTag(content: List<Byte>) :
+class CompressedSHA3256InnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Compressed, InnamarkTag.Hash {
     companion object {
         const val SOURCE = "InnamarkTag.CompressedSHA3256InnamarkTag"
@@ -1191,7 +1222,7 @@ class CompressedSHA3256InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSHA3256InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CompressedSHA3256InnamarkTag {
+        fun new(content: ByteArray): CompressedSHA3256InnamarkTag {
             val compressedContent = Compression.deflate(content)
             val watermark =
                 CompressedSHA3256InnamarkTag(
@@ -1203,7 +1234,7 @@ class CompressedSHA3256InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSHA3256InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
     }
 
     /** Constant function that returns the tag used to encode this InnamarkTag class */
@@ -1222,7 +1253,7 @@ class CompressedSHA3256InnamarkTag(content: List<Byte>) :
      * The bytes of `getHashPlaceholder()` replace the actual checksum in the watermark
      * content.
      */
-    override fun calculateHash(): Result<List<Byte>> {
+    override fun calculateHash(): Result<ByteArray> {
         val hashInput =
             with(getHashInput()) {
                 if (!isSuccess) return status.into<_>()
@@ -1232,15 +1263,15 @@ class CompressedSHA3256InnamarkTag(content: List<Byte>) :
     }
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent(): Result<List<Byte>> {
+    override fun getContent(): Result<ByteArray> {
         val contentOffset = TAG_SIZE + SHA3256InnamarkTag.HASH_SIZE
-        val compressedContent = watermarkContent.drop(contentOffset)
+        val compressedContent = watermarkContent.drop(contentOffset).toByteArray()
         return Compression.inflate(compressedContent)
     }
 }
 
 @JsExport
-class CompressedSizedSHA3256InnamarkTag(content: List<Byte>) :
+class CompressedSizedSHA3256InnamarkTag(content: ByteArray) :
     InnamarkTag(content), InnamarkTag.Compressed, InnamarkTag.Sized, InnamarkTag.Hash {
     companion object {
         const val SOURCE = "InnamarkTag.CompressedSizedSHA3256InnamarkTag"
@@ -1248,7 +1279,7 @@ class CompressedSizedSHA3256InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSizedSHA3256InnamarkTag` containing [content] */
         @JvmStatic
-        fun new(content: List<Byte>): CompressedSizedSHA3256InnamarkTag {
+        fun new(content: ByteArray): CompressedSizedSHA3256InnamarkTag {
             val compressedContent = Compression.deflate(content)
             val watermark =
                 CompressedSizedSHA3256InnamarkTag(
@@ -1260,7 +1291,7 @@ class CompressedSizedSHA3256InnamarkTag(content: List<Byte>) :
 
         /** Creates a new `CompressedSizedSHA3256InnamarkTag` with [text] as content */
         @JvmStatic
-        fun fromString(text: String) = new(text.encodeToByteArray().asList())
+        fun fromString(text: String) = new(text.encodeToByteArray())
     }
 
     /** Constant function that returns the tag used to encode this InnamarkTag class */
@@ -1283,7 +1314,7 @@ class CompressedSizedSHA3256InnamarkTag(content: List<Byte>) :
      * The bytes of `getHashPlaceholder()` replace the actual checksum in the watermark
      * content.
      */
-    override fun calculateHash(): Result<List<Byte>> {
+    override fun calculateHash(): Result<ByteArray> {
         val hashInput =
             with(getHashInput()) {
                 if (!isSuccess) return status.into<_>()
@@ -1293,10 +1324,10 @@ class CompressedSizedSHA3256InnamarkTag(content: List<Byte>) :
     }
 
     /** Returns the decoded information stored in the InnamarkTag */
-    override fun getContent(): Result<List<Byte>> {
+    override fun getContent(): Result<ByteArray> {
         val contentOffset =
             TAG_SIZE + SizedSHA3256InnamarkTag.SIZE_SIZE + SizedSHA3256InnamarkTag.HASH_SIZE
-        val compressedContent = watermarkContent.drop(contentOffset)
+        val compressedContent = watermarkContent.drop(contentOffset).toByteArray()
         return Compression.inflate(compressedContent)
     }
 }
