@@ -102,23 +102,11 @@ public class Main {
         // **********************
 
         // extract the watermark from the watermarked text
-        List<Watermark> extractedWatermarks =
-                unwrap(watermarker.getWatermarks(watermarkedText, false, false));
-
-
-        assert (extractedWatermarks.size() == 1);
-        Watermark extractedWatermark = extractedWatermarks.getFirst();
-
-        // get Watermark Bytes
-        byte[] extractedBytes = new byte[extractedWatermark.getWatermarkContent().size()];
-        for (int i = 0; i < extractedBytes.length; i++) {
-            extractedBytes[i] = extractedWatermark.getWatermarkContent().get(i);
-        }
+        String extractedWatermark = unwrap(watermarker.getWatermarkAsString(watermarkedText));
 
         // print the watermark text
         System.out.println("Found a watermark in the text:");
-        String extractedText = new String(extractedBytes, StandardCharsets.UTF_8);
-        System.out.println(extractedText);
+        System.out.println(extractedWatermark);
 
         // *******************************
         // ***** Multiple watermarks *****
@@ -141,19 +129,12 @@ public class Main {
         List<Watermark> extractedMultipleWatermarks =
                 unwrap(watermarker.getWatermarks(combinedText, false, false));
 
-        // get Watermark Bytes
-        List<byte[]> extractedMultipleBytes = new ArrayList<>();
-        for (Watermark watermark : extractedMultipleWatermarks) {
-            byte[] array = new byte[watermark.getWatermarkContent().size()];
-            for (int i = 0; i < array.length; i++) {
-                array[i] = watermark.getWatermarkContent().get(i);
-            }
-            extractedMultipleBytes.add(array);
-        }
 
         // convert Watermark Bytes to Strings
         List<String> extractedMultipleText = new ArrayList<>();
-        extractedMultipleBytes.forEach(array -> extractedMultipleText.add(new String(array, StandardCharsets.UTF_8)));
+        extractedMultipleWatermarks.forEach(
+                watermark -> extractedMultipleText.add(
+                        new String(watermark.getWatermarkContent(), StandardCharsets.UTF_8)));
 
         // print the watermarks found
         for (String content : extractedMultipleText) {

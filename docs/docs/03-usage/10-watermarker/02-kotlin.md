@@ -87,19 +87,17 @@ fun main() {
     println("watermarked text:")
     println(watermarkedText)
     println()
-    
+
     // **********************
     // ***** Extraction *****
     // **********************
 
     // extract the watermark from the watermarked text
-    val extractedWatermarks = watermarker.getWatermarks(watermarkedText).unwrap()
-    check(extractedWatermarks.size == 1)
-    val extractedWatermark = extractedWatermarks[0]
+    val extractedWatermark = watermarker.getWatermarkAsString(watermarkedText).unwrap()
 
     // print the watermark text
     println("Found a watermark in the text:")
-    println(extractedWatermark.watermarkContent.toByteArray().decodeToString())
+    println(extractedWatermark)
     println()
 
 
@@ -108,8 +106,8 @@ fun main() {
     // *******************************
 
     // for multiple watermarks in a single text an additional parameter 'singleWatermark = false'
-    // can be passed to the extraction function alongside the watermarked text, details are linked 
-    // above this code block 
+    // can be passed to the extraction function alongside the watermarked text, details are linked
+    // above this code block
 
     // a second Watermark to illustrate multiple watermark extraction
     val secondWatermarkText = "Okay"
@@ -126,7 +124,7 @@ fun main() {
 
     // print the watermarks found
     for (extracted in extractedMultipleWatermarks) {
-        println("Found watermark: ${extracted.watermarkContent.toByteArray().decodeToString()}")
+        println("Found watermark: ${extracted.watermarkContent.decodeToString()}")
     }
 
 }
