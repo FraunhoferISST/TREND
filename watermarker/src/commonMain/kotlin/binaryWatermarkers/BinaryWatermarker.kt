@@ -8,6 +8,7 @@ package de.fraunhofer.isst.innamark.watermarker.binaryWatermarkers
 
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.MultipleMostFrequentWarning
 
 /**
  * Interface for implementations facilitating watermarking of arbitrary non-text covers
@@ -33,6 +34,22 @@ interface BinaryWatermarker<CoverType> {
 
     /** Returns a [Boolean] indicating whether [cover] contains watermarks */
     fun containsWatermark(cover: CoverType): Boolean
+
+    /**
+     * Returns a [Result] containing the most frequent Watermark in [cover] as a String
+     *
+     * Result contains an empty String if no Watermarks were found.
+     * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     */
+    fun getWatermarkAsString(cover: CoverType): Result<String>
+
+    /**
+     * Returns a [Result] containing the most frequent Watermark in [cover] as a ByteArray
+     *
+     * Result contains an empty ByteArray if no Watermarks were found.
+     * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     */
+    fun getWatermarkAsByteArray(cover: CoverType): Result<ByteArray>
 
     /**
      * Returns a [Result] containing a list of [Watermark]s in [cover]

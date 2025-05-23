@@ -48,7 +48,7 @@ class PlainTextWatermarker(
         watermark: ByteArray,
     ): Result<String> {
         val textFile = TextFile.fromString(cover)
-        val status = watermarker.addWatermark(textFile, watermark.toList())
+        val status = watermarker.addWatermark(textFile, watermark)
         return status.into(textFile.content)
     }
 
@@ -82,6 +82,24 @@ class PlainTextWatermarker(
 
     override fun containsWatermark(cover: String): Boolean {
         return watermarker.containsWatermark(TextFile.fromString(cover))
+    }
+
+    override fun getWatermarkAsString(cover: String): Result<String> {
+        val watermarks = getWatermarks(cover, false, true)
+        if (watermarks.value?.isNotEmpty() ?: return Result.success("")) {
+            return watermarks.status.into(watermarks.value[0].watermarkContent.decodeToString())
+        } else {
+            return Result.success("")
+        }
+    }
+
+    override fun getWatermarkAsByteArray(cover: String): Result<ByteArray> {
+        val watermarks = getWatermarks(cover, false, true)
+        if (watermarks.value?.isNotEmpty() ?: return Result.success(ByteArray(0))) {
+            return watermarks.status.into(watermarks.value[0].watermarkContent)
+        } else {
+            return Result.success(ByteArray(0))
+        }
     }
 
     override fun getWatermarks(

@@ -37,7 +37,7 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         cover: ZipFile,
         watermark: ByteArray,
     ): Result<ZipFile> {
-        val status = watermarker.addWatermark(cover, watermark.toList())
+        val status = watermarker.addWatermark(cover, watermark)
         return status.into(cover)
     }
 
@@ -55,6 +55,24 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
 
     override fun containsWatermark(cover: ZipFile): Boolean {
         return watermarker.containsWatermark(cover)
+    }
+
+    override fun getWatermarkAsString(cover: ZipFile): Result<String> {
+        val watermarks = getWatermarks(cover, false, true)
+        if (watermarks.value?.isNotEmpty() ?: return Result.success("")){
+            return watermarks.status.into(watermarks.value[0].watermarkContent.decodeToString())
+        } else {
+            return Result.success("")
+        }
+    }
+
+    override fun getWatermarkAsByteArray(cover: ZipFile): Result<ByteArray> {
+        val watermarks = getWatermarks(cover, false, true)
+        if (watermarks.value?.isNotEmpty() ?: return Result.success(ByteArray(0))) {
+            return watermarks.status.into(watermarks.value[0].watermarkContent)
+        } else {
+            return Result.success(ByteArray(0))
+        }
     }
 
     override fun getWatermarks(
