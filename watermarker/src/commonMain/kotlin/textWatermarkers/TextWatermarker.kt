@@ -9,6 +9,7 @@ package de.fraunhofer.isst.innamark.watermarker.textWatermarkers
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.MultipleMostFrequentWarning
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.StringDecodeWarning
 
 /**
  * Interface for implementations facilitating watermarking of [String] covers
@@ -40,6 +41,7 @@ interface TextWatermarker {
      *
      * Result contains an empty String if no Watermarks were found.
      * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     * Result contains a [StringDecodeWarning] in cases where a byte cannot be read as UTF-8.
      */
     fun getWatermarkAsString(cover: String): Result<String>
 

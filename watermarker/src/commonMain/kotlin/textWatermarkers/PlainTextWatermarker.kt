@@ -14,6 +14,8 @@ import de.fraunhofer.isst.innamark.watermarker.files.TextFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.MultipleMostFrequentWarning
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.StringDecodeWarning
 
 /**
  * Implementation of [de.fraunhofer.isst.innamark.watermarker.textWatermarkers.TextWatermarker] for watermarking plaintext
@@ -81,10 +83,18 @@ class PlainTextWatermarker(
         return status.into(textFile.content)
     }
 
+    /** Returns a [Boolean] indicating whether [cover] contains watermarks */
     override fun containsWatermark(cover: String): Boolean {
         return watermarker.containsWatermark(TextFile.fromString(cover))
     }
 
+    /**
+     * Returns a [Result] containing the most frequent Watermark in [cover] as a String
+     *
+     * Result contains an empty String if no Watermarks were found.
+     * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     * Result contains a [StringDecodeWarning] in cases where a byte cannot be read as UTF-8.
+     */
     override fun getWatermarkAsString(cover: String): Result<String> {
         val watermarks = getWatermarks(cover, false, true)
         if (watermarks.value?.isNotEmpty() ?: return Result.success("")) {
@@ -94,7 +104,7 @@ class PlainTextWatermarker(
                         .decodeToString(),
                 )
             if (decoded.value!!.contains('\uFFFD')) {
-                decoded.appendStatus(Status(Watermark.StringDecodeWarning("PlainTextWatermarker")))
+                decoded.appendStatus(Status(StringDecodeWarning("PlainTextWatermarker")))
             }
             return decoded
         } else {
@@ -102,6 +112,12 @@ class PlainTextWatermarker(
         }
     }
 
+    /**
+     * Returns a [Result] containing the most frequent Watermark in [cover] as a ByteArray
+     *
+     * Result contains an empty ByteArray if no Watermarks were found.
+     * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     */
     override fun getWatermarkAsByteArray(cover: String): Result<ByteArray> {
         val watermarks = getWatermarks(cover, false, true)
         if (watermarks.value?.isNotEmpty() ?: return Result.success(ByteArray(0))) {
@@ -111,6 +127,12 @@ class PlainTextWatermarker(
         }
     }
 
+    /**
+     * Returns a [Result] containing a list of [Watermark]s in [cover]
+     *
+     * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     */
     override fun getWatermarks(
         cover: String,
         squash: Boolean,
@@ -119,6 +141,7 @@ class PlainTextWatermarker(
         return watermarker.getWatermarks(TextFile.fromString(cover), squash, singleWatermark)
     }
 
+    /** Removes all watermarks from [cover] and returns a [Result] containing the cleaned cover */
     override fun removeWatermarks(cover: String): Result<String> {
         val textFile = TextFile.fromString(cover)
         val result = watermarker.removeWatermarks(textFile)

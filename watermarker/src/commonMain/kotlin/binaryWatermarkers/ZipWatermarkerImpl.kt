@@ -11,6 +11,8 @@ import de.fraunhofer.isst.innamark.watermarker.files.ZipFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.MultipleMostFrequentWarning
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark.StringDecodeWarning
 
 /**
  * Implementation of [BinaryWatermarker] for [ZipFile] covers
@@ -54,10 +56,18 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         return status.into(cover)
     }
 
+    /** Returns a [Boolean] indicating whether [cover] contains watermarks */
     override fun containsWatermark(cover: ZipFile): Boolean {
         return watermarker.containsWatermark(cover)
     }
 
+    /**
+     * Returns a [Result] containing the most frequent Watermark in [cover] as a String
+     *
+     * Result contains an empty String if no Watermarks were found.
+     * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     * Result contains a [StringDecodeWarning] in cases where a byte cannot be read as UTF-8.
+     */
     override fun getWatermarkAsString(cover: ZipFile): Result<String> {
         val watermarks = getWatermarks(cover, false, true)
         if (watermarks.value?.isNotEmpty() ?: return Result.success("")) {
@@ -66,7 +76,7 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
                     watermarks.value[0].watermarkContent.decodeToString(),
                 )
             if (decoded.value!!.contains('\uFFFD')) {
-                decoded.appendStatus(Status(Watermark.StringDecodeWarning("ZipWatermarkerImpl")))
+                decoded.appendStatus(Status(StringDecodeWarning("ZipWatermarkerImpl")))
             }
             return decoded
         } else {
@@ -74,6 +84,12 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         }
     }
 
+    /**
+     * Returns a [Result] containing the most frequent Watermark in [cover] as a ByteArray
+     *
+     * Result contains an empty ByteArray if no Watermarks were found.
+     * Result contains a [MultipleMostFrequentWarning] in cases where an unambiguous Watermark could not be extracted.
+     */
     override fun getWatermarkAsByteArray(cover: ZipFile): Result<ByteArray> {
         val watermarks = getWatermarks(cover, false, true)
         if (watermarks.value?.isNotEmpty() ?: return Result.success(ByteArray(0))) {
@@ -83,6 +99,12 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         }
     }
 
+    /**
+     * Returns a [Result] containing a list of [Watermark]s in [cover]
+     *
+     * When [squash] is true: watermarks with the same content are merged.
+     * When [singleWatermark] is true: only the most frequent watermark is returned.
+     */
     override fun getWatermarks(
         cover: ZipFile,
         squash: Boolean,
@@ -91,6 +113,7 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
         return watermarker.getWatermarks(cover, squash, singleWatermark)
     }
 
+    /** Removes all watermarks from [cover] and returns a [Result] containing the cleaned cover */
     override fun removeWatermark(cover: ZipFile): Result<ZipFile> {
         val status = watermarker.removeWatermarks(cover).status
         return status.into(cover)
