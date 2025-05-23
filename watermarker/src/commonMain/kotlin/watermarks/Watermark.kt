@@ -88,6 +88,15 @@ open class Watermark(var watermarkContent: ByteArray) {
     /** Exposes content.hashCode() */
     override fun hashCode(): Int = watermarkContent.contentHashCode()
 
+    class StringDecodeWarning(
+        private val SOURCE: String,
+    ) : Event.Warning("$SOURCE.getWatermarkAsString") {
+        /** Returns a String explaining the event */
+        override fun getMessage() =
+            "Malformed UTF-8 bytes were found in the Watermark and were " +
+                "replaced by \uFFFD"
+    }
+
     class MultipleMostFrequentWarning(
         private val WatermarkCount: Int,
     ) : Event.Warning("$SOURCE.mostFrequent") {

@@ -62,11 +62,13 @@ for more details).*
 (see [Watermarker](../#extraction-customization) for more details)*
 
 ```java title="src/main/java/Main.java" showLineNumbers
-import de.fraunhofer.isst.innamark.watermarker.Watermarker;
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result;
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status;
-import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark;
+import de.fraunhofer.isst.innamark.watermarker.textWatermarkers.PlainTextWatermarker;
+import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -85,13 +87,10 @@ public class Main {
         String watermarkText = "Test";
 
         // prepare watermarker
-        Watermarker watermarker = new Watermarker();
-
-        // creating a watermark with watermarkText as content
-        TextWatermark watermark = TextWatermark.Companion.create(watermarkText);
+        PlainTextWatermarker watermarker = new PlainTextWatermarker();
 
         // inserting the watermark into the cover text and handling potential errors and warnings
-        String watermarkedText = unwrap(watermarker.textAddWatermark(coverText, watermark));
+        String watermarkedText = unwrap(watermarker.addWatermark(coverText, watermarkText));
 
         // print the watermarked text
         System.out.println("watermarked text:");
@@ -103,41 +102,44 @@ public class Main {
         // **********************
 
         // extract the watermark from the watermarked text
-        List<TextWatermark> extractedWatermarks =
-                unwrap(watermarker.textGetTextWatermarks(watermarkedText, true, true, false));
-        assert (extractedWatermarks.size() == 1);
-        TextWatermark extractedWatermark = extractedWatermarks.get(0);
+        String extractedWatermark = unwrap(watermarker.getWatermarkAsString(watermarkedText));
 
         // print the watermark text
         System.out.println("Found a watermark in the text:");
-        System.out.println(extractedWatermark.getText());
+        System.out.println(extractedWatermark);
 
         // *******************************
         // ***** Multiple watermarks *****
         // *******************************
 
-        // for multiple watermarks in a single text the parameter 'singleWatermark' must be set 
-        // to 'false' when passed to the extraction function alongside the watermarked text, 
-        // details are linked above this code block 
+        // for multiple watermarks in a single text the parameter 'singleWatermark' must be set
+        // to 'false' when passed to the extraction function alongside the watermarked text,
+        // details are linked above this code block
 
         // a second Watermark to illustrate multiple watermark extraction
         String secondWatermarkText = "Okay";
 
-        // creating the second watermark
-        TextWatermark secondWatermark = TextWatermark.Companion.create(secondWatermarkText);
-
         // inserting the second watermark into the coverText
-        String secondWatermarkedText = unwrap(watermarker.textAddWatermark(coverText, secondWatermark));
+        String secondWatermarkedText = unwrap(watermarker.addWatermark(coverText, secondWatermarkText));
 
         // combining the watermarked texts to get two different watermarks in one Text
         String combinedText = watermarkedText + secondWatermarkedText;
 
         // extract the watermarks from the watermarked text
-        List<TextWatermark> extractedMultipleWatermarks =
-                unwrap(watermarker.textGetTextWatermarks(combinedText, true, false, false));
+        List<Watermark> extractedMultipleWatermarks =
+                unwrap(watermarker.getWatermarks(combinedText, false, false));
+
+
+        // convert Watermark Bytes to Strings
+        List<String> extractedMultipleText = new ArrayList<>();
+        extractedMultipleWatermarks.forEach(
+                watermark -> extractedMultipleText.add(
+                        new String(watermark.getWatermarkContent(), StandardCharsets.UTF_8)));
 
         // print the watermarks found
-        extractedMultipleWatermarks.forEach(System.out::println);
+        for (String content : extractedMultipleText) {
+            System.out.println("Watermark found: " + content);
+        }
 
     }
 
