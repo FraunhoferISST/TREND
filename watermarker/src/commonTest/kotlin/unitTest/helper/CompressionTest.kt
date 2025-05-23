@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -8,7 +8,7 @@ package unitTest.helper
 
 import de.fraunhofer.isst.innamark.watermarker.helper.Compression
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.assertContentEquals
 import kotlin.test.assertTrue
 
 class CompressionTest {
@@ -22,7 +22,7 @@ class CompressionTest {
         val result = Compression.deflate(input)
 
         // Assert
-        assertEquals(expected, result)
+        assertContentEquals(expected, result)
     }
 
     @Test
@@ -36,34 +36,34 @@ class CompressionTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertEquals(expected, result.value)
+        assertContentEquals(expected, result.value)
     }
 
     @Test
     fun deflate_allBytes_success() {
         // Arrange
-        val input = TestCases.allBytes
+        val input = TestCases.allBytes.toByteArray()
         val expected = TestCases.allBytesDeflated
 
         // Act
         val result = Compression.deflate(input)
 
         // Assert
-        assertEquals(expected, result)
+        assertContentEquals(expected, result)
     }
 
     @Test
     fun inflate_allBytes_success() {
         // Arrange
         val input = TestCases.allBytesDeflated
-        val expected = TestCases.allBytes
+        val expected = TestCases.allBytes.toByteArray()
 
         // Act
         val result = Compression.inflate(input)
 
         // Assert
         assertTrue(result.isSuccess)
-        assertEquals(expected, result.value)
+        assertContentEquals(expected, result.value)
     }
 
     @Test
@@ -76,7 +76,7 @@ class CompressionTest {
         val result = Compression.deflate(input)
 
         // Assert
-        assertEquals(expected, result)
+        assertContentEquals(expected, result)
     }
 
     @Test
@@ -90,7 +90,7 @@ class CompressionTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertEquals(expected, result.value)
+        assertContentEquals(expected, result.value)
     }
 
     @Test
@@ -103,7 +103,7 @@ class CompressionTest {
         val result = Compression.deflate(input)
 
         // Assert
-        assertEquals(expected, result)
+        assertContentEquals(expected, result)
     }
 
     @Test
@@ -117,26 +117,26 @@ class CompressionTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertEquals(expected, result.value)
+        assertContentEquals(expected, result.value)
     }
 }
 
 object TestCases {
-    val empty = listOf<Byte>()
-    val emptyDeflated = listOf<Byte>()
+    val empty = byteArrayOf()
+    val emptyDeflated = byteArrayOf()
 
     val helloWorld =
-        listOf<Byte>(
+        byteArrayOf(
             0x48, 0x65, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21,
         )
     val helloWorldDeflated =
-        listOf<Byte>(
+        byteArrayOf(
             0xf3.toByte(), 0x48, 0xcd.toByte(), 0xc9.toByte(), 0x57, 0x08, 0xcf.toByte(), 0x2f,
             0xca.toByte(), 0x49, 0x51, 0x04, 0x00,
         )
 
     val allBytes = (0..255).toList().map { it.toByte() }
-    val allBytesDeflated = listOf<Byte>(0x01, 0x00, 0x01, 0xff.toByte(), 0xfe.toByte()) + allBytes
+    val allBytesDeflated = byteArrayOf(0x01, 0x00, 0x01, 0xff.toByte(), 0xfe.toByte()) + allBytes
 
     val loremIpsum =
         (
@@ -153,9 +153,9 @@ object TestCases {
                 "pharetra convallis posuere morbi leo urna molestie. Lobortis elementum nibh " +
                 "tellus molestie. Ac felis donec et odio. Ipsum suspendisse ultrices gravida " +
                 "dictum."
-        ).encodeToByteArray().asList()
+        ).encodeToByteArray()
     val loremIpsumDeflated =
-        listOf<Byte>(
+        byteArrayOf(
             0x7d, 0x52, 0x5b, 0x8a.toByte(), 0xdd.toByte(), 0x30, 0x0c, 0xdd.toByte(),
             0x8a.toByte(), 0x16, 0x50, 0xb2.toByte(), 0x87.toByte(), 0xd2.toByte(), 0x76,
             0xa0.toByte(), 0x30, 0x4c, 0x29, 0xed.toByte(), 0x06, 0x74, 0x6d, 0x4d, 0x46,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -48,9 +48,9 @@ object DeflateOptions {
 @JsExport
 actual object Compression {
     /** Compresses [data] using the deflate algorithm */
-    actual fun inflate(data: List<Byte>): Result<List<Byte>> {
+    actual fun inflate(data: ByteArray): Result<ByteArray> {
         // Fixing different behavior on empty lists
-        if (data.isEmpty()) return Result.success(listOf())
+        if (data.isEmpty()) return Result.success(byteArrayOf())
 
         /*
          * BUG: An UByteArray get compiled to Int8Array in JS and contains negative numbers
@@ -62,16 +62,16 @@ actual object Compression {
         val workaroundData = data.map { it.toInt() and 0xff }.toIntArray()
         return try {
             val bytes = Pako.inflateRaw(workaroundData).map { it.toByte() }
-            Result.success(bytes)
+            Result.success(bytes.toByteArray())
         } catch (e: dynamic) {
             InflationError(e.toString()).into<_>()
         }
     }
 
     /** Uncompresses [data] using the inflate algorithm */
-    actual fun deflate(data: List<Byte>): List<Byte> {
+    actual fun deflate(data: ByteArray): ByteArray {
         // Fixing different behavior on empty lists
-        if (data.isEmpty()) return listOf()
+        if (data.isEmpty()) return byteArrayOf()
 
         /*
          * BUG: An UByteArray get compiled to Int8Array in JS and contains negative numbers
@@ -81,6 +81,6 @@ actual object Compression {
          * Workaround: Convert Byte to Int and apply byte mask to prevent negative numbers
          */
         val workaroundData = data.map { it.toInt() and 0xff }.toIntArray()
-        return Pako.deflateRaw(workaroundData, DeflateOptions).map { it.toByte() }
+        return Pako.deflateRaw(workaroundData, DeflateOptions).map { it.toByte() }.toByteArray()
     }
 }

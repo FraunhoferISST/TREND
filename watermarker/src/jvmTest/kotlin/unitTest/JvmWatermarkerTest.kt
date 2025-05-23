@@ -15,6 +15,7 @@ import de.fraunhofer.isst.innamark.watermarker.files.ZipFileHeader
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -28,7 +29,7 @@ class JvmWatermarkerTest {
         // Arrange
         val source = "src/jvmTest/resources/multiple_files.zip"
         val target = "src/jvmTest/resources/multiple_files_test.zip"
-        val watermark = Watermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList())
+        val watermark = Watermark("Lorem ipsum dolor sit amet".encodeToByteArray())
         val expected = "src/jvmTest/resources/multiple_files_watermarked.zip"
 
         // Act
@@ -76,7 +77,7 @@ class JvmWatermarkerTest {
         // Arrange
         val source = "src/jvmTest/resources/lorem_ipsum.txt"
         val target = "src/jvmTest/resources/lorem_ipsum_test.txt"
-        val watermark = Watermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList())
+        val watermark = Watermark("Lorem ipsum dolor sit amet".encodeToByteArray())
         val fileType = "zip"
         val expectedMessage = ZipFileHeader.InvalidMagicBytesError().into().toString()
 
@@ -99,7 +100,7 @@ class JvmWatermarkerTest {
         // Arrange
         val source = "src/jvmTest/resources/lorem_ipsum.unsupported"
         val target = "src/jvmTest/resources/lorem_ipsum_test.unsupported"
-        val watermark = Watermark("Hello".encodeToByteArray().asList())
+        val watermark = Watermark("Hello".encodeToByteArray())
         val expectedMessage =
             SupportedFileType.UnsupportedTypeError("unsupported").into().toString()
 
@@ -116,7 +117,7 @@ class JvmWatermarkerTest {
         // Arrange
         val source = ""
         val target = "src/jvmTest/resources/lorem_ipsum_test.unsupported"
-        val watermark = Watermark("Hello".encodeToByteArray().asList())
+        val watermark = Watermark("Hello".encodeToByteArray())
         val expectedMessage = SupportedFileType.NoFileTypeError(source).into().toString()
 
         // Act
@@ -133,7 +134,7 @@ class JvmWatermarkerTest {
         val source = ""
         val target = "src/jvmTest/resources/multiple_files_test.zip"
         val fileType = "zip"
-        val watermark = Watermark("Hello".encodeToByteArray().asList())
+        val watermark = Watermark("Hello".encodeToByteArray())
         val expectedMessage =
             WatermarkableFile.ReadError(source, " (No such file or directory)").into().toString()
 
@@ -150,7 +151,7 @@ class JvmWatermarkerTest {
         // Arrange
         val source = "src/jvmTest/resources/multiple_files.zip"
         val target = ""
-        val watermark = Watermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList())
+        val watermark = Watermark("Lorem ipsum dolor sit amet".encodeToByteArray())
         val expectedMessage =
             WatermarkableFile.WriteError(
                 target,
@@ -369,7 +370,7 @@ class JvmWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
-        assertEquals(expected, result.value)
+        assertContentEquals(expected, result.value)
     }
 
     @Test
@@ -492,7 +493,7 @@ class JvmWatermarkerTest {
         val expected = "src/jvmTest/resources/multiple_files.zip"
         val expectedWatermarks =
             listOf(
-                Watermark("Lorem ipsum dolor sit amet".encodeToByteArray().asList()),
+                Watermark("Lorem ipsum dolor sit amet".encodeToByteArray()),
             )
 
         // Act

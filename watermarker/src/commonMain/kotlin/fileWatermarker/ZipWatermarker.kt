@@ -28,9 +28,9 @@ object ZipWatermarker : FileWatermarker<ZipFile> {
      */
     override fun addWatermark(
         file: ZipFile,
-        watermark: List<Byte>,
+        watermark: ByteArray,
     ): Status {
-        return file.header.addExtraField(ZIP_WATERMARK_ID, watermark)
+        return file.header.addExtraField(ZIP_WATERMARK_ID, watermark.toList())
     }
 
     /** Checks if [file] contains a watermark */
@@ -55,7 +55,7 @@ object ZipWatermarker : FileWatermarker<ZipFile> {
         var watermarks = ArrayList<Watermark>()
         for (extraField in file.header.extraFields) {
             if (extraField.id == ZIP_WATERMARK_ID) {
-                watermarks.add(Watermark(extraField.data))
+                watermarks.add(Watermark(extraField.data.toByteArray()))
             }
         }
         if (singleWatermark && watermarks.isNotEmpty()) {
@@ -83,7 +83,7 @@ object ZipWatermarker : FileWatermarker<ZipFile> {
         val status: Status = Status.success()
         var watermarks = ArrayList<Watermark>()
         for (extraField in file.header.removeExtraFields(ZIP_WATERMARK_ID)) {
-            watermarks.add(Watermark(extraField.data))
+            watermarks.add(Watermark(extraField.data.toByteArray()))
         }
         if (singleWatermark && watermarks.isNotEmpty()) {
             with(Watermark.mostFrequent(watermarks)) {
@@ -104,7 +104,7 @@ object ZipWatermarker : FileWatermarker<ZipFile> {
      * Returns errors if it cannot parse [bytes] as zip file.
      * Returns warnings if the parser finds unexpected structures but is still able to parse it
      */
-    override fun parseBytes(bytes: List<Byte>): Result<ZipFile> {
-        return ZipFile.fromBytes(bytes.toByteArray())
+    override fun parseBytes(bytes: ByteArray): Result<ZipFile> {
+        return ZipFile.fromBytes(bytes)
     }
 }

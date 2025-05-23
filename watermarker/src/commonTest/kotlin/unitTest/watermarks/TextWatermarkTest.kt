@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -20,6 +20,7 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256InnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.TextWatermark
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -27,7 +28,7 @@ import kotlin.test.assertTrue
 
 class TextWatermarkTest {
     private val text = "Lorem Ipsum"
-    private val textBytes = text.encodeToByteArray().asList()
+    private val textBytes = text.encodeToByteArray()
 
     @Test
     fun new_loremIpsum_success() {
@@ -47,7 +48,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -68,7 +69,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -89,14 +90,14 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
     fun small_loremIpsum_compression() {
         // Arrange
         val customText = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
-        val customTextBytes = customText.encodeToByteArray().asList()
+        val customTextBytes = customText.encodeToByteArray()
         val expectedTrendmark = CompressedRawInnamarkTag.new(customTextBytes)
 
         // Act
@@ -112,14 +113,14 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(customTextBytes, content.value)
+        assertContentEquals(customTextBytes, content.value)
     }
 
     @Test
     fun small_loremIpsum_noCompression() {
         // Arrange
         val customText = "Lorem"
-        val customTextBytes = customText.encodeToByteArray().asList()
+        val customTextBytes = customText.encodeToByteArray()
         val expectedTrendmark = RawInnamarkTag.new(customTextBytes)
 
         // Act
@@ -135,7 +136,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(customTextBytes, content.value)
+        assertContentEquals(customTextBytes, content.value)
     }
 
     @Test
@@ -156,7 +157,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -178,7 +179,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -200,7 +201,7 @@ class TextWatermarkTest {
         assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -221,7 +222,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -242,7 +243,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -263,7 +264,7 @@ class TextWatermarkTest {
         assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -284,7 +285,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -305,7 +306,7 @@ class TextWatermarkTest {
         assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -326,7 +327,7 @@ class TextWatermarkTest {
         assertFalse(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test
@@ -347,7 +348,7 @@ class TextWatermarkTest {
         assertTrue(textWatermark.isSHA3256())
         assertEquals(expectedTrendmark, trendmark)
         assertTrue(content.isSuccess)
-        assertEquals(textBytes, content.value)
+        assertContentEquals(textBytes, content.value)
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -149,7 +149,6 @@ class TextWatermark private constructor(
             val text =
                 try {
                     content
-                        .toByteArray()
                         .decodeToString(throwOnInvalidSequence = errorOnInvalidUTF8)
                 } catch (e: Exception) {
                     status.addEvent(DecodeToStringError(e.message ?: e.stackTraceToString()))
@@ -230,7 +229,7 @@ class TextWatermark private constructor(
      *  - [SHA3256].
      */
     override fun finish(): InnamarkTag {
-        val content = text.encodeToByteArray().asList()
+        val content = text.encodeToByteArray()
 
         return if (compressed && sized && SHA3256) {
             CompressedSizedSHA3256InnamarkTag.new(content)

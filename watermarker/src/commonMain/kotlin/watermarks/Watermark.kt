@@ -13,14 +13,14 @@ import kotlin.js.JsExport
 import kotlin.jvm.JvmStatic
 
 @JsExport
-open class Watermark(var watermarkContent: List<Byte>) {
+open class Watermark(var watermarkContent: ByteArray) {
     companion object {
         const val SOURCE = "Watermark"
 
         /** Creates a Watermark from [text] */
         @JvmStatic
         fun fromString(text: String): Watermark {
-            val bytes = text.encodeToByteArray().asList()
+            val bytes = text.encodeToByteArray()
             return Watermark(bytes)
         }
 
@@ -78,7 +78,7 @@ open class Watermark(var watermarkContent: List<Byte>) {
     override fun equals(other: Any?): Boolean {
         return when (other) {
             is Watermark -> {
-                this.watermarkContent == other.watermarkContent
+                this.watermarkContent.contentEquals(other.watermarkContent)
             }
 
             else -> false
@@ -86,7 +86,7 @@ open class Watermark(var watermarkContent: List<Byte>) {
     }
 
     /** Exposes content.hashCode() */
-    override fun hashCode(): Int = watermarkContent.hashCode()
+    override fun hashCode(): Int = watermarkContent.contentHashCode()
 
     class MultipleMostFrequentWarning(
         private val WatermarkCount: Int,

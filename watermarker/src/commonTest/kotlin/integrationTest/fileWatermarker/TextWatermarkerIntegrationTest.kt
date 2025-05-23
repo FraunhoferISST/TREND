@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -43,7 +43,7 @@ class TextWatermarkerIntegrationTest {
         // Assert
         assertTrue(watermarks.isSuccess)
         assertEquals(watermarks.value!!.size, 1)
-        val firstWatermark = watermarks.value!![0].watermarkContent.toByteArray().decodeToString()
+        val firstWatermark = watermarks.value!![0].watermarkContent.decodeToString()
         assertEquals(watermark, firstWatermark)
     }
 
@@ -75,7 +75,7 @@ class TextWatermarkerIntegrationTest {
         // Assert
         assertTrue(watermarks.isSuccess)
         assertEquals(watermarks.value!!.size, 1)
-        val firstWatermark = watermarks.value!![0].watermarkContent.toByteArray().decodeToString()
+        val firstWatermark = watermarks.value!![0].watermarkContent.decodeToString()
         assertEquals(watermark, firstWatermark)
     }
 }

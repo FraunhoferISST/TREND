@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -25,7 +25,7 @@ actual object CRC32 {
         }.toList()
 
     /** Calculates the CRC32 checksum of [bytes] */
-    actual fun checksum(bytes: List<Byte>): UInt {
+    actual fun checksum(bytes: ByteArray): UInt {
         var c = 0xffffffffu
         for (byte in bytes) {
             val index = (c xor byte.toUInt() and 0xffu).toInt()

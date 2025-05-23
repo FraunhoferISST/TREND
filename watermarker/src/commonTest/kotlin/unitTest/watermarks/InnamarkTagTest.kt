@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2024-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -23,19 +23,20 @@ import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedCRC32InnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedInnamarkTag
 import de.fraunhofer.isst.innamark.watermarker.watermarks.SizedSHA3256InnamarkTag
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class InnamarkTagTest {
-    private val content = "Lorem Ipsum".encodeToByteArray().asList()
+    private val content = "Lorem Ipsum".encodeToByteArray()
     private val compressedContent =
         listOf<Byte>(-13, -55, 47, 74, -51, 85, -16, 44, 40, 46, -51, 5, 0)
 
     @Test
     fun rawInnamark_creation_success() {
         // Arrange
-        val expected = listOf(RawInnamarkTag.TYPE_TAG.toByte()) + content
+        val expected = byteArrayOf(RawInnamarkTag.TYPE_TAG.toByte()) + content
 
         // Act
         val watermark = RawInnamarkTag.new(content)
@@ -43,15 +44,15 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(content, extractedContent.value)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
     @Test
     fun rawInnamark_invalidTag_error() {
         // Arrange
-        val watermarkContent = listOf((-1).toByte()) + content
+        val watermarkContent = byteArrayOf((-1).toByte()) + content
         val expectedStatus =
             InnamarkTag.InvalidTagError(
                 "InnamarkTag.RawInnamarkTag",
@@ -66,10 +67,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(content, extractedContent.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -77,7 +78,7 @@ class InnamarkTagTest {
     @Test
     fun compressedRawInnamark_creation_success() {
         // Arrange
-        val expected = listOf(CompressedRawInnamarkTag.TYPE_TAG.toByte()) + compressedContent
+        val expected = byteArrayOf(CompressedRawInnamarkTag.TYPE_TAG.toByte()) + compressedContent
 
         // Act
         val watermark = CompressedRawInnamarkTag.new(content)
@@ -85,15 +86,15 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(content, extractedContent.value)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
     @Test
     fun compressedRawInnamark_invalidTag_error() {
         // Arrange
-        val watermarkContent = listOf((-1).toByte()) + compressedContent
+        val watermarkContent = byteArrayOf((-1).toByte()) + compressedContent
         val expectedStatus =
             InnamarkTag.InvalidTagError(
                 "InnamarkTag.CompressedRawInnamarkTag",
@@ -108,10 +109,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(content, extractedContent.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -122,7 +123,7 @@ class InnamarkTagTest {
         val expectedSize =
             (InnamarkTagInterface.TAG_SIZE + SizedInnamarkTag.SIZE_SIZE + content.size).toUInt()
         val expected =
-            listOf(SizedInnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(SizedInnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 content
 
@@ -133,10 +134,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -146,7 +147,7 @@ class InnamarkTagTest {
         val expectedSize =
             (InnamarkTagInterface.TAG_SIZE + SizedInnamarkTag.SIZE_SIZE + content.size).toUInt()
         val watermarkContent =
-            listOf((-1).toByte()) +
+            byteArrayOf((-1).toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
@@ -164,10 +165,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -178,7 +179,7 @@ class InnamarkTagTest {
         val invalidSize =
             (InnamarkTagInterface.TAG_SIZE + SizedInnamarkTag.SIZE_SIZE + content.size + 1).toUInt()
         val watermarkContent =
-            listOf(SizedInnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(SizedInnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 content
         val expectedStatus =
@@ -196,10 +197,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(invalidSize, extractedSize.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus, status.toString())
     }
@@ -214,7 +215,7 @@ class InnamarkTagTest {
                     compressedContent.size
             ).toUInt()
         val expected =
-            listOf(CompressedSizedInnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSizedInnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 compressedContent
 
@@ -225,10 +226,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -242,7 +243,7 @@ class InnamarkTagTest {
                     compressedContent.size
             ).toUInt()
         val watermarkContent =
-            listOf((-1).toByte()) +
+            byteArrayOf((-1).toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
@@ -260,10 +261,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -279,7 +280,7 @@ class InnamarkTagTest {
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(CompressedSizedInnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSizedInnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
@@ -297,10 +298,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(invalidSize, extractedSize.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus, status.toString())
     }
@@ -310,7 +311,7 @@ class InnamarkTagTest {
         // Arrange
         val expectedCrc32 = 0x5491107Au
         val expected =
-            listOf(CRC32InnamarkTag.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() +
+            byteArrayOf(CRC32InnamarkTag.TYPE_TAG.toByte()) + expectedCrc32.toBytesLittleEndian() +
                 content
 
         // Act
@@ -320,10 +321,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -332,7 +333,7 @@ class InnamarkTagTest {
         // Arrange
         val expectedCrc32 = 0xBFC71733u
         val watermarkContent =
-            listOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + content
+            byteArrayOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + content
         val expectedStatus =
             InnamarkTag.InvalidTagError(
                 "InnamarkTag.CRC32InnamarkTag",
@@ -348,7 +349,7 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
         assertEquals(watermarkContent, watermark.watermarkContent)
@@ -362,7 +363,7 @@ class InnamarkTagTest {
         val expectedCrc32 = 0x5491107Au
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 content
         val expectedStatus =
@@ -380,10 +381,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(invalidCrc32, extractedChecksum.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -393,7 +394,7 @@ class InnamarkTagTest {
         // Arrange
         val expectedCrc32 = 0x10927326u
         val expected =
-            listOf(CompressedCRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
 
@@ -404,10 +405,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -416,7 +417,7 @@ class InnamarkTagTest {
         // Arrange
         val expectedCrc32 = 0x15C089FFu
         val watermarkContent =
-            listOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + compressedContent
+            byteArrayOf((-1).toByte()) + expectedCrc32.toBytesLittleEndian() + compressedContent
         val expectedStatus =
             InnamarkTag.InvalidTagError(
                 "InnamarkTag.CompressedCRC32InnamarkTag",
@@ -432,10 +433,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -446,7 +447,7 @@ class InnamarkTagTest {
         val expectedCrc32 = 0x10927326u
         val invalidCrc32 = 0xFFFFFFFFu
         val watermarkContent =
-            listOf(CompressedCRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidCrc32.toBytesLittleEndian() +
                 compressedContent
         val expectedStatus =
@@ -464,10 +465,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(invalidCrc32, extractedChecksum.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -484,7 +485,7 @@ class InnamarkTagTest {
             ).toUInt()
         val expectedCrc32 = 0x51C833FAu
         val expected =
-            listOf(SizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(SizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 content
@@ -497,12 +498,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -518,7 +519,7 @@ class InnamarkTagTest {
                     content.size
             ).toUInt()
         val watermarkContent =
-            listOf((-1).toByte()) +
+            byteArrayOf((-1).toByte()) +
                 size.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 content
@@ -537,10 +538,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -559,7 +560,7 @@ class InnamarkTagTest {
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(SizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(SizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 content
@@ -587,10 +588,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(invalidCrc32, extractedChecksum.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -607,7 +608,7 @@ class InnamarkTagTest {
             ).toUInt()
         val expectedCrc32 = 0x1D71CD9Cu
         val expected =
-            listOf(CompressedSizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
@@ -620,12 +621,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(expected, watermark.watermarkContent)
+        assertContentEquals(expected, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -641,7 +642,7 @@ class InnamarkTagTest {
                     compressedContent.size
             ).toUInt()
         val watermarkContent =
-            listOf((-1).toByte()) +
+            byteArrayOf((-1).toByte()) +
                 size.toBytesLittleEndian() +
                 expectedCrc32.toBytesLittleEndian() +
                 compressedContent
@@ -660,10 +661,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(expectedCrc32, extractedChecksum.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -682,7 +683,7 @@ class InnamarkTagTest {
                     1
             ).toUInt()
         val watermarkContent =
-            listOf(CompressedSizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSizedCRC32InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidCrc32.toBytesLittleEndian() +
                 compressedContent
@@ -710,7 +711,7 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedChecksum.isSuccess)
         assertEquals(invalidCrc32, extractedChecksum.value)
         assertEquals(watermarkContent, watermark.watermarkContent)
@@ -722,12 +723,12 @@ class InnamarkTagTest {
     fun sha3256Innamark_creation_success() {
         // Arrange
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 100, 2, -123, -78, 123, 0, 73, 0, -117, 5, -12, -11, -83, 82, -2, -34, 24, 19,
                 -76, 61, 47, 113, 121, -36, -76, 56, -100, -96, 28, 21, -66, -80,
             )
         val expectedContent =
-            listOf(SHA3256InnamarkTag.TYPE_TAG.toByte()) + expectedHash + content
+            byteArrayOf(SHA3256InnamarkTag.TYPE_TAG.toByte()) + expectedHash + content
 
         // Act
         val watermark = SHA3256InnamarkTag.new(content)
@@ -736,10 +737,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(expectedContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(expectedContent, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -747,7 +748,7 @@ class InnamarkTagTest {
     fun sha3256Innamark_invalidTag_error() {
         // Arrange
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 94, -5, 11, -28, 39, 90, -127, 48, 78, -60, -46, 88, 37, 14, -58, -35, 9, -124,
                 -49, -76, -26, 59, -96, -35, -99, 98, 110, -6, -49, 47, -52, 25,
             )
@@ -759,7 +760,7 @@ class InnamarkTagTest {
             ).into().toString()
 
         val watermarkContent =
-            listOf((-1).toByte()) + expectedHash + content
+            byteArrayOf((-1).toByte()) + expectedHash + content
 
         // Act
         val watermark = SHA3256InnamarkTag(watermarkContent)
@@ -769,10 +770,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -780,9 +781,9 @@ class InnamarkTagTest {
     @Test
     fun sha3256Trendmark_invalidHash_warning() {
         // Arrange
-        val invalidHash = (0 until 32).map { it.toByte() }.toList()
+        val invalidHash = (0 until 32).map { it.toByte() }.toByteArray()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 100, 2, -123, -78, 123, 0, 73, 0, -117, 5, -12, -11, -83, 82, -2, -34, 24, 19,
                 -76, 61, 47, 113, 121, -36, -76, 56, -100, -96, 28, 21, -66, -80,
             )
@@ -792,7 +793,10 @@ class InnamarkTagTest {
                 invalidHash,
                 expectedHash,
             ).into()
-        val watermarkContent = listOf(SHA3256InnamarkTag.TYPE_TAG.toByte()) + invalidHash + content
+        val watermarkContent =
+            byteArrayOf(
+                SHA3256InnamarkTag.TYPE_TAG.toByte(),
+            ) + invalidHash + content
 
         // Act
         val watermark = SHA3256InnamarkTag(watermarkContent)
@@ -802,10 +806,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(invalidHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(invalidHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -814,12 +818,12 @@ class InnamarkTagTest {
     fun compressedSHA3256Innamark_creation_success() {
         // Arrange
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 83, -74, -63, -41, 15, 9, 90, -55, -72, 74, 82, -63, -76, -123, 72, -16, -42, 9,
                 -120, -86, 127, 120, -35, -3, 84, -62, 33, -33, -113, -97, -79, 41,
             )
         val expectedContent =
-            listOf(CompressedSHA3256InnamarkTag.TYPE_TAG.toByte()) + expectedHash +
+            byteArrayOf(CompressedSHA3256InnamarkTag.TYPE_TAG.toByte()) + expectedHash +
                 compressedContent
 
         // Act
@@ -829,10 +833,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(expectedContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(expectedContent, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -840,7 +844,7 @@ class InnamarkTagTest {
     fun compressedSHA3256Innamark_invalidTag_error() {
         // Arrange
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 55, 41, 25, 53, -104, 106, 100, -32, 42, 123, -87, 37, -47, 105, -71, 24, -48, -43,
                 54, 84, 69, -92, -70, -57, -61, -120, 113, 124, 119, -44, -38, 92,
             )
@@ -852,7 +856,7 @@ class InnamarkTagTest {
             ).into().toString()
 
         val watermarkContent =
-            listOf((-1).toByte()) + expectedHash + compressedContent
+            byteArrayOf((-1).toByte()) + expectedHash + compressedContent
 
         // Act
         val watermark = CompressedSHA3256InnamarkTag(watermarkContent)
@@ -862,10 +866,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -873,9 +877,9 @@ class InnamarkTagTest {
     @Test
     fun compressedSHA3256Innamark_invalidHash_warning() {
         // Arrange
-        val invalidHash = (0 until 32).map { it.toByte() }.toList()
+        val invalidHash = (0 until 32).map { it.toByte() }.toByteArray()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 83, -74, -63, -41, 15, 9, 90, -55, -72, 74, 82, -63, -76, -123, 72, -16, -42, 9,
                 -120, -86, 127, 120, -35, -3, 84, -62, 33, -33, -113, -97, -79, 41,
             )
@@ -886,7 +890,7 @@ class InnamarkTagTest {
                 expectedHash,
             ).into()
         val watermarkContent =
-            listOf(CompressedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 invalidHash +
                 compressedContent
 
@@ -898,10 +902,10 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(invalidHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(invalidHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -917,12 +921,12 @@ class InnamarkTagTest {
                     content.size
             ).toUInt()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 16, 40, 37, 39, 11, -23, 67, 16, -53, -112, -19, 39, -109, 30, 9, -53, -26, 19,
                 -70, -68, -11, 59, 8, -6, -105, 42, 27, 107, 30, -31, 59, -115,
             )
         val expectedContent =
-            listOf(SizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(SizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 content
@@ -935,12 +939,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(expectedContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(expectedContent, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -955,7 +959,7 @@ class InnamarkTagTest {
                     content.size
             ).toUInt()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 -68, 110, 96, 52, -108, 67, 119, -3, 58, 85, 89, 2, 25, 81, 60, 105, 63, -54, 8,
                 -50, -44, 69, 39, 37, -21, -72, -75, -56, -90, 97, 36, 63,
             )
@@ -967,7 +971,7 @@ class InnamarkTagTest {
             ).into().toString()
 
         val watermarkContent =
-            listOf((-1).toByte()) +
+            byteArrayOf((-1).toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 content
@@ -981,12 +985,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -1002,9 +1006,9 @@ class InnamarkTagTest {
                     content.size +
                     1
             ).toUInt()
-        val invalidHash = (0 until 32).map { it.toByte() }.toList()
+        val invalidHash = (0 until 32).map { it.toByte() }.toByteArray()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 39, -19, 18, 28, -13, 83, -11, 91, 79, 63, -53, 86, -126, -122, -70, -60, -81,
                 17, -64, 117, 19, 119, 30, 118, 40, 56, -22, -10, -94, 54, -45, 20,
             )
@@ -1025,7 +1029,7 @@ class InnamarkTagTest {
         )
 
         val watermarkContent =
-            listOf(SizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(SizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidHash +
                 content
@@ -1039,12 +1043,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(invalidSize, extractedSize.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(invalidHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(invalidHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -1060,12 +1064,12 @@ class InnamarkTagTest {
                     compressedContent.size
             ).toUInt()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 -33, -68, 41, 33, 109, -108, 61, 115, 107, 115, 25, -122, 76, -88, -73, 88, 0,
                 35, 122, 46, 83, -70, 108, -22, 73, 79, -48, -114, -7, 71, -99, 27,
             )
         val expectedContent =
-            listOf(CompressedSizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 compressedContent
@@ -1078,12 +1082,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(expectedContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(expectedContent, watermark.watermarkContent)
         assertTrue(watermark.validate().isSuccess)
     }
 
@@ -1098,7 +1102,7 @@ class InnamarkTagTest {
                     compressedContent.size
             ).toUInt()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 22, 122, -87, -67, 54, -68, -18, -114, 70, 43, -46, -77, 75, -59, 107, 121, 32, -63,
                 72, 54, 39, -70, 100, 80, -51, 116, 126, 105, 94, 14, -36, -102,
             )
@@ -1110,7 +1114,7 @@ class InnamarkTagTest {
             ).into().toString()
 
         val watermarkContent =
-            listOf((-1).toByte()) +
+            byteArrayOf((-1).toByte()) +
                 expectedSize.toBytesLittleEndian() +
                 expectedHash +
                 compressedContent
@@ -1124,12 +1128,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(expectedSize, extractedSize.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(expectedHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(expectedHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isError)
         assertEquals(expectedStatus, status.toString())
     }
@@ -1145,9 +1149,9 @@ class InnamarkTagTest {
                     compressedContent.size +
                     1
             ).toUInt()
-        val invalidHash = (0 until 32).map { it.toByte() }.toList()
+        val invalidHash = (0 until 32).map { it.toByte() }.toByteArray()
         val expectedHash =
-            listOf<Byte>(
+            byteArrayOf(
                 56, -83, 26, -125, 21, 20, 92, 91, 122, 82, -125, -58, 17, -34, -53, 117, 112,
                 -88, -128, -3, 72, 62, -85, 112, -103, 46, 26, -112, -67, 30, -34, 31,
             )
@@ -1168,7 +1172,7 @@ class InnamarkTagTest {
         )
 
         val watermarkContent =
-            listOf(CompressedSizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
+            byteArrayOf(CompressedSizedSHA3256InnamarkTag.TYPE_TAG.toByte()) +
                 invalidSize.toBytesLittleEndian() +
                 invalidHash +
                 compressedContent
@@ -1182,12 +1186,12 @@ class InnamarkTagTest {
 
         // Assert
         assertTrue(extractedContent.isSuccess)
-        assertEquals(content, extractedContent.value)
+        assertContentEquals(content, extractedContent.value)
         assertTrue(extractedSize.isSuccess)
         assertEquals(invalidSize, extractedSize.value)
         assertTrue(extractedHash.isSuccess)
-        assertEquals(invalidHash, extractedHash.value)
-        assertEquals(watermarkContent, watermark.watermarkContent)
+        assertContentEquals(invalidHash, extractedHash.value)
+        assertContentEquals(watermarkContent, watermark.watermarkContent)
         assertTrue(status.isWarning)
         assertEquals(expectedStatus.toString(), status.toString())
     }
@@ -1233,16 +1237,16 @@ class InnamarkTagTest {
         assertTrue(parsedPlainWatermark.isSuccess)
         var parsedWatermark = parsedPlainWatermark.value!!
         assertTrue(parsedWatermark is RawInnamarkTag)
-        assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(rawInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, parsedWatermark.getContent().value)
+        assertContentEquals(rawInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedSizedInnamarkTag.isSuccess)
         parsedWatermark = parsedSizedInnamarkTag.value!!
         assertTrue(parsedWatermark is SizedInnamarkTag)
         assertEquals(sizedInnamarkTag.extractSize().value!!, parsedWatermark.extractSize().value!!)
-        assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, parsedWatermark.getContent().value)
+        assertContentEquals(sizedInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCRC32InnamarkTag.isSuccess)
@@ -1252,8 +1256,8 @@ class InnamarkTagTest {
             crc32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
-        assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(crc32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, parsedWatermark.getContent().value)
+        assertContentEquals(crc32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
 
         assertTrue(parsedSizedCRC32InnamarkTag.isSuccess)
         parsedWatermark = parsedSizedCRC32InnamarkTag.value!!
@@ -1266,19 +1270,22 @@ class InnamarkTagTest {
             sizedCRC32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
-        assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedCRC32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, parsedWatermark.getContent().value)
+        assertContentEquals(
+            sizedCRC32InnamarkTag.watermarkContent,
+            parsedWatermark.watermarkContent,
+        )
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedSHA3256InnamarkTag.isSuccess)
         parsedWatermark = parsedSHA3256InnamarkTag.value!!
         assertTrue(parsedWatermark is SHA3256InnamarkTag)
-        assertEquals(
+        assertContentEquals(
             sha3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
-        assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sha3256InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, parsedWatermark.getContent().value)
+        assertContentEquals(sha3256InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedSizedSHA3256InnamarkTag.isSuccess)
@@ -1288,12 +1295,15 @@ class InnamarkTagTest {
             sizedSHA3256InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
-        assertEquals(
+        assertContentEquals(
             sizedSHA3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
-        assertEquals(content, parsedWatermark.getContent().value)
-        assertEquals(sizedSHA3256InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, parsedWatermark.getContent().value)
+        assertContentEquals(
+            sizedSHA3256InnamarkTag.watermarkContent,
+            parsedWatermark.watermarkContent,
+        )
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedRawInnamarkTag.isSuccess)
@@ -1301,8 +1311,11 @@ class InnamarkTagTest {
         assertTrue(parsedWatermark is CompressedRawInnamarkTag)
         var decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
-        assertEquals(content, decompressedContent.value)
-        assertEquals(compressedRawInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(content, decompressedContent.value)
+        assertContentEquals(
+            compressedRawInnamarkTag.watermarkContent,
+            parsedWatermark.watermarkContent,
+        )
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedSizedInnamarkTag.isSuccess)
@@ -1310,12 +1323,15 @@ class InnamarkTagTest {
         assertTrue(parsedWatermark is CompressedSizedInnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
-        assertEquals(content, decompressedContent.value)
+        assertContentEquals(content, decompressedContent.value)
         assertEquals(
             compressedSizedInnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
-        assertEquals(compressedSizedInnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(
+            compressedSizedInnamarkTag.watermarkContent,
+            parsedWatermark.watermarkContent,
+        )
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedCRC32InnamarkTag.isSuccess)
@@ -1323,12 +1339,15 @@ class InnamarkTagTest {
         assertTrue(parsedWatermark is CompressedCRC32InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
-        assertEquals(content, decompressedContent.value)
+        assertContentEquals(content, decompressedContent.value)
         assertEquals(
             compressedCRC32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
-        assertEquals(compressedCRC32InnamarkTag.watermarkContent, parsedWatermark.watermarkContent)
+        assertContentEquals(
+            compressedCRC32InnamarkTag.watermarkContent,
+            parsedWatermark.watermarkContent,
+        )
         assertTrue(parsedWatermark.validate().isSuccess)
 
         assertTrue(parsedCompressedSizedCRC32InnamarkTag.isSuccess)
@@ -1336,7 +1355,7 @@ class InnamarkTagTest {
         assertTrue(parsedWatermark is CompressedSizedCRC32InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
-        assertEquals(content, decompressedContent.value)
+        assertContentEquals(content, decompressedContent.value)
         assertEquals(
             compressedSizedCRC32InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
@@ -1345,7 +1364,7 @@ class InnamarkTagTest {
             compressedSizedCRC32InnamarkTag.extractChecksum().value!!,
             parsedWatermark.extractChecksum().value!!,
         )
-        assertEquals(
+        assertContentEquals(
             compressedSizedCRC32InnamarkTag.watermarkContent,
             parsedWatermark.watermarkContent,
         )
@@ -1356,12 +1375,12 @@ class InnamarkTagTest {
         assertTrue(parsedWatermark is CompressedSHA3256InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
-        assertEquals(content, decompressedContent.value)
-        assertEquals(
+        assertContentEquals(content, decompressedContent.value)
+        assertContentEquals(
             compressedSHA3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
-        assertEquals(
+        assertContentEquals(
             compressedSHA3256InnamarkTag.watermarkContent,
             parsedWatermark.watermarkContent,
         )
@@ -1372,16 +1391,16 @@ class InnamarkTagTest {
         assertTrue(parsedWatermark is CompressedSizedSHA3256InnamarkTag)
         decompressedContent = parsedWatermark.getContent()
         assertTrue(decompressedContent.isSuccess)
-        assertEquals(content, decompressedContent.value)
+        assertContentEquals(content, decompressedContent.value)
         assertEquals(
             compressedSizedSHA3256InnamarkTag.extractSize().value!!,
             parsedWatermark.extractSize().value!!,
         )
-        assertEquals(
+        assertContentEquals(
             compressedSizedSHA3256InnamarkTag.extractHash().value!!,
             parsedWatermark.extractHash().value!!,
         )
-        assertEquals(
+        assertContentEquals(
             compressedSizedSHA3256InnamarkTag.watermarkContent,
             parsedWatermark.watermarkContent,
         )
@@ -1396,7 +1415,7 @@ class InnamarkTagTest {
 
         // Act & Assert
         for (tag in 0..255) {
-            val watermark = listOf(tag.toByte())
+            val watermark = byteArrayOf(tag.toByte())
             val parsedWatermark = InnamarkTag.parse(watermark)
             val events = parsedWatermark.status.getEvents()
 
@@ -1502,8 +1521,8 @@ class InnamarkTagTest {
         val error =
             InnamarkTag.InvalidHashWarning(
                 "Unittest",
-                listOf<Byte>(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte()),
-                listOf<Byte>(0xca.toByte(), 0xfe.toByte(), 0xba.toByte(), 0xbe.toByte()),
+                byteArrayOf(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte()),
+                byteArrayOf(0xca.toByte(), 0xfe.toByte(), 0xba.toByte(), 0xbe.toByte()),
             )
         val expected =
             "Warning (Unittest): Expected hash: [DE, AD, BE, EF], but was: [CA, FE, BA, BE]."

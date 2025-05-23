@@ -40,10 +40,10 @@ interface Transcoding {
     val alphabet: List<Char>
 
     /** Encodes [bytes] to chars of [alphabet] */
-    fun encode(bytes: List<Byte>): Sequence<Char>
+    fun encode(bytes: ByteArray): Sequence<Char>
 
     /** Decodes [chars] of [alphabet] to bytes */
-    fun decode(chars: Sequence<Char>): Result<List<Byte>>
+    fun decode(chars: Sequence<Char>): Result<ByteArray>
 }
 
 @JsExport
@@ -73,7 +73,7 @@ object DefaultTranscoding : Transcoding {
     }
 
     /** Encodes [bytes] to a chars of [alphabet] */
-    override fun encode(bytes: List<Byte>): Sequence<Char> =
+    override fun encode(bytes: ByteArray): Sequence<Char> =
         sequence {
             for (byte in bytes) {
                 var iByte = byte.toIntUnsigned()
@@ -88,7 +88,7 @@ object DefaultTranscoding : Transcoding {
         }
 
     /** Decodes [chars] of [alphabet] to bytes */
-    override fun decode(chars: Sequence<Char>): Result<List<Byte>> {
+    override fun decode(chars: Sequence<Char>): Result<ByteArray> {
         val status = Status()
         val dBase = base.toDouble()
 
@@ -105,7 +105,7 @@ object DefaultTranscoding : Transcoding {
             }
         }
 
-        return status.into(result)
+        return status.into(result.toByteArray())
     }
 
     /** Calculates how many digits are required for a byte in given base ([alphabetSize]) */
@@ -146,7 +146,7 @@ class TextWatermarker(
      */
     override fun addWatermark(
         file: TextFile,
-        watermark: List<Byte>,
+        watermark: ByteArray,
     ): Status {
         // Check if file contains any chars from the used alphabet
         if (file.content.any { char -> char in fullAlphabet }) {
@@ -348,13 +348,13 @@ class TextWatermarker(
     }
 
     /** Parses [bytes] as text and returns it as TextFile */
-    override fun parseBytes(bytes: List<Byte>): Result<TextFile> {
-        return TextFile.fromBytes(bytes.toByteArray())
+    override fun parseBytes(bytes: ByteArray): Result<TextFile> {
+        return TextFile.fromBytes(bytes)
     }
 
     /** Counts the minimum number of insert positions needed in a text to insert the [watermark] */
     @JsName("getMinimumInsertPositionsBytes")
-    fun getMinimumInsertPositions(watermark: List<Byte>): Int {
+    fun getMinimumInsertPositions(watermark: ByteArray): Int {
         val separatedWatermark = getSeparatedWatermark(watermark)
         return if (separatorStrategy is SeparatorStrategy.StartEndSeparatorChars) {
             separatedWatermark.count()
@@ -376,7 +376,7 @@ class TextWatermarker(
         getMinimumInsertPositions(innamarkTagBuilder.finish())
 
     /** Transforms a [watermark] into a separated watermark */
-    private fun getSeparatedWatermark(watermark: List<Byte>): Sequence<Char> {
+    private fun getSeparatedWatermark(watermark: ByteArray): Sequence<Char> {
         val encodedWatermark = transcoding.encode(watermark)
 
         val separatedWatermark =

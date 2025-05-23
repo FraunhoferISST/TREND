@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2023-2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * This work is licensed under the Fraunhofer License (on the basis of the MIT license)
  * that can be found in the LICENSE file.
@@ -8,7 +8,7 @@
 package de.fraunhofer.isst.innamark.watermarker.helper
 
 /**
- * Returns an UInt created from 4 bytes in little endian order
+ * Returns a UInt created from 4 bytes in little endian order
  * If less than 4 bytes are supplied they get filled with zeros from MSB to LSB
  */
 fun UInt.Companion.fromBytesLittleEndian(bytes: List<Byte>): UInt {
@@ -21,7 +21,7 @@ fun UInt.Companion.fromBytesLittleEndian(bytes: List<Byte>): UInt {
 }
 
 /**
- * Returns an UShort created from 2 bytes in little endian order
+ * Returns a UShort created from 2 bytes in little endian order
  * If less than 2 bytes are supplied they get filled with zeros from MSB to LSB
  */
 fun UShort.Companion.fromBytesLittleEndian(bytes: List<Byte>): UShort {
@@ -33,7 +33,7 @@ fun UShort.Companion.fromBytesLittleEndian(bytes: List<Byte>): UShort {
     return result.toUShort()
 }
 
-/** Converts an UInt into a list of 4 bytes in little endian order */
+/** Converts a UInt into a list of 4 bytes in little endian order */
 fun UInt.toBytesLittleEndian(): List<Byte> =
     listOf(
         this.toByte(),
@@ -42,7 +42,7 @@ fun UInt.toBytesLittleEndian(): List<Byte> =
         this.shr(24).toByte(),
     )
 
-/** Converts an UShort into a list of 2 bytes in little endian order */
+/** Converts a UShort into a list of 2 bytes in little endian order */
 fun UShort.toBytesLittleEndian(): List<Byte> =
     listOf(
         this.toByte(),
@@ -52,15 +52,15 @@ fun UShort.toBytesLittleEndian(): List<Byte> =
 /** Coverts a Byte into an UByte and returns it as Int */
 fun Byte.toIntUnsigned(): Int = this.toInt() and 0xff
 
-/** Returns the unicode representation of the character */
+/** Returns the Unicode representation of the character */
 fun Char.toUnicodeRepresentation(): String =
     "\\u" + this.code.toString(16).uppercase().padStart(4, '0')
 
 /**
- * Represents a List of bytes in hex
+ * Represents a ByteArray in hex
  * E.g.: [0xde, 0xad, 0xbe, 0xef]
  */
-fun List<Byte>.toHexString(): String =
+fun ByteArray.toHexString(): String =
     "[" +
         joinToString(separator = ", ") { eachByte ->
             eachByte.toIntUnsigned().toString(16).uppercase().padStart(2, '0')

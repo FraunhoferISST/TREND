@@ -35,7 +35,7 @@ class WatermarkerTest {
             "sanctus est Lorem ipsum dolor sit amet."
 
     private val watermarkString = "Test"
-    private val watermark = watermarkString.encodeToByteArray().asList()
+    private val watermark = watermarkString.encodeToByteArray()
 
     private val textWithWatermark =
         "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor i" +
@@ -116,7 +116,7 @@ class WatermarkerTest {
     @Test
     fun textAddWatermark_watermarkTooLong_warningAndWatermarkedString() {
         // Arrange
-        val watermark = "Hello, world!".encodeToByteArray().asList()
+        val watermark = "Hello, world!".encodeToByteArray()
         val expectedMessage = TextWatermarker.OversizedWatermarkWarning(54, 49).into().toString()
         val expected =
             "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod temp" +
@@ -196,7 +196,7 @@ class WatermarkerTest {
         // Arrange
         val expected =
             listOf(
-                Watermark(listOf(0, 97)),
+                Watermark(byteArrayOf(0, 97)),
             )
 
         // Act
