@@ -19,7 +19,7 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
     id("io.kvision") version kvisionVersion
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
     id("com.github.node-gradle.node") version "7.1.0"
 }
 
