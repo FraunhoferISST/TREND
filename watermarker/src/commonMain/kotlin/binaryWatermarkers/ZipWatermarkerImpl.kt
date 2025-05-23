@@ -59,7 +59,7 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
 
     override fun getWatermarkAsString(cover: ZipFile): Result<String> {
         val watermarks = getWatermarks(cover, false, true)
-        if (watermarks.value?.isNotEmpty() ?: return Result.success("")){
+        if (watermarks.value?.isNotEmpty() ?: return Result.success("")) {
             return watermarks.status.into(watermarks.value[0].watermarkContent.decodeToString())
         } else {
             return Result.success("")
