@@ -51,6 +51,7 @@ class PlainTextWatermarkerTest {
     val watermarkBytes = watermark.encodeToByteArray()
     val watermark2 = "Okay"
     val watermarkBytes2 = watermark2.encodeToByteArray()
+    val malformedBytes = byteArrayOf(0x54.toByte(), 0x65.toByte(), 0x73.toByte(), 0xFF.toByte())
 
     @Test
     fun getWatermarkAsString_unmarkedText_Success() {
@@ -103,6 +104,22 @@ class PlainTextWatermarkerTest {
 
         // Assert
         assertTrue(result.isSuccess)
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun getWatermarkAsString_singleWatermark_StringDecodeWarning() {
+        // Arrange
+        val expected = "Tes" + '\uFFFD'
+        val expectedStatus = Watermark.StringDecodeWarning("PlainTextWatermarker")
+        val watermarked = watermarker.addWatermark(loremIpsum, malformedBytes)
+
+        // Act
+        val result = watermarker.getWatermarkAsString(watermarked.value!!)
+
+        // Assert
+        assertTrue(result.isWarning)
+        assertEquals(expectedStatus.getMessage(), result.getMessage())
         assertEquals(expected, result.value)
     }
 

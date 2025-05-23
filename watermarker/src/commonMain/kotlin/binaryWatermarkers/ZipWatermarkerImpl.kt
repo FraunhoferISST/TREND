@@ -9,6 +9,7 @@ package de.fraunhofer.isst.innamark.watermarker.binaryWatermarkers
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.ZipWatermarker
 import de.fraunhofer.isst.innamark.watermarker.files.ZipFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 
 /**
@@ -60,7 +61,14 @@ class ZipWatermarkerImpl : BinaryWatermarker<ZipFile> {
     override fun getWatermarkAsString(cover: ZipFile): Result<String> {
         val watermarks = getWatermarks(cover, false, true)
         if (watermarks.value?.isNotEmpty() ?: return Result.success("")) {
-            return watermarks.status.into(watermarks.value[0].watermarkContent.decodeToString())
+            val decoded =
+                watermarks.status.into(
+                    watermarks.value[0].watermarkContent.decodeToString(),
+                )
+            if (decoded.value!!.contains('\uFFFD')) {
+                decoded.appendStatus(Status(Watermark.StringDecodeWarning("ZipWatermarkerImpl")))
+            }
+            return decoded
         } else {
             return Result.success("")
         }

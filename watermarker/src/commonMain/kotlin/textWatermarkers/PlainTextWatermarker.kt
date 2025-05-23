@@ -12,6 +12,7 @@ import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.TextWatermarker
 import de.fraunhofer.isst.innamark.watermarker.fileWatermarker.Transcoding
 import de.fraunhofer.isst.innamark.watermarker.files.TextFile
 import de.fraunhofer.isst.innamark.watermarker.returnTypes.Result
+import de.fraunhofer.isst.innamark.watermarker.returnTypes.Status
 import de.fraunhofer.isst.innamark.watermarker.watermarks.Watermark
 
 /**
@@ -87,7 +88,15 @@ class PlainTextWatermarker(
     override fun getWatermarkAsString(cover: String): Result<String> {
         val watermarks = getWatermarks(cover, false, true)
         if (watermarks.value?.isNotEmpty() ?: return Result.success("")) {
-            return watermarks.status.into(watermarks.value[0].watermarkContent.decodeToString())
+            val decoded =
+                watermarks.status.into(
+                    watermarks.value[0].watermarkContent
+                        .decodeToString(),
+                )
+            if (decoded.value!!.contains('\uFFFD')) {
+                decoded.appendStatus(Status(Watermark.StringDecodeWarning("PlainTextWatermarker")))
+            }
+            return decoded
         } else {
             return Result.success("")
         }
