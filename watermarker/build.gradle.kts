@@ -10,7 +10,7 @@ plugins {
     kotlin("multiplatform") version "2.1.10"
     id("maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
 
